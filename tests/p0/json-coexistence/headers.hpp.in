@@ -1,0 +1,2 @@
+#define HOST_JSON_HEADER "@HOST_JSON_DIR@/json.hpp"
+#define BUNDLED_JSON_HEADER "@KNOT_JSON_DIR@/json.hpp"
