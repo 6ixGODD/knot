@@ -1,0 +1,7 @@
+{
+  "id": "T06",
+  "title": "Color uppercase normalization",
+  "operation": "apply",
+  "expectedStatus": 0,
+  "modelValidation": "valid"
+}

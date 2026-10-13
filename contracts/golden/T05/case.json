@@ -1,0 +1,7 @@
+{
+  "id": "T05",
+  "title": "Multi answer declaration ordering and price",
+  "operation": "apply",
+  "expectedStatus": 0,
+  "modelValidation": "valid"
+}

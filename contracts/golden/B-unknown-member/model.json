@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "1.0",
+  "productId": "small",
+  "productVersion": "1",
+  "questions": [
+    {
+      "id": "n",
+      "type": "integer",
+      "label": "Number",
+      "required": true,
+      "min": 0,
+      "max": 10,
+      "step": 2
+    }
+  ],
+  "flow": {
+    "start": "n",
+    "edges": [
+      {
+        "from": "n",
+        "to": "END"
+      }
+    ]
+  },
+  "pricing": {
+    "currency": "CNY",
+    "components": [
+      {
+        "id": "base",
+        "category": "base",
+        "amountMinor": 100
+      }
+    ]
+  },
+  "visual": {
+    "targets": [],
+    "slots": []
+  },
+  "unexpected": true
+}

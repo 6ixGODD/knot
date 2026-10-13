@@ -1,0 +1,7 @@
+{
+  "id": "T19",
+  "title": "Stale event rejected before no-op",
+  "operation": "apply",
+  "expectedStatus": 1006,
+  "modelValidation": "valid"
+}

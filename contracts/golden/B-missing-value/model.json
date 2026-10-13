@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "productId": "small",
+  "productVersion": "1",
+  "questions": [
+    {
+      "id": "c",
+      "type": "color",
+      "label": "Color",
+      "required": true
+    }
+  ],
+  "flow": {
+    "start": "c",
+    "edges": [
+      {
+        "from": "c",
+        "to": "END"
+      }
+    ]
+  },
+  "pricing": {
+    "currency": "CNY",
+    "components": [
+      {
+        "id": "base",
+        "category": "base",
+        "amountMinor": 100
+      }
+    ]
+  },
+  "visual": {
+    "targets": [
+      {
+        "id": "t",
+        "order": 0,
+        "defaults": {
+          "color": "#000000"
+        }
+      }
+    ],
+    "slots": [
+      {
+        "id": "color",
+        "target": "t",
+        "property": "color",
+        "cases": [
+          {
+            "when": {
+              "not": {
+                "field": "c",
+                "op": "exists"
+              }
+            },
+            "valueFrom": "c"
+          }
+        ]
+      }
+    ]
+  }
+}

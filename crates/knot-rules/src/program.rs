@@ -55,4 +55,21 @@ mod tests {
                 .is_ok()
         );
     }
+
+    #[test]
+    fn source_locations_are_distinct_even_with_shared_slot_id() {
+        use crate::RuleSource;
+        let id = knot_schema::wire::Id::new("slot".into()).unwrap_or_else(|e| panic!("{e}"));
+        let first = RuleSource::new("/visual/slots/0/cases/0/when".into(), Some(&id))
+            .unwrap_or_else(|e| panic!("{e}"));
+        let second = RuleSource::new("/visual/slots/0/cases/1/when".into(), Some(&id))
+            .unwrap_or_else(|e| panic!("{e}"));
+        assert_ne!(first.path(), second.path());
+        assert_eq!(first.rule_id(), second.rule_id());
+        let escaped = RuleSource::new("/x~1y/~0".into(), None).unwrap_or_else(|e| panic!("{e}"));
+        assert_eq!(escaped.rule_id(), "rule:/x~1y/~0");
+        for path in ["x", "/~", "/~2", "/\n"] {
+            assert!(RuleSource::new(path.into(), None).is_err());
+        }
+    }
 }

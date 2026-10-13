@@ -185,3 +185,285 @@ fn schema_formats_assert_utf8_id_and_exact_decimal_limits() {
             .is_err()
     );
 }
+
+#[test]
+fn fixed_currency_snapshot_and_golden_contracts() {
+    use knot_schema::{canonical::model_digest, currency, validation::Validator, wire::*};
+    use serde_json::Value;
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../contracts");
+    let load = |path: &std::path::Path| -> Value {
+        let bytes = std::fs::read(path).unwrap_or_else(|e| panic!("{e}"));
+        parse_json(&bytes, 4 * 1024 * 1024).unwrap_or_else(|e| panic!("{}: {e}", path.display()))
+    };
+    let source = load(&root.join("currency/provenance.json"));
+    assert_eq!(source["tableDigest"], currency::table_digest());
+    for (code, units) in [("CNY", 2), ("JPY", 0), ("KWD", 3), ("CLF", 4)] {
+        assert_eq!(currency::minor_units(code), Ok(units));
+    }
+    for code in ["XXX", "XTS", "XAU", "ZZZ", "cny", "", "USD "] {
+        assert!(currency::minor_units(code).is_err(), "{code}");
+    }
+    let index = load(&root.join("golden/index.json"));
+    assert_eq!(index["currencyTableDigest"], currency::table_digest());
+    let cases = index["cases"]
+        .as_array()
+        .unwrap_or_else(|| panic!("case array"));
+    for number in 1..=28 {
+        let id = format!("T{number:02}");
+        assert_eq!(cases.iter().filter(|c| c["id"] == id).count(), 1, "{id}");
+    }
+    let validator = |name: &str| {
+        Validator::new(&load(&root.join(format!("schemas/{name}.schema.json"))))
+            .unwrap_or_else(|e| panic!("{e}"))
+    };
+    let product_schema = validator("product");
+    let state_schema = validator("state");
+    let event_schema = validator("event");
+    let result_schema = validator("result");
+    let error_schema = validator("error");
+    for meta in cases {
+        let id = meta["id"].as_str().unwrap_or_else(|| panic!("id"));
+        let directory = root.join("golden").join(id);
+        assert_eq!(load(&directory.join("case.json")), *meta);
+        let bytes = std::fs::read(directory.join("model.json")).unwrap_or_else(|e| panic!("{e}"));
+        let parsed = parse_json(&bytes, 4 * 1024 * 1024);
+        let mut front_end_error = None;
+        let digest = if meta["modelValidation"] == "parse-error" {
+            assert!(parsed.is_err(), "{id}");
+            front_end_error = parsed.err();
+            None
+        } else {
+            let model = parsed.unwrap_or_else(|e| panic!("{id}: {e}"));
+            if meta["modelValidation"] == "schema-error" {
+                assert!(product_schema.validate(&model).is_err(), "{id}");
+                front_end_error = product_schema.validate(&model).err();
+                None
+            } else {
+                product_schema
+                    .validate(&model)
+                    .unwrap_or_else(|e| panic!("{id}: {e}"));
+                let mut normalized = model.clone();
+                for q in normalized["questions"]
+                    .as_array_mut()
+                    .unwrap_or_else(|| panic!("questions"))
+                {
+                    if q.get("required").is_none() {
+                        q["required"] = true.into();
+                    }
+                }
+                for target in normalized["visual"]["targets"]
+                    .as_array_mut()
+                    .unwrap_or_else(|| panic!("targets"))
+                {
+                    if target.get("order").is_none() {
+                        target["order"] = 0.into();
+                    }
+                }
+                let typed: Product =
+                    serde_json::from_value(normalized).unwrap_or_else(|e| panic!("{id}: {e}"));
+                Some(
+                    model_digest(&typed, &currency::table_digest())
+                        .unwrap_or_else(|e| panic!("{id}: {e}")),
+                )
+            }
+        };
+        let state = load(&directory.join("initial-state.json"));
+        if !state.is_null() {
+            state_schema
+                .validate(&state)
+                .unwrap_or_else(|e| panic!("{id} state: {e}"));
+            let typed: ConfigurationState =
+                serde_json::from_value(state.clone()).unwrap_or_else(|e| panic!("{id}: {e}"));
+            assert_eq!(
+                serde_json::to_value(typed).unwrap_or_else(|e| panic!("{e}")),
+                state
+            );
+            if meta["stateValidation"] != "semantic-error" {
+                assert_eq!(state["modelDigest"].as_str(), digest.as_deref(), "{id}");
+            }
+        }
+        let event = load(&directory.join("event.json"));
+        if !event.is_null() {
+            if meta["eventValidation"] == "schema-error" {
+                assert!(event_schema.validate(&event).is_err(), "{id}");
+                front_end_error = event_schema.validate(&event).err();
+            } else {
+                event_schema
+                    .validate(&event)
+                    .unwrap_or_else(|e| panic!("{id} event: {e}"));
+                let _: ConfigurationEvent =
+                    serde_json::from_value(event).unwrap_or_else(|e| panic!("{id}: {e}"));
+            }
+        }
+        let expected = load(&directory.join("expected-result.json"));
+        if meta["expectedStatus"] != 0 {
+            error_schema
+                .validate(&expected)
+                .unwrap_or_else(|e| panic!("{id} error: {e}"));
+            let error: knot_schema::KnotError =
+                serde_json::from_value(expected["error"].clone()).unwrap_or_else(|e| panic!("{e}"));
+            if let Some(actual) = front_end_error {
+                assert_eq!(
+                    (actual.code, actual.path),
+                    (error.code.clone(), error.path.clone()),
+                    "{id}"
+                );
+            }
+            assert_eq!(
+                error.status() as i64,
+                meta["expectedStatus"].as_i64().unwrap_or_default(),
+                "{id}"
+            );
+        } else {
+            result_schema
+                .validate(&expected)
+                .unwrap_or_else(|e| panic!("{id} result: {e}"));
+            if meta["operation"] == "model_create" {
+                let typed: ModelCreateResult = serde_json::from_value(expected.clone())
+                    .unwrap_or_else(|e| panic!("{id}: {e}"));
+                assert_eq!(Some(typed.model_digest.as_str()), digest.as_deref(), "{id}");
+            } else {
+                let typed: TransitionResult = serde_json::from_value(expected.clone())
+                    .unwrap_or_else(|e| panic!("{id}: {e}"));
+                assert_eq!(
+                    Some(typed.state.model_digest.as_str()),
+                    digest.as_deref(),
+                    "{id}"
+                );
+                assert_eq!(
+                    serde_json::to_value(typed).unwrap_or_else(|e| panic!("{e}")),
+                    expected,
+                    "{id}"
+                );
+                let p = &expected["snapshot"]["price"];
+                if p["status"] != "unknown" {
+                    let sum: i64 = p["components"]
+                        .as_array()
+                        .unwrap_or_else(|| panic!("components"))
+                        .iter()
+                        .map(|c| {
+                            c["amountMinor"]
+                                .as_i64()
+                                .unwrap_or_else(|| panic!("amount"))
+                        })
+                        .sum();
+                    assert_eq!(Some(sum), p["totalMinor"].as_i64(), "{id}");
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn schema_shape_matrix_rejects_partial_results_and_mixed_variants() {
+    use knot_schema::{validation::Validator, wire::Product};
+    use serde_json::{Value, json};
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../contracts");
+    let load = |path: &str| -> Value {
+        let bytes = std::fs::read(root.join(path)).unwrap_or_else(|e| panic!("{e}"));
+        parse_json(&bytes, 4 * 1024 * 1024).unwrap_or_else(|e| panic!("{e}"))
+    };
+    let schema = |name: &str| {
+        Validator::new(&load(&format!("schemas/{name}.schema.json")))
+            .unwrap_or_else(|e| panic!("{e}"))
+    };
+    let product = schema("product");
+    let base = load("golden/T07/model.json");
+    for op in [
+        "eq", "ne", "gt", "gte", "lt", "lte", "between", "in", "exists",
+    ] {
+        let mut leaf = json!({"field":"n","op":op});
+        match op {
+            "exists" => {}
+            "between" | "in" => leaf["value"] = json!([0, 10]),
+            _ => leaf["value"] = json!(2),
+        }
+        let mut input = base.clone();
+        input["flow"]["edges"][0]["when"] = json!({"all":[{"any":[leaf.clone()]},{"not":leaf}]});
+        assert!(product.validate(&input).is_ok(), "{op}");
+        assert!(serde_json::from_value::<Product>(input).is_ok(), "{op}");
+    }
+    for bad in [
+        json!({"all":[]}),
+        json!({"any":[]}),
+        json!({"field":"n","op":"exists","value":1}),
+        json!({"field":"n","op":"between","value":[1]}),
+        json!({"field":"n","op":"in","value":[]}),
+        json!({"all":[{"field":"n","op":"exists"}],"not":{"field":"n","op":"exists"}}),
+    ] {
+        let mut input = base.clone();
+        input["flow"]["edges"][0]["when"] = bad;
+        assert!(product.validate(&input).is_err());
+    }
+    let mut mixed = base.clone();
+    mixed["pricing"]["components"][0]["unitMinor"] = json!(1);
+    mixed["pricing"]["components"][0]["quantityFrom"] = json!("n");
+    assert!(product.validate(&mixed).is_err());
+    let state = schema("state");
+    for bad in [json!(null), json!(true), json!(["a", "a"]), json!(0.5)] {
+        let mut input = load("golden/T04/initial-state.json");
+        input["answers"]["q"] = bad;
+        assert!(state.validate(&input).is_err());
+    }
+    let event = schema("event");
+    for kind in ["clear_answer", "skip_answer"] {
+        let mut input =
+            json!({"schemaVersion":"1.0","type":kind,"questionId":"q","expectedRevision":0});
+        assert!(event.validate(&input).is_ok());
+        input["value"] = json!("unexpected");
+        assert!(event.validate(&input).is_err());
+    }
+    let result = schema("result");
+    let full = load("golden/T12/expected-result.json");
+    for key in ["state", "snapshot", "changes", "diagnostics"] {
+        let mut partial = full.clone();
+        partial
+            .as_object_mut()
+            .unwrap_or_else(|| panic!("object"))
+            .remove(key);
+        assert!(result.validate(&partial).is_err(), "missing {key}");
+    }
+    let visual = schema("visual");
+    for (property, value) in [
+        ("visible", json!(true)),
+        ("color", json!("#123ABC")),
+        ("opacity", json!(0.5)),
+        ("transform.scale", json!([-1, 0, 1])),
+        ("assetRef", json!("mesh")),
+    ] {
+        let mut input = json!({"targets":[{"id":"t","order":0,"properties":{}}]});
+        input["targets"][0]["properties"][property] = value;
+        assert!(visual.validate(&input).is_ok(), "{property}");
+        input["targets"][0]["properties"][property] = json!(null);
+        assert!(visual.validate(&input).is_err(), "{property}");
+    }
+    for (property, value) in [
+        ("unknown", json!(1)),
+        ("opacity", json!(1.01)),
+        ("transform.scale", json!([1, 2])),
+        ("color", json!("#fff")),
+    ] {
+        let mut input = json!({"targets":[{"id":"t","order":0,"properties":{}}]});
+        input["targets"][0]["properties"][property] = value;
+        assert!(visual.validate(&input).is_err(), "{property}");
+    }
+    let error = schema("error");
+    for record in load("errors.json")["errors"]
+        .as_array()
+        .unwrap_or_else(|| panic!("errors"))
+    {
+        let code = record["code"].as_str().unwrap_or_else(|| panic!("code"));
+        let mut actual = knot_schema::KnotError::new(code, "");
+        if code == "RESOURCE_LIMIT" {
+            actual = knot_schema::KnotError::limit("questions", 256, 257);
+        }
+        if code == "REVISION_CONFLICT" {
+            *actual.details = json!({"expectedRevision":0,"actualRevision":1});
+        }
+        assert_eq!(json!(actual.status()), record["status"]);
+        let mut envelope = actual.envelope();
+        assert!(error.validate(&envelope).is_ok(), "{code}");
+        envelope["error"]["details"]["unregistered"] = json!(true);
+        assert!(error.validate(&envelope).is_err(), "{code}");
+    }
+}

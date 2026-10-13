@@ -1,0 +1,11 @@
+{
+  "id": "T25",
+  "title": "Python and C++ exact output agreement",
+  "operation": "evaluate",
+  "expectedStatus": 0,
+  "modelValidation": "valid",
+  "bindings": [
+    "python",
+    "cpp"
+  ]
+}

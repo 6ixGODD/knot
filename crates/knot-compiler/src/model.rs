@@ -1,7 +1,7 @@
-use knot_rules::{ConditionId, RuleProgram, SourceMap};
+use knot_rules::{ConditionId, RuleProgram, RuleSource, SourceMap};
 use knot_schema::{
     KnotError,
-    wire::{Id, Product},
+    wire::{Id, PriceComponent, Product, Question},
 };
 use std::{
     collections::{BTreeMap, BTreeSet},
@@ -19,6 +19,7 @@ pub struct ModelParts {
     pub product: Product,
     pub question_index: BTreeMap<Id, usize>,
     pub edges: Vec<IndexedEdge>,
+    /// Transitive structural successors, sorted by question index (not just direct edges).
     pub successors: Vec<Vec<usize>>,
     pub target_order: Vec<usize>,
     pub sources: SourceMap,
@@ -27,6 +28,7 @@ pub struct ModelParts {
 }
 pub struct CompiledModel {
     parts: ModelParts,
+    condition_ids: BTreeMap<String, ConditionId>,
 }
 impl CompiledModel {
     /// Check storage consistency before publishing read-only shared model data.
@@ -42,10 +44,20 @@ impl CompiledModel {
         {
             return Err(bad());
         }
+        let mut option_count = 0;
         for (index, q) in product.questions.iter().enumerate() {
             if parts.question_index.get(q.id()) != Some(&index) || q.id().as_str() == "END" {
                 return Err(bad());
             }
+            if let Question::Single { options, .. } | Question::Multi { options, .. } = q {
+                if options.is_empty() || options.len() > 256 {
+                    return Err(bad());
+                }
+                option_count += options.len();
+            }
+        }
+        if option_count > 8192 {
+            return Err(bad());
         }
         if !parts.question_index.contains_key(&product.flow.start) {
             return Err(bad());
@@ -56,15 +68,75 @@ impl CompiledModel {
         if parts.sources.len() != parts.program.condition_count() || parts.sources.len() > 4096 {
             return Err(bad());
         }
+        if product.pricing.components.len() > 1024
+            || product.visual.targets.len() > 256
+            || product.visual.slots.len() > 2048
+        {
+            return Err(bad());
+        }
+        let mut case_count = 0;
+        for slot in &product.visual.slots {
+            if slot.cases.len() > 4096 {
+                return Err(bad());
+            }
+            case_count += slot.cases.len();
+        }
+        if case_count > 4096 {
+            return Err(bad());
+        }
+        let mut expected_sources = Vec::new();
+        for (q, question) in product.questions.iter().enumerate() {
+            if let Question::Single { options, .. } | Question::Multi { options, .. } = question {
+                for (o, option) in options.iter().enumerate() {
+                    if option.enabled_when.is_some() {
+                        expected_sources.push(RuleSource::new(
+                            format!("/questions/{q}/options/{o}/enabledWhen"),
+                            None,
+                        )?);
+                    }
+                }
+            }
+        }
+        for (i, edge) in product.flow.edges.iter().enumerate() {
+            if edge.when.is_some() {
+                expected_sources.push(RuleSource::new(format!("/flow/edges/{i}/when"), None)?);
+            }
+        }
+        for (i, component) in product.pricing.components.iter().enumerate() {
+            let (id, when) = match component {
+                PriceComponent::Fixed { id, when, .. }
+                | PriceComponent::Quantity { id, when, .. } => (id, when),
+            };
+            if when.is_some() {
+                expected_sources.push(RuleSource::new(
+                    format!("/pricing/components/{i}/when"),
+                    Some(id),
+                )?);
+            }
+        }
+        for (s, slot) in product.visual.slots.iter().enumerate() {
+            for c in 0..slot.cases.len() {
+                expected_sources.push(RuleSource::new(
+                    format!("/visual/slots/{s}/cases/{c}/when"),
+                    Some(&slot.id),
+                )?);
+            }
+        }
+        if expected_sources != parts.sources {
+            return Err(bad());
+        }
         if parts
             .sources
             .iter()
-            .any(|s| s.is_empty() || s.len() > 16384)
+            .map(|s| s.path())
+            .collect::<BTreeSet<_>>()
+            .len()
+            != parts.sources.len()
         {
             return Err(bad());
         }
         let mut successors = vec![BTreeSet::new(); count];
-        for (edge, wire) in parts.edges.iter().zip(&product.flow.edges) {
+        for (index, (edge, wire)) in parts.edges.iter().zip(&product.flow.edges).enumerate() {
             if parts.question_index.get(&wire.from) != Some(&edge.from) || edge.from >= count {
                 return Err(bad());
             }
@@ -79,20 +151,29 @@ impl CompiledModel {
             if edge.condition.is_some_and(|id| id.0 >= parts.sources.len()) {
                 return Err(bad());
             }
+            if let Some(id) = edge.condition
+                && parts.sources[id.0].path() != format!("/flow/edges/{index}/when")
+            {
+                return Err(bad());
+            }
             if let Some(to) = edge.to {
                 successors[edge.from].insert(to);
             }
         }
-        for (stored, expected) in parts.successors.iter().zip(successors) {
-            if stored.iter().copied().ne(expected) {
+        // Each vertex is visited at most once per source; count <= 256, edges <= 2048.
+        // The stored closure is used by dependency validation, so direct-only sets
+        // would incorrectly permit reads of questions two or more steps ahead.
+        for (source, stored) in parts.successors.iter().enumerate() {
+            let mut reachable = BTreeSet::new();
+            let mut pending: Vec<_> = successors[source].iter().copied().collect();
+            while let Some(next) = pending.pop() {
+                if reachable.insert(next) {
+                    pending.extend(successors[next].iter().copied());
+                }
+            }
+            if reachable.contains(&source) || stored.iter().copied().ne(reachable) {
                 return Err(bad());
             }
-        }
-        if product.pricing.components.len() > 1024
-            || product.visual.targets.len() > 256
-            || product.visual.slots.len() > 2048
-        {
-            return Err(bad());
         }
         let mut expected: Vec<_> = (0..product.visual.targets.len()).collect();
         expected.sort_by(|a, b| {
@@ -115,7 +196,16 @@ impl CompiledModel {
         {
             return Err(bad());
         }
-        Ok(Self { parts })
+        let condition_ids = parts
+            .sources
+            .iter()
+            .enumerate()
+            .map(|(i, source)| (source.path().to_owned(), ConditionId(i)))
+            .collect();
+        Ok(Self {
+            parts,
+            condition_ids,
+        })
     }
     pub fn product(&self) -> &Product {
         &self.parts.product
@@ -135,6 +225,11 @@ impl CompiledModel {
     pub fn sources(&self) -> &SourceMap {
         &self.parts.sources
     }
+    /// Resolve a compiled condition by its Product JSON Pointer, never by a
+    /// potentially shared diagnostic rule ID. None means no condition at that path.
+    pub fn condition_id(&self, path: &str) -> Option<ConditionId> {
+        self.condition_ids.get(path).copied()
+    }
     pub fn program(&self) -> &dyn RuleProgram {
         self.parts.program.as_ref()
     }
@@ -148,10 +243,10 @@ mod tests {
     use super::*;
     use knot_rules::{BooleanEffects, CallBudget, Facts};
     use knot_schema::wire::*;
-    struct EmptyProgram;
-    impl RuleProgram for EmptyProgram {
+    struct StorageOnlyProgram(usize);
+    impl RuleProgram for StorageOnlyProgram {
         fn condition_count(&self) -> usize {
-            0
+            self.0
         }
         fn evaluate(
             &self,
@@ -209,7 +304,7 @@ mod tests {
             successors: vec![vec![]],
             target_order: vec![],
             sources: vec![],
-            program: Arc::new(EmptyProgram),
+            program: Arc::new(StorageOnlyProgram(0)),
             digest: format!("sha256:{}", "0".repeat(64)),
         }
     }
@@ -233,6 +328,93 @@ mod tests {
         assert!(CompiledModel::new(p).is_err());
         let mut p = parts();
         p.digest = "sha256:invalid".into();
+        assert!(CompiledModel::new(p).is_err());
+    }
+
+    #[test]
+    fn successor_storage_is_transitive_and_cycle_free() {
+        let mut p = parts();
+        for name in ["second", "third"] {
+            let index = p.product.questions.len();
+            p.question_index.insert(id(name), index);
+            p.product.questions.push(Question::Color {
+                id: id(name),
+                label: name.into(),
+                required: Some(true),
+            });
+        }
+        p.product.flow.edges = vec![
+            Edge {
+                from: id("color"),
+                to: id("second"),
+                when: None,
+            },
+            Edge {
+                from: id("second"),
+                to: id("third"),
+                when: None,
+            },
+            Edge {
+                from: id("third"),
+                to: id("END"),
+                when: None,
+            },
+        ];
+        p.edges = vec![
+            IndexedEdge {
+                from: 0,
+                to: Some(1),
+                condition: None,
+            },
+            IndexedEdge {
+                from: 1,
+                to: Some(2),
+                condition: None,
+            },
+            IndexedEdge {
+                from: 2,
+                to: None,
+                condition: None,
+            },
+        ];
+        p.successors = vec![vec![1, 2], vec![2], vec![]];
+        let model = CompiledModel::new(p).unwrap_or_else(|e| panic!("{e}"));
+        let mut p = model.parts;
+        p.successors[0] = vec![1];
+        assert!(CompiledModel::new(p).is_err());
+        let mut p = parts();
+        p.product.flow.edges[0].to = id("color");
+        p.edges[0].to = Some(0);
+        p.successors[0] = vec![0];
+        assert!(CompiledModel::new(p).is_err());
+    }
+
+    #[test]
+    fn source_table_and_edge_ids_agree_with_product_locations() {
+        let mut p = parts();
+        let condition = knot_schema::wire::Condition::Leaf(Leaf::Exists { field: id("color") });
+        p.product.flow.edges[0].when = Some(condition.clone());
+        p.edges[0].condition = Some(ConditionId(0));
+        p.product.pricing.components = vec![PriceComponent::Fixed {
+            id: id("base"),
+            category: PriceCategory::Base,
+            amount_minor: Integer::new(100).unwrap_or_else(|e| panic!("{e}")),
+            when: Some(condition),
+        }];
+        p.sources = vec![
+            RuleSource::new("/flow/edges/0/when".into(), None).unwrap_or_else(|e| panic!("{e}")),
+            RuleSource::new("/pricing/components/0/when".into(), Some(&id("base")))
+                .unwrap_or_else(|e| panic!("{e}")),
+        ];
+        p.program = Arc::new(StorageOnlyProgram(2));
+        let model = CompiledModel::new(p).unwrap_or_else(|e| panic!("{e}"));
+        assert_eq!(
+            model.condition_id("/pricing/components/0/when"),
+            Some(ConditionId(1))
+        );
+        assert_eq!(model.condition_id("base"), None);
+        let mut p = model.parts;
+        p.edges[0].condition = Some(ConditionId(1));
         assert!(CompiledModel::new(p).is_err());
     }
 }

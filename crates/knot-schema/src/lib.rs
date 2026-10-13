@@ -1,6 +1,7 @@
 //! Bounded JSON, exact protocol values, and offline contract validation.
 #![forbid(unsafe_code)]
 pub mod canonical;
+pub mod currency;
 
 pub mod error;
 pub mod parse;

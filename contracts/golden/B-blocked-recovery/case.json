@@ -1,0 +1,7 @@
+{
+  "id": "B-blocked-recovery",
+  "title": "Upstream edit unblocks required choice",
+  "operation": "apply",
+  "expectedStatus": 0,
+  "modelValidation": "valid"
+}

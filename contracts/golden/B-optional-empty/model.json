@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "1.0",
+  "productId": "small",
+  "productVersion": "1",
+  "questions": [
+    {
+      "id": "gate",
+      "type": "single",
+      "label": "Gate",
+      "required": true,
+      "options": [
+        {
+          "id": "on",
+          "label": "On"
+        },
+        {
+          "id": "off",
+          "label": "Off"
+        }
+      ]
+    },
+    {
+      "id": "m",
+      "type": "multi",
+      "label": "Multi",
+      "required": false,
+      "options": [
+        {
+          "id": "y",
+          "label": "Y",
+          "enabledWhen": {
+            "field": "gate",
+            "op": "eq",
+            "value": "on"
+          }
+        }
+      ]
+    }
+  ],
+  "flow": {
+    "start": "gate",
+    "edges": [
+      {
+        "from": "gate",
+        "to": "m"
+      },
+      {
+        "from": "m",
+        "to": "END"
+      }
+    ]
+  },
+  "pricing": {
+    "currency": "CNY",
+    "components": [
+      {
+        "id": "base",
+        "category": "base",
+        "amountMinor": 100
+      }
+    ]
+  },
+  "visual": {
+    "targets": [],
+    "slots": []
+  }
+}

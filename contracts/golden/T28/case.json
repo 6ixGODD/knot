@@ -1,0 +1,7 @@
+{
+  "id": "T28",
+  "title": "Malformed rule document",
+  "operation": "model_create",
+  "expectedStatus": 1002,
+  "modelValidation": "parse-error"
+}

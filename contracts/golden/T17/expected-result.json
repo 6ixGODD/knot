@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "1.0",
+  "error": {
+    "code": "INVALID_MODEL",
+    "message": "INVALID_MODEL",
+    "path": "/flow/edges/0/when/field",
+    "ruleIds": [
+      "rule:/flow/edges/0/when"
+    ],
+    "details": {}
+  }
+}

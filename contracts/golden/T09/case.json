@@ -1,0 +1,7 @@
+{
+  "id": "T09",
+  "title": "Disabled option rejected",
+  "operation": "apply",
+  "expectedStatus": 1007,
+  "modelValidation": "valid"
+}

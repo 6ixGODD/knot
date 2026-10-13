@@ -1,0 +1,7 @@
+{
+  "id": "T01",
+  "title": "Empty model bytes",
+  "operation": "model_create",
+  "expectedStatus": 1002,
+  "modelValidation": "parse-error"
+}

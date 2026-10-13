@@ -1,0 +1,7 @@
+{
+  "id": "B-merge-missing",
+  "title": "Unvisited branch is missing at merge and ne is false",
+  "operation": "evaluate",
+  "expectedStatus": 0,
+  "modelValidation": "valid"
+}

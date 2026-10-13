@@ -189,7 +189,21 @@
       "checksum": "f1622d8446a2d4b2ce0c7eefc73dd43a99779028d5ee5c2dd8073a658ba8a2bc",
       "features": [
         "prebuilt-nasm"
-      ]
+      ],
+      "bundledNotices": {
+        "aws-lc/LICENSE": {
+          "sha256": "977c541bd25ffe36975dde25c028c0cd15ddf3d08243983b58e8a6a3d9447523",
+          "bundledPath": "contracts/notices/aws-lc-sys-0.46.0/aws-lc/LICENSE"
+        },
+        "aws-lc/third_party/fiat/LICENSE": {
+          "sha256": "43e358d7b6eb109d0f51f7b3a090fd82607965767c25fadee39e922475de2061",
+          "bundledPath": "contracts/notices/aws-lc-sys-0.46.0/aws-lc/third_party/fiat/LICENSE"
+        },
+        "LICENSE": {
+          "sha256": "728536b4160e051f86d7c9c388f704866b3d512cd7df97ac3516c65279523c4e",
+          "bundledPath": "contracts/notices/aws-lc-sys-0.46.0/LICENSE"
+        }
+      }
     },
     {
       "name": "base64",
@@ -443,7 +457,17 @@
       "checksum": "6651c9ed80effdc7db0ff72512157f901af5e3549e341e24b1dd4887d836d838",
       "features": [
         "parallel"
-      ]
+      ],
+      "bundledNotices": {
+        "LICENSE-APACHE": {
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "bundledPath": "contracts/notices/cc-1.8.0/LICENSE-APACHE"
+        },
+        "LICENSE-MIT": {
+          "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397",
+          "bundledPath": "contracts/notices/cc-1.8.0/LICENSE-MIT"
+        }
+      }
     },
     {
       "name": "cexpr",
@@ -551,7 +575,17 @@
       "source": "registry+https://github.com/rust-lang/crates.io-index",
       "license": "MIT OR Apache-2.0",
       "checksum": "c0f78a02292a74a88ac736019ab962ece0bc380e3f977bf72e376c5d78ff0678",
-      "features": []
+      "features": [],
+      "bundledNotices": {
+        "LICENSE-APACHE": {
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+          "bundledPath": "contracts/notices/cmake-0.1.58/LICENSE-APACHE"
+        },
+        "LICENSE-MIT": {
+          "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397",
+          "bundledPath": "contracts/notices/cmake-0.1.58/LICENSE-MIT"
+        }
+      }
     },
     {
       "name": "cmov",
@@ -2968,7 +3002,13 @@
       "features": [
         "bindgen",
         "bindgen-rs"
-      ]
+      ],
+      "bundledNotices": {
+        "quickjs/LICENSE": {
+          "sha256": "98de27cc1e8c21a61cb242021aeb5b3711d694fab59fd75ad5b84c36b2c86b7e",
+          "bundledPath": "contracts/notices/rquickjs-sys-0.10.0/quickjs/LICENSE"
+        }
+      }
     },
     {
       "name": "rsa",
@@ -5385,9 +5425,9 @@
   ],
   "licenseReview": {
     "crateLicenseMetadata": "present for all registry packages",
-    "nativeNotices": "full bundled-source notice review still required before acceptance",
-    "productLicense": "owner decision pending",
-    "currencyTable": "distribution evidence pending"
+    "nativeNotices": "upstream native/build notice files copied verbatim and hashed; final SDK notice assembly belongs to packaging",
+    "productLicense": "no SDK published by this P0; final product licensing belongs to release",
+    "currencyTable": "fixed attributed SIX code/minor-unit snapshot; provenance in contracts/currency"
   },
   "supportedEvidence": [
     "Windows x86_64, MSVC 19.41.34123.0, Windows 10.0.26200, dynamic CRT, C++ Release, CMake 3.29.5-msvc4"

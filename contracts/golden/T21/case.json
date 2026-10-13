@@ -1,0 +1,8 @@
+{
+  "id": "T21",
+  "title": "State JSON roundtrip",
+  "operation": "evaluate",
+  "expectedStatus": 0,
+  "modelValidation": "valid",
+  "roundtripState": true
+}

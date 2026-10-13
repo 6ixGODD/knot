@@ -42,7 +42,8 @@ impl RuleCompiler for ZenCompiler {
             budget.expression(lowered.expression.len())?;
             entries.push(Entry {
                 decision: compile_probe(&lowered.expression).map_err(|mut error| {
-                    error.rule_ids = vec![sources[index].clone()];
+                    error.path = sources[index].path().into();
+                    error.rule_ids = vec![sources[index].rule_id().into()];
                     error
                 })?,
                 constants: lowered.constants,
@@ -90,7 +91,9 @@ impl RuleProgram for Program {
         }
         // Prepay all requested graphs, even when a condition short-circuits.
         if requested.is_empty() {
-            return BooleanEffects::new(requested, vec![]);
+            return crate::isolation::isolate(&self.faulted, || {
+                BooleanEffects::new(requested, vec![])
+            });
         }
         for id in requested {
             let entry = self

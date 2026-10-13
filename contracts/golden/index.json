@@ -1,0 +1,327 @@
+{
+  "schemaVersion": "1.0",
+  "currencyTableDigest": "sha256:d1d429783375a1177f44f4ed661849fef44ae43a7d8a19d877c69701889b79fe",
+  "cases": [
+    {
+      "id": "T01",
+      "title": "Empty model bytes",
+      "operation": "model_create",
+      "expectedStatus": 1002,
+      "modelValidation": "parse-error"
+    },
+    {
+      "id": "T02",
+      "title": "Valid model compilation",
+      "operation": "model_create",
+      "expectedStatus": 0,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "T03",
+      "title": "Initial first question",
+      "operation": "initial",
+      "expectedStatus": 0,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "T04",
+      "title": "Single answer",
+      "operation": "apply",
+      "expectedStatus": 0,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "T05",
+      "title": "Multi answer declaration ordering and price",
+      "operation": "apply",
+      "expectedStatus": 0,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "T06",
+      "title": "Color uppercase normalization",
+      "operation": "apply",
+      "expectedStatus": 0,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "T07",
+      "title": "Off-step integer rejected",
+      "operation": "apply",
+      "expectedStatus": 1007,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "T08",
+      "title": "Fallback branch to cable",
+      "operation": "apply",
+      "expectedStatus": 0,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "T09",
+      "title": "Disabled option rejected",
+      "operation": "apply",
+      "expectedStatus": 1007,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "T10",
+      "title": "Upstream edit clears disabled power and suffix",
+      "operation": "apply",
+      "expectedStatus": 0,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "T11",
+      "title": "Branch switch removes unreachable answers",
+      "operation": "apply",
+      "expectedStatus": 0,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "T12",
+      "title": "Speaker final price 282800",
+      "operation": "apply",
+      "expectedStatus": 0,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "T13",
+      "title": "Optional skip makes price final",
+      "operation": "apply",
+      "expectedStatus": 0,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "T14",
+      "title": "Complete visual output",
+      "operation": "evaluate",
+      "expectedStatus": 0,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "T15",
+      "title": "Multiple visual cases conflict atomically",
+      "operation": "apply",
+      "expectedStatus": 1010,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "T16",
+      "title": "Flow cycle rejected",
+      "operation": "model_create",
+      "expectedStatus": 1003,
+      "modelValidation": "semantic-error"
+    },
+    {
+      "id": "T17",
+      "title": "Undefined condition field rejected",
+      "operation": "model_create",
+      "expectedStatus": 1003,
+      "modelValidation": "semantic-error"
+    },
+    {
+      "id": "T18",
+      "title": "Same normalized answer at current revision is no-op",
+      "operation": "apply",
+      "expectedStatus": 0,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "T19",
+      "title": "Stale event rejected before no-op",
+      "operation": "apply",
+      "expectedStatus": 1006,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "T20",
+      "title": "Wrong model digest",
+      "operation": "evaluate",
+      "expectedStatus": 1005,
+      "modelValidation": "valid",
+      "stateValidation": "semantic-error"
+    },
+    {
+      "id": "T21",
+      "title": "State JSON roundtrip",
+      "operation": "evaluate",
+      "expectedStatus": 0,
+      "modelValidation": "valid",
+      "roundtripState": true
+    },
+    {
+      "id": "T22",
+      "title": "Shared model parallel evaluate",
+      "operation": "evaluate",
+      "expectedStatus": 0,
+      "modelValidation": "valid",
+      "threads": 8,
+      "repetitions": 100,
+      "alternateCase": "T03"
+    },
+    {
+      "id": "T23",
+      "title": "C ABI result ownership and repeated release",
+      "operation": "initial",
+      "expectedStatus": 0,
+      "modelValidation": "valid",
+      "bindings": [
+        "c"
+      ],
+      "repetitions": 1000,
+      "releaseOriginalBufferTwice": true
+    },
+    {
+      "id": "T24",
+      "title": "Rust and C++ exact output agreement",
+      "operation": "evaluate",
+      "expectedStatus": 0,
+      "modelValidation": "valid",
+      "bindings": [
+        "rust",
+        "cpp"
+      ]
+    },
+    {
+      "id": "T25",
+      "title": "Python and C++ exact output agreement",
+      "operation": "evaluate",
+      "expectedStatus": 0,
+      "modelValidation": "valid",
+      "bindings": [
+        "python",
+        "cpp"
+      ]
+    },
+    {
+      "id": "T26",
+      "title": "Price addition overflow",
+      "operation": "initial",
+      "expectedStatus": 1011,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "T27",
+      "title": "Invalid UTF-8",
+      "operation": "model_create",
+      "expectedStatus": 1002,
+      "modelValidation": "parse-error"
+    },
+    {
+      "id": "T28",
+      "title": "Malformed rule document",
+      "operation": "model_create",
+      "expectedStatus": 1002,
+      "modelValidation": "parse-error"
+    },
+    {
+      "id": "B-optional-estimated",
+      "title": "Unanswered optional is estimated",
+      "operation": "evaluate",
+      "expectedStatus": 0,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "B-reanswer-skip",
+      "title": "Set removes skipped marker",
+      "operation": "apply",
+      "expectedStatus": 0,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "B-clear-upstream",
+      "title": "Clear removes entire suffix",
+      "operation": "apply",
+      "expectedStatus": 0,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "B-invalid-old-state",
+      "title": "Evaluate refuses suffix leftovers",
+      "operation": "evaluate",
+      "expectedStatus": 1005,
+      "modelValidation": "valid",
+      "stateValidation": "semantic-error"
+    },
+    {
+      "id": "B-revision-noop",
+      "title": "No-op at largest revision",
+      "operation": "apply",
+      "expectedStatus": 0,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "B-revision-overflow",
+      "title": "Changed answers at largest revision",
+      "operation": "apply",
+      "expectedStatus": 1011,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "B-quantity-rounding",
+      "title": "Half away from zero",
+      "operation": "apply",
+      "expectedStatus": 0,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "B-missing-value",
+      "title": "Matched valueFrom cannot default missing",
+      "operation": "initial",
+      "expectedStatus": 1009,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "B-fractional-integer",
+      "title": "Safe integer fraction must not round",
+      "operation": "apply",
+      "expectedStatus": 1003,
+      "modelValidation": "valid",
+      "eventValidation": "schema-error"
+    },
+    {
+      "id": "B-unknown-member",
+      "title": "Unknown model member rejected",
+      "operation": "model_create",
+      "expectedStatus": 1003,
+      "modelValidation": "schema-error"
+    },
+    {
+      "id": "B-multi-whole-clear",
+      "title": "One disabled member invalidates whole multi answer",
+      "operation": "apply",
+      "expectedStatus": 0,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "B-blocked-restore",
+      "title": "A blocked state is valid input to evaluate",
+      "operation": "evaluate",
+      "expectedStatus": 0,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "B-blocked-recovery",
+      "title": "Upstream edit unblocks required choice",
+      "operation": "apply",
+      "expectedStatus": 0,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "B-optional-empty",
+      "title": "Optional empty multi is an explicit answer",
+      "operation": "apply",
+      "expectedStatus": 0,
+      "modelValidation": "valid"
+    },
+    {
+      "id": "B-merge-missing",
+      "title": "Unvisited branch is missing at merge and ne is false",
+      "operation": "evaluate",
+      "expectedStatus": 0,
+      "modelValidation": "valid"
+    }
+  ]
+}

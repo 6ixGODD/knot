@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "1.0",
+  "state": {
+    "schemaVersion": "1.0",
+    "productId": "speaker-pro",
+    "modelDigest": "sha256:73e5998863973011c590d9883bb0a593f62d77fca5d10480b4f0029153ed1541",
+    "revision": 5,
+    "answers": {
+      "speaker_type": "active",
+      "material": "aluminum",
+      "panel_color": "#315A79",
+      "power": "200w",
+      "extras": [
+        "led"
+      ]
+    },
+    "skipped": []
+  },
+  "snapshot": {
+    "price": {
+      "status": "final",
+      "currency": "CNY",
+      "totalMinor": 282800,
+      "components": [
+        {
+          "id": "base_active",
+          "amountMinor": 129900
+        },
+        {
+          "id": "material_aluminum",
+          "amountMinor": 50000
+        },
+        {
+          "id": "power_200",
+          "amountMinor": 90000
+        },
+        {
+          "id": "extra_led",
+          "amountMinor": 12900
+        }
+      ]
+    },
+    "flow": {
+      "status": "complete",
+      "path": [
+        "speaker_type",
+        "material",
+        "panel_color",
+        "power",
+        "extras"
+      ],
+      "nextQuestionId": null,
+      "currentQuestion": null
+    },
+    "visual": {
+      "targets": [
+        {
+          "id": "speaker.base",
+          "order": 0,
+          "properties": {
+            "visible": true,
+            "assetRef": "speaker-base"
+          }
+        },
+        {
+          "id": "speaker.cabinet",
+          "order": 10,
+          "properties": {
+            "visible": true,
+            "assetRef": "cabinet-aluminum",
+            "surface.metallic": 0.9,
+            "surface.roughness": 0.7
+          }
+        },
+        {
+          "id": "speaker.front_panel",
+          "order": 20,
+          "properties": {
+            "visible": true,
+            "color": "#315A79"
+          }
+        },
+        {
+          "id": "speaker.led_ring",
+          "order": 30,
+          "properties": {
+            "visible": true,
+            "assetRef": "led-ring",
+            "emission.color": "#315A79",
+            "emission.strength": 0.8
+          }
+        }
+      ]
+    },
+    "validation": {
+      "valid": true,
+      "issues": []
+    }
+  },
+  "changes": {
+    "answerChanges": [],
+    "priceChanged": false,
+    "visualChangedTargets": [],
+    "flowChanged": false
+  },
+  "diagnostics": []
+}

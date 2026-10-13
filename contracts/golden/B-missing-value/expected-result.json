@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "1.0",
+  "error": {
+    "code": "MISSING_VALUE",
+    "message": "MISSING_VALUE",
+    "path": "/visual/slots/0/cases/0/valueFrom",
+    "ruleIds": [
+      "color"
+    ],
+    "details": {}
+  }
+}

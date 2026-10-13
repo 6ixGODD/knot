@@ -1,0 +1,8 @@
+{
+  "id": "B-fractional-integer",
+  "title": "Safe integer fraction must not round",
+  "operation": "apply",
+  "expectedStatus": 1003,
+  "modelValidation": "valid",
+  "eventValidation": "schema-error"
+}

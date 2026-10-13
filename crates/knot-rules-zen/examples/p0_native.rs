@@ -75,7 +75,7 @@ pub unsafe extern "C" fn p0_probe_create(out: *mut *mut Probe) -> Response {
                 },
                 scalar,
             )],
-            &vec!["rule:/probe".into()],
+            &vec![knot_rules::RuleSource::new("/probe".into(), None)?],
             &mut CompileBudget::default(),
         )?;
         // SAFETY: caller owns the returned unique Box until p0_probe_destroy.

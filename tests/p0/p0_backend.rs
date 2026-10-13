@@ -12,7 +12,7 @@ fn wide_boolean_tree_and_declared_depth_bound() {
         .compile(
             &[field.kind],
             &[condition],
-            &vec!["rule:/wide".into()],
+            &vec![RuleSource::new("/wide".into(), None).unwrap_or_else(|e| panic!("{e}"))],
             &mut CompileBudget::default(),
         )
         .unwrap_or_else(|e| panic!("{e}"));
@@ -30,7 +30,7 @@ fn wide_boolean_tree_and_declared_depth_bound() {
             .compile(
                 &[field.kind],
                 &[too_deep],
-                &vec!["rule:/deep".into()],
+                &vec![RuleSource::new("/deep".into(), None).unwrap_or_else(|e| panic!("{e}"))],
                 &mut CompileBudget::default()
             )
             .is_err()
@@ -117,7 +117,7 @@ fn all_operators_missing_exact_decimals_and_data_only_constants() {
         Condition::Eq(s, Scalar::Single(id("') || true || ('"))),
     ];
     let sources = (0..conditions.len())
-        .map(|i| format!("rule:/test/{i}"))
+        .map(|i| RuleSource::new(format!("/test/{i}"), None).unwrap_or_else(|e| panic!("{e}")))
         .collect();
     let program = ZenCompiler
         .compile(

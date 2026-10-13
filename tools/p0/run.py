@@ -147,7 +147,9 @@ def main():
         evidence['artifacts'] = {str(p): digest(p) for p in paths if p.is_file()}
         evidence['runtimeTests'] = 13
         evidence['nativeSystemLibraries'] = native_libs
-        evidence['sourceSha256'] = {p.relative_to(source).as_posix(): digest(p) for folder in ('crates', 'tests/p0', 'tools/p0') for p in sorted((source / folder).rglob('*')) if p.is_file()}
+        evidence['sourceSha256'] = {p.relative_to(source).as_posix(): digest(p) for folder in ('crates', 'contracts', 'tests', 'tools/p0', 'vendor') for p in sorted((source / folder).rglob('*')) if p.is_file()}
+        for name in ('Cargo.toml', 'rust-toolchain.toml', '.gitattributes', '.github/workflows/p0.yml'):
+            evidence['sourceSha256'][name] = digest(source / name)
         if evidence['lockSha256'] != digest(source / 'Cargo.lock'):
             raise RuntimeError('candidate lock changed during P0')
         evidence['passed'] = True

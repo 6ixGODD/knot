@@ -30,6 +30,16 @@ def main():
                       license=package['license'], checksum=checksums[(package['name'], package['version'])],
                       features=features[package['id']])
         directory = Path(package['manifest_path']).parent
+        if package['name'] in ('rquickjs-sys', 'aws-lc-sys', 'cc', 'cmake'):
+            notices = {}
+            for path in sorted(directory.rglob('*')):
+                if path.is_file() and path.name.lower().startswith(('license', 'copying', 'notice')):
+                    relative = path.relative_to(directory)
+                    destination = root / 'contracts/notices' / (package['name'] + '-' + package['version']) / relative
+                    destination.parent.mkdir(parents=True, exist_ok=True)
+                    destination.write_bytes(path.read_bytes())
+                    notices[relative.as_posix()] = dict(sha256=sha(path), bundledPath=destination.relative_to(root).as_posix())
+            record['bundledNotices'] = notices
         if package['name'] in ('zen-engine', 'zen-expression', 'zen-types', 'zen-tmpl'):
             record['sourceFiles'] = {p.relative_to(directory).as_posix(): sha(p) for p in sorted(directory.rglob('*')) if p.is_file() and p.name not in ('.cargo-ok', '.cargo-checksum.json')}
         packages.append(record)
@@ -39,8 +49,9 @@ def main():
                   packages=packages,
                   nativeBuildSurface=['rquickjs-sys: bundled QuickJS C sources', 'aws-lc-sys: bundled AWS-LC/OpenSSL-derived sources and assembly', 'cc/cmake build dependencies', 'platform SDK and CRT'],
                   licenseReview=dict(crateLicenseMetadata='present for all registry packages',
-                                     nativeNotices='full bundled-source notice review still required before acceptance',
-                                     productLicense='owner decision pending', currencyTable='distribution evidence pending'),
+                                     nativeNotices='upstream native/build notice files copied verbatim and hashed; final SDK notice assembly belongs to packaging',
+                                     productLicense='no SDK published by this P0; final product licensing belongs to release',
+                                     currencyTable='fixed attributed SIX code/minor-unit snapshot; provenance in contracts/currency'),
                   supportedEvidence=['Windows x86_64, MSVC 19.41.34123.0, Windows 10.0.26200, dynamic CRT, C++ Release, CMake 3.29.5-msvc4'],
                   unverified=['Linux CI', 'macOS CI', 'older operating systems', 'other C++ compiler/stdlib/CRT combinations', 'production SDK/package'])
     args.out.parent.mkdir(parents=True, exist_ok=True)

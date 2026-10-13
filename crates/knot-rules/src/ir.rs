@@ -51,7 +51,37 @@ pub enum Condition {
     Contains(Field, Id),
     Exists(Field),
 }
-pub type SourceMap = Vec<String>;
+/// One entry per condition, in declaration order. Several cases may intentionally
+/// share a slot's rule ID while retaining distinct JSON Pointer locations.
+pub type SourceMap = Vec<RuleSource>;
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RuleSource {
+    path: String,
+    rule_id: String,
+}
+impl RuleSource {
+    pub fn new(path: String, explicit_id: Option<&Id>) -> Result<Self, KnotError> {
+        if !path.starts_with('/') || path.len() > 16379 || path.chars().any(char::is_control) {
+            return Err(KnotError::new("INVALID_MODEL", ""));
+        }
+        let mut chars = path.chars();
+        while let Some(c) = chars.next() {
+            if c == '~' && !matches!(chars.next(), Some('0' | '1')) {
+                return Err(KnotError::new("INVALID_MODEL", ""));
+            }
+        }
+        let rule_id = explicit_id
+            .map(|id| id.as_str().to_owned())
+            .unwrap_or_else(|| format!("rule:{path}"));
+        Ok(Self { path, rule_id })
+    }
+    pub fn path(&self) -> &str {
+        &self.path
+    }
+    pub fn rule_id(&self) -> &str {
+        &self.rule_id
+    }
+}
 impl Condition {
     /// Validate types, cardinality, indices and node budgets before backend allocation.
     pub fn validate(
