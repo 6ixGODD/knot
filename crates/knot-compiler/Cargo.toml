@@ -10,3 +10,5 @@ workspace = true
 knot-schema.workspace = true
 knot-rules.workspace = true
 serde_json.workspace = true
+[dev-dependencies]
+knot-rules-zen.workspace = true
