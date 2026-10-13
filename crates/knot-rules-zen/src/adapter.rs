@@ -32,20 +32,21 @@ impl RuleCompiler for ZenCompiler {
         if fields.len() > 256 || conditions.len() != sources.len() || conditions.len() > 4096 {
             return Err(KnotError::new("RULE_COMPILE", ""));
         }
-        for condition in conditions {
-            budget.root()?;
-            condition.validate(fields, budget, 1)?;
+        for (index, condition) in conditions.iter().enumerate() {
+            budget
+                .root()
+                .and_then(|()| condition.validate(fields, budget, 1))
+                .map_err(|e| at_source(e, &sources[index]))?;
         }
         let mut entries = Vec::with_capacity(conditions.len());
         for (index, condition) in conditions.iter().enumerate() {
-            let lowered = lowering::lower(condition)?;
-            budget.expression(lowered.expression.len())?;
+            let lowered = lowering::lower(condition).map_err(|e| at_source(e, &sources[index]))?;
+            budget
+                .expression(lowered.expression.len())
+                .map_err(|e| at_source(e, &sources[index]))?;
             entries.push(Entry {
-                decision: compile_probe(&lowered.expression).map_err(|mut error| {
-                    error.path = sources[index].path().into();
-                    error.rule_ids = vec![sources[index].rule_id().into()];
-                    error
-                })?,
+                decision: compile_probe(&lowered.expression)
+                    .map_err(|e| at_source(e, &sources[index]))?,
                 constants: lowered.constants,
                 cost: lowered.cost,
             });
@@ -56,6 +57,11 @@ impl RuleCompiler for ZenCompiler {
             faulted: AtomicBool::new(false),
         }))
     }
+}
+fn at_source(mut error: KnotError, source: &knot_rules::RuleSource) -> KnotError {
+    error.path = source.path().into();
+    error.rule_ids = vec![source.rule_id().into()];
+    error
 }
 impl RuleProgram for Program {
     fn condition_count(&self) -> usize {

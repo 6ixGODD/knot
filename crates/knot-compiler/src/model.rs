@@ -29,6 +29,7 @@ pub struct ModelParts {
 pub struct CompiledModel {
     parts: ModelParts,
     condition_ids: BTreeMap<String, ConditionId>,
+    diagnostics: Vec<knot_schema::wire::Diagnostic>,
 }
 impl CompiledModel {
     /// Check storage consistency before publishing read-only shared model data.
@@ -202,9 +203,27 @@ impl CompiledModel {
             .enumerate()
             .map(|(i, source)| (source.path().to_owned(), ConditionId(i)))
             .collect();
+        let start = parts.question_index[&product.flow.start];
+        let diagnostics = product
+            .questions
+            .iter()
+            .enumerate()
+            .filter(|(i, q)| {
+                *i != start
+                    && !crate::semantic::required(q)
+                    && parts.successors[start].binary_search(i).is_err()
+            })
+            .map(|(i, _)| knot_schema::wire::Diagnostic {
+                level: knot_schema::wire::DiagnosticLevel::Warning,
+                code: "UNREACHABLE_QUESTION".into(),
+                path: format!("/questions/{i}"),
+                rule_ids: vec![],
+            })
+            .collect();
         Ok(Self {
             parts,
             condition_ids,
+            diagnostics,
         })
     }
     pub fn product(&self) -> &Product {
@@ -235,6 +254,11 @@ impl CompiledModel {
     }
     pub fn digest(&self) -> &str {
         &self.parts.digest
+    }
+    /// Compile-time warnings in definition order (at most 255 optional islands).
+    /// Existing typed assembly and model accessors keep their frozen signatures.
+    pub fn diagnostics(&self) -> &[knot_schema::wire::Diagnostic] {
+        &self.diagnostics
     }
 }
 
