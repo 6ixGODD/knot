@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "1.0",
+  "componentOnly": true,
+  "productionVerification": "pending",
+  "platforms": ["x86_64-pc-windows-msvc", "x86_64-unknown-linux-gnu", "aarch64-apple-darwin"],
+  "inputs": ["contracts/examples/speaker.json", "contracts/examples/speaker-events.json"],
+  "examples": [
+    {"source": "examples/c/smoke.c", "targets": ["Knot::Shared", "Knot::Static"], "expect": "model_create and initial complete result JSON"},
+    {"source": "examples/cpp/speaker.cpp", "targets": ["Knot::CppShared", "Knot::CppStatic"], "expectStdout": "282800\n159900\n"},
+    {"source": "examples/python/smoke.py", "expectStdout": "282800\n159900\n"},
+    {"source": "examples/go/smoke.go", "expect": "six actual TransitionResult lines and successful evaluate"}
+  ],
+  "mandatoryChecks": [
+    "Link and run all examples with the actual production compiler, ZEN, Core and FFI",
+    "Run all 43 frozen Golden cases, including full Speaker and upstream answer changes",
+    "Compare Rust/C/C++/Python results without ignoring order, numbers or removal reasons",
+    "Execute Go with actual native kernel and enforce cgo pointer checks",
+    "Run final bridge JSON coexistence, polluted compilation and archive checks on all three platforms",
+    "Build and run shared and static consumers from relocated offline packages without Rust or source paths",
+    "Record final compiler/standard-library ABI/CRT/configuration/deployment target and native system libraries",
+    "If LTO is enabled in release artifacts, repeat coexistence and symbol checks with LTO",
+    "Verify package notices/checksums and absence of test boundary libraries and private JSON headers",
+    "Independent new developer completes Quickstart using only the package documentation",
+    "Replace contract-only output claims with reproducible production SDK output evidence"
+  ]
+}
