@@ -13,7 +13,8 @@ Use error code, path and ruleIds, not message text. Paths are JSON Pointers (esc
 | inactive question edit | INACTIVE_QUESTION | question is outside reachable prefix | edit the current or a reached upstream question |
 | wrong numeric representation | BAD_SCHEMA or INVALID_ANSWER | decimal passed as number or integer outside safe domain | send a bounded decimal string or safe integer as required |
 | missing visual value source | MISSING_VALUE | a matching visual case references an absent answer | answer the source question before activating that case |
-| two visual writers | VISUAL_CONFLICT | cases/slots overlap | make writer conditions mutually exclusive |
+| multiple matching cases in one visual slot | VISUAL_CONFLICT | more than one case condition is true | make that slot's case conditions mutually exclusive |
+| multiple slots declare the same target/property | INVALID_MODEL | duplicate writers are invalid even with exclusive conditions | combine the cases into one slot for that target/property |
 | backend failure or empty error JSON | INTERNAL | native failure; model may be invalidated | release and rebuild the model, retaining diagnostic metadata |
 | DLL load failure | host loader error | wrong architecture, missing file or dependency | load the matching package from an explicit absolute path |
 | unresolved imports in static build | linker error | import bridge used with static kernel | link only Knot::CppStatic |

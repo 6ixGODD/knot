@@ -16,3 +16,17 @@ get_target_property(macro Knot::Static INTERFACE_COMPILE_DEFINITIONS)
 if(NOT shared STREQUAL "Knot::Shared" OR NOT static STREQUAL "Knot::Static" OR NOT macro STREQUAL "KNOT_STATIC")
     message(FATAL_ERROR "Mismatched bridge/kernel interfaces")
 endif()
+# Exercise the installed config in a separate project so the targets above do
+# not mask a config guard that incorrectly hides them from sibling directories.
+set(scope_source "${CMAKE_CURRENT_BINARY_DIR}/scope-source")
+set(scope_build "${CMAKE_CURRENT_BINARY_DIR}/scope-build")
+file(MAKE_DIRECTORY "${scope_source}/prefix/lib/cmake/Knot")
+file(COPY "${KNOT_SOURCE_ROOT}/cmake/KnotConfig.cmake" "${KNOT_SOURCE_ROOT}/cmake/KnotTargets.cmake"
+    DESTINATION "${scope_source}/prefix/lib/cmake/Knot")
+file(WRITE "${scope_source}/CMakeLists.txt" "cmake_minimum_required(VERSION 3.23)\nproject(config_scope NONE)\nset(Knot_DIR \"${scope_source}/prefix/lib/cmake/Knot\")\nadd_subdirectory(first)\nadd_subdirectory(second)\nfind_package(Knot CONFIG REQUIRED)\nif(NOT TARGET Knot::CppShared)\nmessage(FATAL_ERROR \"Parent target missing\")\nendif()\n")
+foreach(child IN ITEMS first second)
+    file(MAKE_DIRECTORY "${scope_source}/${child}")
+    file(WRITE "${scope_source}/${child}/CMakeLists.txt" "find_package(Knot CONFIG REQUIRED)\nfind_package(Knot CONFIG REQUIRED)\nforeach(name Shared Static CppShared CppStatic)\nif(NOT TARGET Knot::\${name})\nmessage(FATAL_ERROR \"Missing target in ${child}\")\nendif()\nendforeach()\n")
+endforeach()
+execute_process(COMMAND "${CMAKE_COMMAND}" -S "${scope_source}" -B "${scope_build}"
+    COMMAND_ERROR_IS_FATAL ANY)

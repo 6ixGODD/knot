@@ -80,6 +80,18 @@ int main() {
     s.answers["bad"] = std::int64_t(9007199254740992LL);
     fails([&] { knot::to_json(s); });
     CHECK(knot::state_from_json(knot::to_json(r.state)).revision == r.state.revision);
+    // Limits count UTF-8 bytes, not code points, on both codec directions.
+    std::string unicode;
+    for (int i = 0; i < 5461; ++i)
+        unicode += "中";
+    s = r.state;
+    s.answers["unicode"] = unicode + "a";
+    CHECK(std::get<std::string>(knot::state_from_json(knot::to_json(s)).answers.at("unicode")) ==
+          unicode + "a");
+    s.answers["unicode"] = unicode + "ab";
+    fails([&] { knot::to_json(s); });
+    CHECK(!knot::to_json(knot::Event::set_answer("q", unicode + "a", 0)).empty());
+    fails([&] { knot::to_json(knot::Event::set_answer("q", unicode + "ab", 0)); });
     CHECK(J::parse(knot::to_json(knot::Event::clear_answer("q", 2)))["type"] == "clear_answer");
     CHECK(J::parse(knot::to_json(knot::Event::skip_answer("q", 2)))["type"] == "skip_answer");
     // Decode all frozen expected fixtures, without evaluating any business rules.

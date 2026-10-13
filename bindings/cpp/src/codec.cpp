@@ -188,6 +188,8 @@ bool matches(const Json &v, const Json &s, const Json &root) {
     }
     if (v.is_string()) {
         const auto &str = v.get_ref<const std::string &>();
+        if (str.size() > 16384)
+            return false;
         auto length =
             std::count_if(str.begin(), str.end(), [](unsigned char c) { return (c & 192) != 128; });
         if (s.contains("minLength") && length < s.at("minLength").get<std::ptrdiff_t>())
