@@ -187,6 +187,57 @@ fn schema_formats_assert_utf8_id_and_exact_decimal_limits() {
 }
 
 #[test]
+fn visual_numbers_accept_json_exponents_through_typed_roundtrip() {
+    use knot_schema::{
+        validation::Validator,
+        wire::{Product, VisualValue, decode},
+    };
+    use serde_json::json;
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../contracts");
+    let load = |path: &str| {
+        parse_json(
+            &std::fs::read(root.join(path)).unwrap_or_else(|e| panic!("{e}")),
+            4 * 1024 * 1024,
+        )
+        .unwrap_or_else(|e| panic!("{e}"))
+    };
+    let validator =
+        Validator::new(&load("schemas/product.schema.json")).unwrap_or_else(|e| panic!("{e}"));
+    for token in ["1e-3", "0.1234567890123456789", "0.5"] {
+        let value = parse_json(token.as_bytes(), 128).unwrap_or_else(|e| panic!("{e}"));
+        let mut model = load("examples/speaker.json");
+        model["visual"]["targets"][0]["defaults"]["opacity"] = value.clone();
+        model["visual"]["targets"][0]["defaults"]["transform.position"] = json!([value, 0, 1]);
+        // Exercise both direct properties and a nested untagged VisualCase.
+        model["visual"]["slots"][0]["property"] = json!("opacity");
+        model["visual"]["slots"][0]["cases"] = json!([{
+            "when": {"field":"speaker_type","op":"exists"},
+            "value": parse_json(token.as_bytes(), 128).unwrap_or_else(|e| panic!("{e}"))
+        }]);
+        let bytes = serde_json::to_vec(&model).unwrap_or_else(|e| panic!("{e}"));
+        let typed: Product =
+            decode(&bytes, 4 * 1024 * 1024, &validator).unwrap_or_else(|e| panic!("{token}: {e}"));
+        let canonical = serde_json::to_value(&typed).unwrap_or_else(|e| panic!("{e}"));
+        assert!(validator.validate(&canonical).is_ok());
+        let decoded: Product = serde_json::from_value(canonical).unwrap_or_else(|e| panic!("{e}"));
+        assert_eq!(typed, decoded);
+        let expected = token.parse::<f64>().unwrap_or_else(|e| panic!("{e}"));
+        assert_eq!(
+            typed.visual.targets[0].defaults["opacity"],
+            VisualValue::Number(expected)
+        );
+    }
+    for token in ["null", "{}", "[1,2]", "[1,true,3]", "1e999"] {
+        let value: serde_json::Value =
+            serde_json::from_str(token).unwrap_or_else(|e| panic!("{e}"));
+        assert!(
+            serde_json::from_value::<VisualValue>(value).is_err(),
+            "{token}"
+        );
+    }
+}
+
+#[test]
 fn fixed_currency_snapshot_and_golden_contracts() {
     use knot_schema::{canonical::model_digest, currency, validation::Validator, wire::*};
     use serde_json::Value;

@@ -10,11 +10,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2022, ubuntu-24.04, macos-15]
+        include:
+          - os: windows-2022
+            target: x86_64-pc-windows-msvc
+            machine: x86_64
+          - os: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+            machine: x86_64
+          - os: macos-15
+            target: aarch64-apple-darwin
+            machine: arm64
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     env:
-      CARGO_TARGET_DIR: ${{ runner.temp }}/knot-plan01/cargo-target
+      CARGO_BUILD_JOBS: 1
       RUSTDOCFLAGS: -D warnings
     defaults:
       run:
@@ -22,7 +31,18 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Fixed toolchain
-        run: rustup toolchain install 1.97.1 --profile minimal --component rustfmt --component clippy
+        run: |
+          rustup toolchain install 1.97.1 --profile minimal --component rustfmt --component clippy
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          "CARGO_TARGET_DIR=$(Join-Path $env:RUNNER_TEMP 'knot-plan01/cargo-target')" >> $env:GITHUB_ENV
+      - name: Verify actual architecture and tools
+        run: |
+          $version = & rustc -vV
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $version
+          if ($version -notcontains 'host: ${{ matrix.target }}') { throw 'Unexpected Rust host target' }
+          python -c "import platform,struct,sys,sysconfig; machine=(platform.machine() or sysconfig.get_platform().removeprefix('win-')).lower().replace('amd64','x86_64'); print(platform.platform(),machine,sys.version); assert machine == '${{ matrix.machine }}'; assert struct.calcsize('P') == 8; assert sys.version_info >= (3,11)"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Format
         run: cargo fmt --all -- --check
       - name: Clippy
@@ -31,6 +51,8 @@ jobs:
         run: cargo test --workspace --locked
       - name: Documentation
         run: cargo doc --workspace --no-deps --locked
+      - name: Release build
+        run: cargo build --workspace --release --locked
       - name: Real native P0
         run: python tools/p0/run.py --out "${{ runner.temp }}/knot-plan01/p0"
       - name: Preserve evidence

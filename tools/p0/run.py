@@ -141,11 +141,13 @@ def main():
         run('native-build', [cmake, '--build', str(out / 'native'), '--config', 'Release', '--parallel', '2'])
         run('native-test', [ctest, '--test-dir', str(out / 'native'), '-C', 'Release', '--verbose', '--output-junit', str(out / 'native-results.xml')])
         cases = ET.parse(out / 'native-results.xml').getroot().findall('.//testcase')
-        if len(cases) != 13 or any(case.find(tag) is not None for case in cases for tag in ('failure', 'error', 'skipped')):
-            raise RuntimeError('expected 4 native and 9 JSON runtime tests, all executed and passing')
+        if len(cases) != 15 or any(case.find(tag) is not None for case in cases for tag in ('failure', 'error', 'skipped')):
+            raise RuntimeError('expected 2 public ABI, 4 native and 9 JSON tests, all executed and passing')
+        if not {'abi_c', 'abi_cpp'}.issubset({case.attrib.get('name') for case in cases}):
+            raise RuntimeError('public C/C++ ABI checks were not executed')
         run('json-isolation', [sys.executable, str(source / 'tools/p0/check_json_isolation.py'), '--out', str(out / 'json-isolation'), '--host-json-dir', str(host), '--cmake', cmake])
         evidence['artifacts'] = {str(p): digest(p) for p in paths if p.is_file()}
-        evidence['runtimeTests'] = 13
+        evidence['runtimeTests'] = 15
         evidence['nativeSystemLibraries'] = native_libs
         evidence['sourceSha256'] = {p.relative_to(source).as_posix(): digest(p) for folder in ('crates', 'contracts', 'tests', 'tools/p0', 'vendor') for p in sorted((source / folder).rglob('*')) if p.is_file()}
         for name in ('Cargo.toml', 'rust-toolchain.toml', '.gitattributes', '.github/workflows/p0.yml'):

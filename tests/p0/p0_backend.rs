@@ -1,5 +1,71 @@
 use knot_rules_zen::{compile_probe, sync::poll_once};
 #[test]
+fn numeric_templates_distinguish_false_true_and_closed_boundaries() {
+    use knot_rules::*;
+    use knot_rules_zen::ZenCompiler;
+    use knot_schema::{Decimal, SAFE_INTEGER, wire::Integer};
+    // Each present value exercises both true and false outcomes. This catches
+    // a template that merely tests presence, reverses an operator or opens a range.
+    for kind in [FieldKind::Integer, FieldKind::Decimal] {
+        let field = Field { index: 0, kind };
+        let scalar = |n: i64| match kind {
+            FieldKind::Integer => {
+                Scalar::Integer(Integer::new(n).unwrap_or_else(|e| panic!("{e}")))
+            }
+            _ => Scalar::Decimal(Decimal::parse(&n.to_string()).unwrap_or_else(|e| panic!("{e}"))),
+        };
+        let conditions = vec![
+            Condition::Eq(field, scalar(0)),
+            Condition::Ne(field, scalar(0)),
+            Condition::Gt(field, scalar(0)),
+            Condition::Gte(field, scalar(0)),
+            Condition::Lt(field, scalar(0)),
+            Condition::Lte(field, scalar(0)),
+            Condition::Between(field, scalar(-1), scalar(1)),
+            Condition::In(field, vec![scalar(-1), scalar(1)]),
+        ];
+        let sources = (0..conditions.len())
+            .map(|i| {
+                RuleSource::new(format!("/review/{i}"), None).unwrap_or_else(|e| panic!("{e}"))
+            })
+            .collect();
+        let program = ZenCompiler
+            .compile(
+                &[kind],
+                &conditions,
+                &sources,
+                &mut CompileBudget::default(),
+            )
+            .unwrap_or_else(|e| panic!("{e}"));
+        let requested: Vec<_> = (0..conditions.len()).map(ConditionId).collect();
+        for n in [-SAFE_INTEGER, -2, -1, 0, 1, 2, SAFE_INTEGER] {
+            let expected = [
+                n == 0,
+                n != 0,
+                n > 0,
+                n >= 0,
+                n < 0,
+                n <= 0,
+                (-1..=1).contains(&n),
+                n == -1 || n == 1,
+            ];
+            let facts = Facts::new(vec![Some(FactValue::Scalar(scalar(n)))], &[kind])
+                .unwrap_or_else(|e| panic!("{e}"));
+            let effects = program
+                .evaluate(&facts, &requested, &mut CallBudget::new())
+                .unwrap_or_else(|e| panic!("{e}"));
+            assert_eq!(effects.values().len(), expected.len());
+            for (index, ((id, actual), expected)) in
+                effects.values().iter().zip(expected).enumerate()
+            {
+                assert_eq!(*id, ConditionId(index));
+                assert_eq!(*actual, expected, "{kind:?} {n} condition {}", id.0);
+            }
+        }
+    }
+}
+
+#[test]
 fn wide_boolean_tree_and_declared_depth_bound() {
     use knot_rules::*;
     use knot_rules_zen::ZenCompiler;

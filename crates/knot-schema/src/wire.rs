@@ -207,13 +207,36 @@ pub struct Pricing {
 }
 
 /// Property names and values are validated together by the visual Schema.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(untagged)]
 pub enum VisualValue {
     Bool(bool),
     Text(String),
     Number(f64),
     Vector([f64; 3]),
+}
+impl<'de> Deserialize<'de> for VisualValue {
+    fn deserialize<D: serde::Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+        // Preserve serde_json's arbitrary-precision number representation until
+        // this visual-only boundary explicitly converts to finite binary64.
+        // Serde's untagged f64 visitor does not recognize every such number.
+        let value = serde_json::Value::deserialize(d)?;
+        let invalid = || serde::de::Error::custom("invalid visual value");
+        let number = |value: &serde_json::Value| {
+            value.as_f64().filter(|n| n.is_finite()).ok_or_else(invalid)
+        };
+        match value {
+            serde_json::Value::Bool(v) => Ok(Self::Bool(v)),
+            serde_json::Value::String(v) => Ok(Self::Text(v)),
+            serde_json::Value::Number(_) => number(&value).map(Self::Number),
+            serde_json::Value::Array(v) if v.len() == 3 => Ok(Self::Vector([
+                number(&v[0])?,
+                number(&v[1])?,
+                number(&v[2])?,
+            ])),
+            _ => Err(invalid()),
+        }
+    }
 }
 pub type Properties = BTreeMap<String, VisualValue>;
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
