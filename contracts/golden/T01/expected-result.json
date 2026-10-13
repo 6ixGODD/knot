@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0",
+  "error": {
+    "code": "BAD_JSON",
+    "message": "BAD_JSON",
+    "path": "",
+    "ruleIds": [],
+    "details": {}
+  }
+}

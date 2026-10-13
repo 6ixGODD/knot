@@ -1,0 +1,7 @@
+{
+  "id": "B-unknown-member",
+  "title": "Unknown model member rejected",
+  "operation": "model_create",
+  "expectedStatus": 1003,
+  "modelValidation": "schema-error"
+}

@@ -1,0 +1,7 @@
+{
+  "id": "T18",
+  "title": "Same normalized answer at current revision is no-op",
+  "operation": "apply",
+  "expectedStatus": 0,
+  "modelValidation": "valid"
+}

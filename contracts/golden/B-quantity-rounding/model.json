@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0",
+  "productId": "small",
+  "productVersion": "1",
+  "questions": [
+    {
+      "id": "n",
+      "type": "decimal",
+      "label": "Quantity",
+      "required": true,
+      "scale": 3,
+      "min": "0",
+      "max": "10",
+      "step": "0.001"
+    }
+  ],
+  "flow": {
+    "start": "n",
+    "edges": [
+      {
+        "from": "n",
+        "to": "END"
+      }
+    ]
+  },
+  "pricing": {
+    "currency": "CNY",
+    "components": [
+      {
+        "id": "base",
+        "category": "base",
+        "unitMinor": 100,
+        "quantityFrom": "n"
+      }
+    ]
+  },
+  "visual": {
+    "targets": [],
+    "slots": []
+  }
+}

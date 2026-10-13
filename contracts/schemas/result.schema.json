@@ -1,0 +1,1853 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:knot:schema:result:1.0",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "productId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+          "format": "knot-id"
+        },
+        "productVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+          "format": "knot-id"
+        },
+        "modelDigest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "level": {
+                "enum": [
+                  "info",
+                  "warning",
+                  "error"
+                ]
+              },
+              "code": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                "format": "knot-id"
+              },
+              "path": {
+                "type": "string",
+                "maxLength": 16384
+              },
+              "ruleIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 16384
+                },
+                "minItems": 0,
+                "maxItems": 4096
+              }
+            },
+            "required": [
+              "level",
+              "code",
+              "path",
+              "ruleIds"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 1024
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "productId",
+        "productVersion",
+        "modelDigest",
+        "diagnostics"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "state": {
+          "$ref": "#/$defs/state"
+        },
+        "snapshot": {
+          "type": "object",
+          "properties": {
+            "price": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "enum": [
+                    "unknown",
+                    "estimated",
+                    "final"
+                  ]
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "totalMinor": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "components": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128,
+                        "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                        "format": "knot-id"
+                      },
+                      "amountMinor": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "amountMinor"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "minItems": 0,
+                  "maxItems": 1024
+                }
+              },
+              "required": [
+                "status",
+                "currency",
+                "totalMinor",
+                "components"
+              ],
+              "additionalProperties": false,
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "status": {
+                        "const": "unknown"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "totalMinor": {
+                        "type": "null"
+                      },
+                      "components": {
+                        "maxItems": 0
+                      }
+                    }
+                  },
+                  "else": {
+                    "properties": {
+                      "totalMinor": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "flow": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "enum": [
+                    "in_progress",
+                    "complete",
+                    "blocked"
+                  ]
+                },
+                "path": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                    "format": "knot-id"
+                  },
+                  "minItems": 0,
+                  "maxItems": 256,
+                  "uniqueItems": true
+                },
+                "nextQuestionId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                      "format": "knot-id"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "currentQuestion": {
+                  "anyOf": [
+                    {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                              "format": "knot-id"
+                            },
+                            "type": {
+                              "const": "single"
+                            },
+                            "label": {
+                              "type": "string",
+                              "maxLength": 16384
+                            },
+                            "required": {
+                              "type": "boolean",
+                              "default": true
+                            },
+                            "options": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 128,
+                                    "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                                    "format": "knot-id"
+                                  },
+                                  "label": {
+                                    "type": "string",
+                                    "maxLength": 16384
+                                  },
+                                  "enabled": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "label",
+                                  "enabled"
+                                ],
+                                "additionalProperties": false
+                              },
+                              "minItems": 1,
+                              "maxItems": 256
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "type",
+                            "label",
+                            "required",
+                            "options"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                              "format": "knot-id"
+                            },
+                            "type": {
+                              "const": "multi"
+                            },
+                            "label": {
+                              "type": "string",
+                              "maxLength": 16384
+                            },
+                            "required": {
+                              "type": "boolean",
+                              "default": true
+                            },
+                            "options": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 128,
+                                    "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                                    "format": "knot-id"
+                                  },
+                                  "label": {
+                                    "type": "string",
+                                    "maxLength": 16384
+                                  },
+                                  "enabled": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "label",
+                                  "enabled"
+                                ],
+                                "additionalProperties": false
+                              },
+                              "minItems": 1,
+                              "maxItems": 256
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "type",
+                            "label",
+                            "required",
+                            "options"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                              "format": "knot-id"
+                            },
+                            "type": {
+                              "const": "integer"
+                            },
+                            "label": {
+                              "type": "string",
+                              "maxLength": 16384
+                            },
+                            "required": {
+                              "type": "boolean",
+                              "default": true
+                            },
+                            "min": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            },
+                            "max": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            },
+                            "step": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "type",
+                            "label",
+                            "required"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                              "format": "knot-id"
+                            },
+                            "type": {
+                              "const": "decimal"
+                            },
+                            "label": {
+                              "type": "string",
+                              "maxLength": 16384
+                            },
+                            "required": {
+                              "type": "boolean",
+                              "default": true
+                            },
+                            "min": {
+                              "type": "string",
+                              "maxLength": 128,
+                              "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$",
+                              "format": "knot-decimal"
+                            },
+                            "max": {
+                              "type": "string",
+                              "maxLength": 128,
+                              "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$",
+                              "format": "knot-decimal"
+                            },
+                            "step": {
+                              "type": "string",
+                              "maxLength": 128,
+                              "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$",
+                              "format": "knot-decimal"
+                            },
+                            "scale": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "type",
+                            "label",
+                            "required",
+                            "scale"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 128,
+                              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                              "format": "knot-id"
+                            },
+                            "type": {
+                              "const": "color"
+                            },
+                            "label": {
+                              "type": "string",
+                              "maxLength": 16384
+                            },
+                            "required": {
+                              "type": "boolean",
+                              "default": true
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "type",
+                            "label",
+                            "required"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "status",
+                "path",
+                "nextQuestionId",
+                "currentQuestion"
+              ],
+              "additionalProperties": false,
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "status": {
+                        "const": "complete"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "nextQuestionId": {
+                        "type": "null"
+                      },
+                      "currentQuestion": {
+                        "type": "null"
+                      }
+                    }
+                  },
+                  "else": {
+                    "properties": {
+                      "nextQuestionId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128,
+                        "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                        "format": "knot-id"
+                      },
+                      "currentQuestion": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 128,
+                                "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                                "format": "knot-id"
+                              },
+                              "type": {
+                                "const": "single"
+                              },
+                              "label": {
+                                "type": "string",
+                                "maxLength": 16384
+                              },
+                              "required": {
+                                "type": "boolean",
+                                "default": true
+                              },
+                              "options": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 128,
+                                      "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                                      "format": "knot-id"
+                                    },
+                                    "label": {
+                                      "type": "string",
+                                      "maxLength": 16384
+                                    },
+                                    "enabled": {
+                                      "type": "boolean"
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "label",
+                                    "enabled"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "minItems": 1,
+                                "maxItems": 256
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "type",
+                              "label",
+                              "required",
+                              "options"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 128,
+                                "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                                "format": "knot-id"
+                              },
+                              "type": {
+                                "const": "multi"
+                              },
+                              "label": {
+                                "type": "string",
+                                "maxLength": 16384
+                              },
+                              "required": {
+                                "type": "boolean",
+                                "default": true
+                              },
+                              "options": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 128,
+                                      "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                                      "format": "knot-id"
+                                    },
+                                    "label": {
+                                      "type": "string",
+                                      "maxLength": 16384
+                                    },
+                                    "enabled": {
+                                      "type": "boolean"
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "label",
+                                    "enabled"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "minItems": 1,
+                                "maxItems": 256
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "type",
+                              "label",
+                              "required",
+                              "options"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 128,
+                                "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                                "format": "knot-id"
+                              },
+                              "type": {
+                                "const": "integer"
+                              },
+                              "label": {
+                                "type": "string",
+                                "maxLength": 16384
+                              },
+                              "required": {
+                                "type": "boolean",
+                                "default": true
+                              },
+                              "min": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                              },
+                              "max": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                              },
+                              "step": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "type",
+                              "label",
+                              "required"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 128,
+                                "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                                "format": "knot-id"
+                              },
+                              "type": {
+                                "const": "decimal"
+                              },
+                              "label": {
+                                "type": "string",
+                                "maxLength": 16384
+                              },
+                              "required": {
+                                "type": "boolean",
+                                "default": true
+                              },
+                              "min": {
+                                "type": "string",
+                                "maxLength": 128,
+                                "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$",
+                                "format": "knot-decimal"
+                              },
+                              "max": {
+                                "type": "string",
+                                "maxLength": 128,
+                                "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$",
+                                "format": "knot-decimal"
+                              },
+                              "step": {
+                                "type": "string",
+                                "maxLength": 128,
+                                "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$",
+                                "format": "knot-decimal"
+                              },
+                              "scale": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 9
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "type",
+                              "label",
+                              "required",
+                              "scale"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 128,
+                                "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                                "format": "knot-id"
+                              },
+                              "type": {
+                                "const": "color"
+                              },
+                              "label": {
+                                "type": "string",
+                                "maxLength": 16384
+                              },
+                              "required": {
+                                "type": "boolean",
+                                "default": true
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "type",
+                              "label",
+                              "required"
+                            ],
+                            "additionalProperties": false
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "visual": {
+              "$ref": "#/$defs/visual"
+            },
+            "validation": {
+              "type": "object",
+              "properties": {
+                "valid": {
+                  "type": "boolean"
+                },
+                "issues": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128,
+                        "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                        "format": "knot-id"
+                      },
+                      "questionId": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 128,
+                            "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                            "format": "knot-id"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "path": {
+                        "type": "string",
+                        "maxLength": 16384
+                      },
+                      "ruleIds": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 16384
+                        },
+                        "minItems": 0,
+                        "maxItems": 4096
+                      }
+                    },
+                    "required": [
+                      "code",
+                      "questionId",
+                      "path",
+                      "ruleIds"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "minItems": 0,
+                  "maxItems": 1024
+                }
+              },
+              "required": [
+                "valid",
+                "issues"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "price",
+            "flow",
+            "visual",
+            "validation"
+          ],
+          "additionalProperties": false
+        },
+        "changes": {
+          "type": "object",
+          "properties": {
+            "answerChanges": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "questionId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                    "format": "knot-id"
+                  },
+                  "kind": {
+                    "enum": [
+                      "set",
+                      "cleared",
+                      "skipped"
+                    ]
+                  },
+                  "reason": {
+                    "enum": [
+                      "user",
+                      "became_disabled",
+                      "branch_unreachable"
+                    ]
+                  },
+                  "ruleIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 16384
+                    },
+                    "minItems": 0,
+                    "maxItems": 4096
+                  }
+                },
+                "required": [
+                  "questionId",
+                  "kind",
+                  "reason"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 0,
+              "maxItems": 256
+            },
+            "priceChanged": {
+              "type": "boolean"
+            },
+            "visualChangedTargets": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                "format": "knot-id"
+              },
+              "minItems": 0,
+              "maxItems": 256,
+              "uniqueItems": true
+            },
+            "flowChanged": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "answerChanges",
+            "priceChanged",
+            "visualChangedTargets",
+            "flowChanged"
+          ],
+          "additionalProperties": false
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "level": {
+                "enum": [
+                  "info",
+                  "warning",
+                  "error"
+                ]
+              },
+              "code": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                "format": "knot-id"
+              },
+              "path": {
+                "type": "string",
+                "maxLength": 16384
+              },
+              "ruleIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 16384
+                },
+                "minItems": 0,
+                "maxItems": 4096
+              }
+            },
+            "required": [
+              "level",
+              "code",
+              "path",
+              "ruleIds"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 1024
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "state",
+        "snapshot",
+        "changes",
+        "diagnostics"
+      ],
+      "additionalProperties": false
+    }
+  ],
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+      "format": "knot-id"
+    },
+    "integer": {
+      "type": "integer",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991
+    },
+    "decimal": {
+      "type": "string",
+      "maxLength": 128,
+      "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$",
+      "format": "knot-decimal"
+    },
+    "color": {
+      "type": "string",
+      "pattern": "^#[0-9a-fA-F]{6}$"
+    },
+    "condition": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "all": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/condition"
+              },
+              "minItems": 1,
+              "maxItems": 32768
+            }
+          },
+          "required": [
+            "all"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "any": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/condition"
+              },
+              "minItems": 1,
+              "maxItems": 32768
+            }
+          },
+          "required": [
+            "any"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "not": {
+              "$ref": "#/$defs/condition"
+            }
+          },
+          "required": [
+            "not"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "op": {
+              "const": "eq"
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 16384
+                },
+                {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              ]
+            }
+          },
+          "required": [
+            "field",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "op": {
+              "const": "ne"
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 16384
+                },
+                {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              ]
+            }
+          },
+          "required": [
+            "field",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "op": {
+              "const": "gt"
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 16384
+                },
+                {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              ]
+            }
+          },
+          "required": [
+            "field",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "op": {
+              "const": "gte"
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 16384
+                },
+                {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              ]
+            }
+          },
+          "required": [
+            "field",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "op": {
+              "const": "lt"
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 16384
+                },
+                {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              ]
+            }
+          },
+          "required": [
+            "field",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "op": {
+              "const": "lte"
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 16384
+                },
+                {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              ]
+            }
+          },
+          "required": [
+            "field",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "op": {
+              "const": "between"
+            },
+            "value": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 16384
+                  },
+                  {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
+                  }
+                ]
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
+          },
+          "required": [
+            "field",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "op": {
+              "const": "in"
+            },
+            "value": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 16384
+                  },
+                  {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
+                  }
+                ]
+              },
+              "minItems": 1,
+              "maxItems": 256
+            }
+          },
+          "required": [
+            "field",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "op": {
+              "const": "contains"
+            },
+            "value": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            }
+          },
+          "required": [
+            "field",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "op": {
+              "const": "exists"
+            }
+          },
+          "required": [
+            "field",
+            "op"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "question": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "type": {
+              "const": "single"
+            },
+            "label": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "required": {
+              "type": "boolean",
+              "default": true
+            },
+            "options": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                    "format": "knot-id"
+                  },
+                  "label": {
+                    "type": "string",
+                    "maxLength": 16384
+                  },
+                  "enabledWhen": {
+                    "$ref": "#/$defs/condition"
+                  }
+                },
+                "required": [
+                  "id",
+                  "label"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 1,
+              "maxItems": 256
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label",
+            "options"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "type": {
+              "const": "multi"
+            },
+            "label": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "required": {
+              "type": "boolean",
+              "default": true
+            },
+            "options": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                    "format": "knot-id"
+                  },
+                  "label": {
+                    "type": "string",
+                    "maxLength": 16384
+                  },
+                  "enabledWhen": {
+                    "$ref": "#/$defs/condition"
+                  }
+                },
+                "required": [
+                  "id",
+                  "label"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 1,
+              "maxItems": 256
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label",
+            "options"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "type": {
+              "const": "integer"
+            },
+            "label": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "required": {
+              "type": "boolean",
+              "default": true
+            },
+            "min": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            },
+            "max": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            },
+            "step": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "type": {
+              "const": "decimal"
+            },
+            "label": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "required": {
+              "type": "boolean",
+              "default": true
+            },
+            "min": {
+              "type": "string",
+              "maxLength": 128,
+              "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$",
+              "format": "knot-decimal"
+            },
+            "max": {
+              "type": "string",
+              "maxLength": 128,
+              "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$",
+              "format": "knot-decimal"
+            },
+            "step": {
+              "type": "string",
+              "maxLength": 128,
+              "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$",
+              "format": "knot-decimal"
+            },
+            "scale": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label",
+            "scale"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "type": {
+              "const": "color"
+            },
+            "label": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "required": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "properties": {
+      "type": "object",
+      "properties": {
+        "visible": {
+          "type": "boolean"
+        },
+        "variant": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+          "format": "knot-id"
+        },
+        "assetRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+          "format": "knot-id"
+        },
+        "color": {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        },
+        "opacity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "surface.metallic": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "surface.roughness": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "surface.textureRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+          "format": "knot-id"
+        },
+        "emission.color": {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        },
+        "emission.strength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "transform.position": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": -1000000000.0,
+            "maximum": 1000000000.0
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "transform.scale": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": -1000000000.0,
+            "maximum": 1000000000.0
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "light.intensity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "visual": {
+      "type": "object",
+      "properties": {
+        "targets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                "format": "knot-id"
+              },
+              "order": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "properties": {
+                "$ref": "#/$defs/properties"
+              }
+            },
+            "required": [
+              "id",
+              "order",
+              "properties"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 256
+        }
+      },
+      "required": [
+        "targets"
+      ],
+      "additionalProperties": false
+    },
+    "state": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "productId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+          "format": "knot-id"
+        },
+        "modelDigest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "answers": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+            "format": "knot-id"
+          },
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 16384
+              },
+              {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                  "format": "knot-id"
+                },
+                "minItems": 0,
+                "maxItems": 256,
+                "uniqueItems": true
+              }
+            ]
+          },
+          "maxProperties": 256
+        },
+        "skipped": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+            "format": "knot-id"
+          },
+          "minItems": 0,
+          "maxItems": 256,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "productId",
+        "modelDigest",
+        "revision",
+        "answers",
+        "skipped"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

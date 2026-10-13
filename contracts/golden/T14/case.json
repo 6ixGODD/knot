@@ -1,0 +1,7 @@
+{
+  "id": "T14",
+  "title": "Complete visual output",
+  "operation": "evaluate",
+  "expectedStatus": 0,
+  "modelValidation": "valid"
+}

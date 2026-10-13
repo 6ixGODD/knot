@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0",
+  "error": {
+    "code": "INVALID_STATE",
+    "message": "INVALID_STATE",
+    "path": "/answers/power",
+    "ruleIds": [],
+    "details": {}
+  }
+}

@@ -1,0 +1,269 @@
+{
+  "schemaVersion": "1.0",
+  "errors": [
+    {
+      "code": "NULL_ARGUMENT",
+      "status": 1001,
+      "details": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "code": "BAD_JSON",
+      "status": 1002,
+      "details": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "code": "INVALID_UTF8",
+      "status": 1002,
+      "details": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "code": "BAD_SCHEMA",
+      "status": 1003,
+      "details": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "code": "INVALID_MODEL",
+      "status": 1003,
+      "details": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "code": "RULE_COMPILE",
+      "status": 1004,
+      "details": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "code": "INVALID_STATE",
+      "status": 1005,
+      "details": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "code": "MODEL_MISMATCH",
+      "status": 1005,
+      "details": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "code": "REVISION_CONFLICT",
+      "status": 1006,
+      "details": {
+        "type": "object",
+        "properties": {
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "actualRevision": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "expectedRevision",
+          "actualRevision"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "code": "INVALID_ANSWER",
+      "status": 1007,
+      "details": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "code": "INVALID_OPTION",
+      "status": 1007,
+      "details": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "code": "INACTIVE_QUESTION",
+      "status": 1008,
+      "details": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "code": "RULE_EVAL",
+      "status": 1009,
+      "details": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "code": "MISSING_VALUE",
+      "status": 1009,
+      "details": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "code": "BASE_PRICE_CONFLICT",
+      "status": 1010,
+      "details": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "code": "VISUAL_CONFLICT",
+      "status": 1010,
+      "details": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "code": "UNPRICED",
+      "status": 1010,
+      "details": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "code": "NO_BRANCH",
+      "status": 1010,
+      "details": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "code": "NEGATIVE_TOTAL",
+      "status": 1010,
+      "details": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "code": "RESOURCE_LIMIT",
+      "status": 1011,
+      "details": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+          },
+          "maximum": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "observed": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "limit",
+          "maximum"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "code": "NUMERIC_OVERFLOW",
+      "status": 1011,
+      "details": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "code": "REVISION_OVERFLOW",
+      "status": 1011,
+      "details": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "code": "INTERNAL",
+      "status": 1999,
+      "details": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    }
+  ]
+}

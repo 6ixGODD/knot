@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "1.0",
+  "state": {
+    "schemaVersion": "1.0",
+    "productId": "small",
+    "modelDigest": "sha256:8921f62f04a0ad771a785838c384bbf1112faa12fe4594b7667a337e0676ed0a",
+    "revision": 2,
+    "answers": {
+      "gate": "off"
+    },
+    "skipped": []
+  },
+  "snapshot": {
+    "price": {
+      "status": "estimated",
+      "currency": "CNY",
+      "totalMinor": 100,
+      "components": [
+        {
+          "id": "base",
+          "amountMinor": 100
+        }
+      ]
+    },
+    "flow": {
+      "status": "in_progress",
+      "path": [
+        "gate",
+        "m"
+      ],
+      "nextQuestionId": "m",
+      "currentQuestion": {
+        "id": "m",
+        "type": "multi",
+        "label": "Multi",
+        "required": true,
+        "options": [
+          {
+            "id": "x",
+            "label": "X",
+            "enabled": true
+          },
+          {
+            "id": "y",
+            "label": "Y",
+            "enabled": false
+          }
+        ]
+      }
+    },
+    "visual": {
+      "targets": []
+    },
+    "validation": {
+      "valid": true,
+      "issues": []
+    }
+  },
+  "changes": {
+    "answerChanges": [
+      {
+        "questionId": "gate",
+        "kind": "set",
+        "reason": "user"
+      },
+      {
+        "questionId": "m",
+        "kind": "cleared",
+        "reason": "became_disabled",
+        "ruleIds": [
+          "rule:/questions/1/options/1/enabledWhen"
+        ]
+      }
+    ],
+    "priceChanged": true,
+    "visualChangedTargets": [],
+    "flowChanged": true
+  },
+  "diagnostics": []
+}

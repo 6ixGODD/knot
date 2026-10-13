@@ -1,0 +1,46 @@
+[
+  {
+    "schemaVersion": "1.0",
+    "type": "set_answer",
+    "questionId": "speaker_type",
+    "value": "active",
+    "expectedRevision": 0
+  },
+  {
+    "schemaVersion": "1.0",
+    "type": "set_answer",
+    "questionId": "material",
+    "value": "aluminum",
+    "expectedRevision": 1
+  },
+  {
+    "schemaVersion": "1.0",
+    "type": "set_answer",
+    "questionId": "panel_color",
+    "value": "#315A79",
+    "expectedRevision": 2
+  },
+  {
+    "schemaVersion": "1.0",
+    "type": "set_answer",
+    "questionId": "power",
+    "value": "200w",
+    "expectedRevision": 3
+  },
+  {
+    "schemaVersion": "1.0",
+    "type": "set_answer",
+    "questionId": "extras",
+    "value": [
+      "led"
+    ],
+    "expectedRevision": 4
+  },
+  {
+    "schemaVersion": "1.0",
+    "type": "set_answer",
+    "questionId": "material",
+    "value": "walnut",
+    "expectedRevision": 5
+  }
+]

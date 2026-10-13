@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "1.0",
+  "state": {
+    "schemaVersion": "1.0",
+    "productId": "small",
+    "modelDigest": "sha256:ca1014301e228d8ca1b72d54af9ee872c2b3c524f9e7203f81267dd6cbb66b30",
+    "revision": 2,
+    "answers": {
+      "branch": "right",
+      "right": "#112233"
+    },
+    "skipped": []
+  },
+  "snapshot": {
+    "price": {
+      "status": "estimated",
+      "currency": "CNY",
+      "totalMinor": 100,
+      "components": [
+        {
+          "id": "base",
+          "amountMinor": 100
+        }
+      ]
+    },
+    "flow": {
+      "status": "in_progress",
+      "path": [
+        "branch",
+        "right",
+        "join"
+      ],
+      "nextQuestionId": "join",
+      "currentQuestion": {
+        "id": "join",
+        "type": "multi",
+        "label": "Join",
+        "required": false,
+        "options": [
+          {
+            "id": "x",
+            "label": "X",
+            "enabled": false
+          }
+        ]
+      }
+    },
+    "visual": {
+      "targets": []
+    },
+    "validation": {
+      "valid": true,
+      "issues": []
+    }
+  },
+  "changes": {
+    "answerChanges": [],
+    "priceChanged": false,
+    "visualChangedTargets": [],
+    "flowChanged": false
+  },
+  "diagnostics": []
+}

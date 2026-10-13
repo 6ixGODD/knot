@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "1.0",
+  "state": {
+    "schemaVersion": "1.0",
+    "productId": "speaker-pro",
+    "modelDigest": "sha256:73e5998863973011c590d9883bb0a593f62d77fca5d10480b4f0029153ed1541",
+    "revision": 1,
+    "answers": {
+      "speaker_type": "active"
+    },
+    "skipped": []
+  },
+  "snapshot": {
+    "price": {
+      "status": "estimated",
+      "currency": "CNY",
+      "totalMinor": 129900,
+      "components": [
+        {
+          "id": "base_active",
+          "amountMinor": 129900
+        }
+      ]
+    },
+    "flow": {
+      "status": "in_progress",
+      "path": [
+        "speaker_type",
+        "material"
+      ],
+      "nextQuestionId": "material",
+      "currentQuestion": {
+        "id": "material",
+        "type": "single",
+        "label": "箱体材质",
+        "required": true,
+        "options": [
+          {
+            "id": "walnut",
+            "label": "胡桃木",
+            "enabled": true
+          },
+          {
+            "id": "aluminum",
+            "label": "铝合金",
+            "enabled": true
+          }
+        ]
+      }
+    },
+    "visual": {
+      "targets": [
+        {
+          "id": "speaker.base",
+          "order": 0,
+          "properties": {
+            "visible": true,
+            "assetRef": "speaker-base"
+          }
+        },
+        {
+          "id": "speaker.cabinet",
+          "order": 10,
+          "properties": {
+            "visible": true,
+            "assetRef": "cabinet-default",
+            "surface.metallic": 0.0,
+            "surface.roughness": 0.7
+          }
+        },
+        {
+          "id": "speaker.front_panel",
+          "order": 20,
+          "properties": {
+            "visible": true,
+            "color": "#26272B"
+          }
+        },
+        {
+          "id": "speaker.led_ring",
+          "order": 30,
+          "properties": {
+            "visible": false,
+            "assetRef": "led-ring",
+            "emission.color": "#315A79",
+            "emission.strength": 0.8
+          }
+        }
+      ]
+    },
+    "validation": {
+      "valid": true,
+      "issues": []
+    }
+  },
+  "changes": {
+    "answerChanges": [
+      {
+        "questionId": "speaker_type",
+        "kind": "set",
+        "reason": "user"
+      }
+    ],
+    "priceChanged": true,
+    "visualChangedTargets": [],
+    "flowChanged": true
+  },
+  "diagnostics": []
+}

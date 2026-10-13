@@ -1,0 +1,8 @@
+{
+  "id": "B-invalid-old-state",
+  "title": "Evaluate refuses suffix leftovers",
+  "operation": "evaluate",
+  "expectedStatus": 1005,
+  "modelValidation": "valid",
+  "stateValidation": "semantic-error"
+}

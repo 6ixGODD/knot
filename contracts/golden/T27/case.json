@@ -1,0 +1,7 @@
+{
+  "id": "T27",
+  "title": "Invalid UTF-8",
+  "operation": "model_create",
+  "expectedStatus": 1002,
+  "modelValidation": "parse-error"
+}

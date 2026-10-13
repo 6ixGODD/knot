@@ -1,0 +1,7 @@
+{
+  "id": "B-clear-upstream",
+  "title": "Clear removes entire suffix",
+  "operation": "apply",
+  "expectedStatus": 0,
+  "modelValidation": "valid"
+}

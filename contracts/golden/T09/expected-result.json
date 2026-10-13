@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "1.0",
+  "error": {
+    "code": "INVALID_OPTION",
+    "message": "INVALID_OPTION",
+    "path": "/answers/power",
+    "ruleIds": [
+      "rule:/questions/3/options/2/enabledWhen"
+    ],
+    "details": {}
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "id": "T07",
+  "title": "Off-step integer rejected",
+  "operation": "apply",
+  "expectedStatus": 1007,
+  "modelValidation": "valid"
+}

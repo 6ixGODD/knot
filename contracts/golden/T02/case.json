@@ -1,0 +1,7 @@
+{
+  "id": "T02",
+  "title": "Valid model compilation",
+  "operation": "model_create",
+  "expectedStatus": 0,
+  "modelValidation": "valid"
+}

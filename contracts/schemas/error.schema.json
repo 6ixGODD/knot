@@ -1,0 +1,2119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:knot:schema:error:1.0",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "NULL_ARGUMENT"
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "ruleIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "minItems": 0,
+              "maxItems": 4096
+            },
+            "details": {
+              "type": "object",
+              "properties": {},
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "path",
+            "ruleIds",
+            "details"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "BAD_JSON"
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "ruleIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "minItems": 0,
+              "maxItems": 4096
+            },
+            "details": {
+              "type": "object",
+              "properties": {},
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "path",
+            "ruleIds",
+            "details"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "INVALID_UTF8"
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "ruleIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "minItems": 0,
+              "maxItems": 4096
+            },
+            "details": {
+              "type": "object",
+              "properties": {},
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "path",
+            "ruleIds",
+            "details"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "BAD_SCHEMA"
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "ruleIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "minItems": 0,
+              "maxItems": 4096
+            },
+            "details": {
+              "type": "object",
+              "properties": {},
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "path",
+            "ruleIds",
+            "details"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "INVALID_MODEL"
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "ruleIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "minItems": 0,
+              "maxItems": 4096
+            },
+            "details": {
+              "type": "object",
+              "properties": {},
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "path",
+            "ruleIds",
+            "details"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "RULE_COMPILE"
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "ruleIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "minItems": 0,
+              "maxItems": 4096
+            },
+            "details": {
+              "type": "object",
+              "properties": {},
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "path",
+            "ruleIds",
+            "details"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "INVALID_STATE"
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "ruleIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "minItems": 0,
+              "maxItems": 4096
+            },
+            "details": {
+              "type": "object",
+              "properties": {},
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "path",
+            "ruleIds",
+            "details"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "MODEL_MISMATCH"
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "ruleIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "minItems": 0,
+              "maxItems": 4096
+            },
+            "details": {
+              "type": "object",
+              "properties": {},
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "path",
+            "ruleIds",
+            "details"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "REVISION_CONFLICT"
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "ruleIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "minItems": 0,
+              "maxItems": 4096
+            },
+            "details": {
+              "type": "object",
+              "properties": {
+                "expectedRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "actualRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "expectedRevision",
+                "actualRevision"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "path",
+            "ruleIds",
+            "details"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "INVALID_ANSWER"
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "ruleIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "minItems": 0,
+              "maxItems": 4096
+            },
+            "details": {
+              "type": "object",
+              "properties": {},
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "path",
+            "ruleIds",
+            "details"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "INVALID_OPTION"
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "ruleIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "minItems": 0,
+              "maxItems": 4096
+            },
+            "details": {
+              "type": "object",
+              "properties": {},
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "path",
+            "ruleIds",
+            "details"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "INACTIVE_QUESTION"
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "ruleIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "minItems": 0,
+              "maxItems": 4096
+            },
+            "details": {
+              "type": "object",
+              "properties": {},
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "path",
+            "ruleIds",
+            "details"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "RULE_EVAL"
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "ruleIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "minItems": 0,
+              "maxItems": 4096
+            },
+            "details": {
+              "type": "object",
+              "properties": {},
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "path",
+            "ruleIds",
+            "details"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "MISSING_VALUE"
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "ruleIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "minItems": 0,
+              "maxItems": 4096
+            },
+            "details": {
+              "type": "object",
+              "properties": {},
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "path",
+            "ruleIds",
+            "details"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "BASE_PRICE_CONFLICT"
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "ruleIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "minItems": 0,
+              "maxItems": 4096
+            },
+            "details": {
+              "type": "object",
+              "properties": {},
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "path",
+            "ruleIds",
+            "details"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "VISUAL_CONFLICT"
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "ruleIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "minItems": 0,
+              "maxItems": 4096
+            },
+            "details": {
+              "type": "object",
+              "properties": {},
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "path",
+            "ruleIds",
+            "details"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "UNPRICED"
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "ruleIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "minItems": 0,
+              "maxItems": 4096
+            },
+            "details": {
+              "type": "object",
+              "properties": {},
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "path",
+            "ruleIds",
+            "details"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "NO_BRANCH"
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "ruleIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "minItems": 0,
+              "maxItems": 4096
+            },
+            "details": {
+              "type": "object",
+              "properties": {},
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "path",
+            "ruleIds",
+            "details"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "NEGATIVE_TOTAL"
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "ruleIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "minItems": 0,
+              "maxItems": 4096
+            },
+            "details": {
+              "type": "object",
+              "properties": {},
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "path",
+            "ruleIds",
+            "details"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "RESOURCE_LIMIT"
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "ruleIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "minItems": 0,
+              "maxItems": 4096
+            },
+            "details": {
+              "type": "object",
+              "properties": {
+                "limit": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                  "format": "knot-id"
+                },
+                "maximum": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "observed": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "limit",
+                "maximum"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "path",
+            "ruleIds",
+            "details"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "NUMERIC_OVERFLOW"
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "ruleIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "minItems": 0,
+              "maxItems": 4096
+            },
+            "details": {
+              "type": "object",
+              "properties": {},
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "path",
+            "ruleIds",
+            "details"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "REVISION_OVERFLOW"
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "ruleIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "minItems": 0,
+              "maxItems": 4096
+            },
+            "details": {
+              "type": "object",
+              "properties": {},
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "path",
+            "ruleIds",
+            "details"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "INTERNAL"
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "ruleIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "minItems": 0,
+              "maxItems": 4096
+            },
+            "details": {
+              "type": "object",
+              "properties": {},
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "path",
+            "ruleIds",
+            "details"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "error"
+      ],
+      "additionalProperties": false
+    }
+  ],
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+      "format": "knot-id"
+    },
+    "integer": {
+      "type": "integer",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991
+    },
+    "decimal": {
+      "type": "string",
+      "maxLength": 128,
+      "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$",
+      "format": "knot-decimal"
+    },
+    "color": {
+      "type": "string",
+      "pattern": "^#[0-9a-fA-F]{6}$"
+    },
+    "condition": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "all": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/condition"
+              },
+              "minItems": 1,
+              "maxItems": 32768
+            }
+          },
+          "required": [
+            "all"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "any": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/condition"
+              },
+              "minItems": 1,
+              "maxItems": 32768
+            }
+          },
+          "required": [
+            "any"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "not": {
+              "$ref": "#/$defs/condition"
+            }
+          },
+          "required": [
+            "not"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "op": {
+              "const": "eq"
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 16384
+                },
+                {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              ]
+            }
+          },
+          "required": [
+            "field",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "op": {
+              "const": "ne"
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 16384
+                },
+                {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              ]
+            }
+          },
+          "required": [
+            "field",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "op": {
+              "const": "gt"
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 16384
+                },
+                {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              ]
+            }
+          },
+          "required": [
+            "field",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "op": {
+              "const": "gte"
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 16384
+                },
+                {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              ]
+            }
+          },
+          "required": [
+            "field",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "op": {
+              "const": "lt"
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 16384
+                },
+                {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              ]
+            }
+          },
+          "required": [
+            "field",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "op": {
+              "const": "lte"
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 16384
+                },
+                {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              ]
+            }
+          },
+          "required": [
+            "field",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "op": {
+              "const": "between"
+            },
+            "value": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 16384
+                  },
+                  {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
+                  }
+                ]
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
+          },
+          "required": [
+            "field",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "op": {
+              "const": "in"
+            },
+            "value": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 16384
+                  },
+                  {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
+                  }
+                ]
+              },
+              "minItems": 1,
+              "maxItems": 256
+            }
+          },
+          "required": [
+            "field",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "op": {
+              "const": "contains"
+            },
+            "value": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            }
+          },
+          "required": [
+            "field",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "op": {
+              "const": "exists"
+            }
+          },
+          "required": [
+            "field",
+            "op"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "question": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "type": {
+              "const": "single"
+            },
+            "label": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "required": {
+              "type": "boolean",
+              "default": true
+            },
+            "options": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                    "format": "knot-id"
+                  },
+                  "label": {
+                    "type": "string",
+                    "maxLength": 16384
+                  },
+                  "enabledWhen": {
+                    "$ref": "#/$defs/condition"
+                  }
+                },
+                "required": [
+                  "id",
+                  "label"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 1,
+              "maxItems": 256
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label",
+            "options"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "type": {
+              "const": "multi"
+            },
+            "label": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "required": {
+              "type": "boolean",
+              "default": true
+            },
+            "options": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                    "format": "knot-id"
+                  },
+                  "label": {
+                    "type": "string",
+                    "maxLength": 16384
+                  },
+                  "enabledWhen": {
+                    "$ref": "#/$defs/condition"
+                  }
+                },
+                "required": [
+                  "id",
+                  "label"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 1,
+              "maxItems": 256
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label",
+            "options"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "type": {
+              "const": "integer"
+            },
+            "label": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "required": {
+              "type": "boolean",
+              "default": true
+            },
+            "min": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            },
+            "max": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            },
+            "step": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "type": {
+              "const": "decimal"
+            },
+            "label": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "required": {
+              "type": "boolean",
+              "default": true
+            },
+            "min": {
+              "type": "string",
+              "maxLength": 128,
+              "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$",
+              "format": "knot-decimal"
+            },
+            "max": {
+              "type": "string",
+              "maxLength": 128,
+              "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$",
+              "format": "knot-decimal"
+            },
+            "step": {
+              "type": "string",
+              "maxLength": 128,
+              "pattern": "^-?[0-9]+(?:\\.[0-9]+)?$",
+              "format": "knot-decimal"
+            },
+            "scale": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label",
+            "scale"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+              "format": "knot-id"
+            },
+            "type": {
+              "const": "color"
+            },
+            "label": {
+              "type": "string",
+              "maxLength": 16384
+            },
+            "required": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "properties": {
+      "type": "object",
+      "properties": {
+        "visible": {
+          "type": "boolean"
+        },
+        "variant": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+          "format": "knot-id"
+        },
+        "assetRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+          "format": "knot-id"
+        },
+        "color": {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        },
+        "opacity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "surface.metallic": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "surface.roughness": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "surface.textureRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+          "format": "knot-id"
+        },
+        "emission.color": {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        },
+        "emission.strength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "transform.position": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": -1000000000.0,
+            "maximum": 1000000000.0
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "transform.scale": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": -1000000000.0,
+            "maximum": 1000000000.0
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "light.intensity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "visual": {
+      "type": "object",
+      "properties": {
+        "targets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                "format": "knot-id"
+              },
+              "order": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "properties": {
+                "$ref": "#/$defs/properties"
+              }
+            },
+            "required": [
+              "id",
+              "order",
+              "properties"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 256
+        }
+      },
+      "required": [
+        "targets"
+      ],
+      "additionalProperties": false
+    },
+    "state": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "productId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+          "format": "knot-id"
+        },
+        "modelDigest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "answers": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+            "format": "knot-id"
+          },
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 16384
+              },
+              {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+                  "format": "knot-id"
+                },
+                "minItems": 0,
+                "maxItems": 256,
+                "uniqueItems": true
+              }
+            ]
+          },
+          "maxProperties": 256
+        },
+        "skipped": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+            "format": "knot-id"
+          },
+          "minItems": 0,
+          "maxItems": 256,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "productId",
+        "modelDigest",
+        "revision",
+        "answers",
+        "skipped"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

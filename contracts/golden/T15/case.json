@@ -1,0 +1,7 @@
+{
+  "id": "T15",
+  "title": "Multiple visual cases conflict atomically",
+  "operation": "apply",
+  "expectedStatus": 1010,
+  "modelValidation": "valid"
+}
