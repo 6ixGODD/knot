@@ -105,11 +105,15 @@ def main():
         ctest = str(Path(cmake).with_name('ctest.exe' if sys.platform == 'win32' else 'ctest'))
         host = args.host_json_dir.resolve() if args.host_json_dir else out / 'host-json'
         host.mkdir(parents=True, exist_ok=True)
-        for name, (url, expected) in HOST_FILES.items():
+        for name, (relative_path, expected) in HOST_FILES.items():
+            url = f'https://raw.githubusercontent.com/nlohmann/json/v3.11.3/{relative_path}'
             path = host / name
             if not path.is_file():
                 with urllib.request.urlopen(url, timeout=60) as response:
-                    path.write_bytes(response.read(2*1024*1024))
+                    data = response.read(2*1024*1024+1)
+                if len(data) > 2*1024*1024 or hashlib.sha256(data).hexdigest() != expected:
+                    raise RuntimeError(f'downloaded host fixture invalid: {name}')
+                path.write_bytes(data)
             if digest(path) != expected:
                 raise RuntimeError(f'host fixture digest mismatch: {name}')
         evidence['rustc'] = run('rustc-version', ['rustc', '-vV'])

@@ -45,6 +45,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Format
         run: cargo fmt --all -- --check
+      - name: Real native P0
+        run: python tools/p0/run.py --out "${{ runner.temp }}/knot-plan01/p0"
       - name: Clippy
         run: cargo clippy --workspace --all-targets --locked -- -D warnings
       - name: Contracts and shared components
@@ -53,8 +55,6 @@ jobs:
         run: cargo doc --workspace --no-deps --locked
       - name: Release build
         run: cargo build --workspace --release --locked
-      - name: Real native P0
-        run: python tools/p0/run.py --out "${{ runner.temp }}/knot-plan01/p0"
       - name: Preserve evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
