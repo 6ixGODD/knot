@@ -1,9 +1,9 @@
 # Run the Speaker example
 
-This is the candidate-package integration procedure. The client source compiles in component tests; the complete production kernel and relocated package run remain pending. The two numbers below are **contract expectations**, not claimed observations of the production SDK.
+Use a locally supplied candidate SDK. This example has run with the production Windows kernel from a relocated package, using both shared and static linkage. It prints `282800` followed by `159900`. Linux/macOS package certification remains pending.
 
 1. Obtain a local candidate SDK for your platform and matching C++ ABI/configuration. Extract it as `C:/sdk/knot` (or a corresponding absolute path on Linux/macOS). The package contains `include`, `lib`, `bin` on Windows, `contracts`, `examples`, `docs` and `licenses`.
-2. Use the complete `examples/CMakeLists.txt` below with `examples/c/smoke.c` and `examples/cpp/speaker.cpp` from the same package. CMake 3.23 syntax is used; Windows native-probe consumption was tested with CMake 3.29.5. Choose Release and the package's dynamic CRT on MSVC.
+2. Use the complete `examples/CMakeLists.txt` below with `examples/c/smoke.c` and `examples/cpp/speaker.cpp` from the same package. CMake 3.23 syntax is used; Windows package consumption was tested with CMake 3.29.5 and MSVC 19.41. Choose Release and the package's dynamic CRT on MSVC.
 3. Build and run using a trusted DLL directory. Consumers need a C/C++ compiler, not Rust, a rule-engine installation or a network download during CMake.
 
 ```powershell
@@ -85,6 +85,6 @@ int main(int argc, char **argv) {
 }
 ```
 
-All six events match [speaker-events.json](../contracts/examples/speaker-events.json). The first five answers have contract totalMinor `282800`; changing material to walnut has contract totalMinor `159900` and clears invalid downstream answers. The [model](../contracts/examples/speaker.json), [first expected result](../contracts/golden/T12/expected-result.json) and [changed expected result](../contracts/golden/T10/expected-result.json) are shipped together.
+All six events match [speaker-events.json](../contracts/examples/speaker-events.json). The first five answers produce totalMinor `282800`; changing material to walnut produces `159900` and clears invalid downstream answers. The [model](../contracts/examples/speaker.json), [first expected result](../contracts/golden/T12/expected-result.json) and [changed expected result](../contracts/golden/T10/expected-result.json) are shipped together.
 
 Save the complete returned State and replace the complete Snapshot on success. On failure, keep your old State. Unknown price is null, not zero; optional questions still need an answer or explicit skip. A final price is not payment authorization. Details: [state machine](state-machine.md).

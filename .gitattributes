@@ -17,6 +17,8 @@ CMakeLists.txt text eol=lf
 vendor/nlohmann/LICENSE.MIT text eol=lf
 # Preserve upstream notice bytes (including their original whitespace).
 contracts/notices/** text eol=lf -whitespace
+# Dependency notice snapshots are verified against their original byte hashes.
+tools/package/notices/** -text -whitespace
 *.dll binary
 *.so binary
 *.dylib binary

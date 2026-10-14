@@ -27,7 +27,7 @@ The [Python smoke](../examples/python/smoke.py) takes library, model and events 
 
 The [Go binding](../bindings/go/knot.go) exposes `Compile`, `Initial`, `Apply`, `Evaluate`, `Close` and raw owning JSON bytes. Use Go 1.26.4 as frozen in go.mod, enable cgo and provide CGO_CFLAGS for the package include and CGO_LDFLAGS for exactly one native library. On Windows use a cgo-compatible C compiler and the shared C ABI, not the MSVC C++ bridge. The [Go example](../examples/go/smoke.go) runs from the binding module with `go run ../../examples/go/smoke.go <speaker.json> <speaker-events.json>`. Always defer Close after successful Compile. A copied Model shares the same closed state; it is not a new native model.
 
-Production language equivalence, three-platform client tests, clean offline package relocation, loader paths and first-time developer consumption remain required integration checks. Do not distribute test boundary libraries. Packages must carry contract schemas, examples, exact toolchain/target/configuration/CRT metadata, checksums and dependency notices; KNOT's own license remains a release prerequisite.
+The Windows candidate has passed the frozen cases through Rust, C, C++ and Python, a real Go Speaker sequence, and shared/static C/C++ consumption from a relocated package without Rust or dependency downloads. Linux/macOS production package checks and an independent first-time developer trial remain pending. Packages carry contract schemas, examples, toolchain/target/configuration/CRT metadata, checksums and dependency notices; KNOT's own license remains a release prerequisite.
 
 
 ## Command-line inspection and simulation
