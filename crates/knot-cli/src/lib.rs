@@ -1,5 +1,7 @@
-//! Bounded input primitives; this library does not expose a product command yet.
+//! Bounded file and command front end over the production compiler and Core.
 #![forbid(unsafe_code)]
+mod commands;
+pub use commands::run;
 use std::io::{self, Read};
 
 /// Reads at most maximum + 1 bytes, rejecting oversized input without reading the rest.
