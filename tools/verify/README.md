@@ -21,11 +21,18 @@ text; the librarian normalizes absolute archive member names. The pinned Rust
 compiler's bundled `rust-objcopy` removes any remaining host-bearing debug
 sections from extracted assembly objects; code and data remain intact.
 
-The Linux security CI job installs the pinned nightly, Miri and cargo-fuzz, then
-runs `--stage security`. It runs five native fuzz targets for at least 300 seconds
-each, actual ABI buffer code under Miri, and production FFI tests under ASan.
+Linux security CI uses separate `--stage fuzz` and `--stage memory` jobs with the
+pinned nightly, Miri and cargo-fuzz. Separate runners keep their build outputs
+within the hosted disk budget and let both gates report failures independently.
+They run five native fuzz targets for at least 300 seconds each, actual ABI
+buffer code under Miri, and production FFI tests under ASan. `--stage security`
+runs both gates sequentially on hosts with enough disk space.
 `--stage all` requires both stages; unsupported security tooling is a failure.
 A Windows native pass is not a security or cross-platform pass.
+
+Native CI disables development/test debug information and incremental output to
+fit hosted runners. Debug assertions, overflow checks and Release settings remain
+unchanged. Memory CI keeps line tables for sanitizer diagnostics.
 
 Candidates are internal until the product license and dependency notice evidence
 satisfy the public-package checks. No script publishes an artifact. Automated

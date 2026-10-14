@@ -10,7 +10,7 @@ from common import ROOT,Runner,cmake,sha
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--out',type=Path,required=True)
-    parser.add_argument('--stage',choices=['all','native','security'],default='all')
+    parser.add_argument('--stage',choices=['all','native','security','fuzz','memory'],default='all')
     args=parser.parse_args();runner=Runner(args.out)
     runner.env['RUSTDOCFLAGS']='-D warnings'
     evidence=dict(passed=False,stage=args.stage,lockSha256=sha(ROOT/'Cargo.lock'),sourceFiles={str(p.relative_to(ROOT)):sha(p) for base in ['crates','bindings','tools','tests','cmake','examples'] for p in (ROOT/base).rglob('*') if p.is_file() and p.suffix in ['.rs','.py','.c','.cpp','.hpp','.h','.toml','.cmake','.txt']})
@@ -41,8 +41,9 @@ def main():
         consume_env=dict(runner.env,CMAKE=cmake())
         runner.run('consumer',[sys.executable,ROOT/'tests/package/consume.py','--package-dir',package,'--out',runner.out/'consumer'],env=consume_env)
         runner.run('benchmark',[sys.executable,ROOT/'tools/verify/benchmark.py','--out',runner.out/'benchmark'])
-    if args.stage in ['all','security']:
+    if args.stage in ['all','security','fuzz']:
         runner.run('fuzz',[sys.executable,ROOT/'tools/verify/fuzz.py','--seconds-per-target','300','--out',runner.out/'fuzz'],timeout=14400)
+    if args.stage in ['all','security','memory']:
         runner.run('memory',[sys.executable,ROOT/'tools/verify/memory.py','--out',runner.out/'memory'],timeout=14400)
     runner.run('diff-check',['git','diff','--check'])
     evidence['passed']=True;save()

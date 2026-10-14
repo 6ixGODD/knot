@@ -27,6 +27,9 @@ jobs:
     timeout-minutes: 180
     env:
       CARGO_BUILD_JOBS: 1
+      CARGO_PROFILE_DEV_DEBUG: 0
+      CARGO_PROFILE_TEST_DEBUG: 0
+      CARGO_INCREMENTAL: 0
       RUSTDOCFLAGS: -D warnings
       PYTHONDONTWRITEBYTECODE: 1
     defaults:
@@ -107,11 +110,18 @@ jobs:
             ${{ runner.temp }}/isolated-consumer/*.json
             ${{ runner.temp }}/isolated-consumer/*.log
   security:
+    strategy:
+      fail-fast: false
+      matrix:
+        gate: [fuzz, memory]
     runs-on: ubuntu-24.04
     timeout-minutes: 240
     env:
       CARGO_BUILD_JOBS: 1
       KNOT_NIGHTLY: nightly-2026-08-29
+      CARGO_PROFILE_DEV_DEBUG: line-tables-only
+      CARGO_PROFILE_TEST_DEBUG: line-tables-only
+      CARGO_INCREMENTAL: 0
       PYTHONDONTWRITEBYTECODE: 1
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -119,14 +129,16 @@ jobs:
         run: |
           rustup toolchain install nightly-2026-08-29 --profile minimal --component miri --component rust-src
           echo "CARGO_TARGET_DIR=$RUNNER_TEMP/knot-security/cargo-target" >> "$GITHUB_ENV"
-          CARGO_TARGET_DIR="$RUNNER_TEMP/knot-security/install" cargo +nightly-2026-08-29 install cargo-fuzz --version 0.13.2 --locked
-      - name: Native fuzz and memory tools
-        run: python tools/verify/all.py --stage security --out "$RUNNER_TEMP/knot-security/verify"
+      - name: Fixed fuzz tool
+        if: matrix.gate == 'fuzz'
+        run: CARGO_TARGET_DIR="$RUNNER_TEMP/knot-security/install" cargo +nightly-2026-08-29 install cargo-fuzz --version 0.13.2 --locked
+      - name: Native security gate
+        run: python tools/verify/all.py --stage ${{ matrix.gate }} --out "$RUNNER_TEMP/knot-security/verify"
       - name: Preserve security evidence and crash corpus
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: security-${{ github.run_id }}-${{ github.run_attempt }}
+          name: security-${{ matrix.gate }}-${{ github.run_id }}-${{ github.run_attempt }}
           if-no-files-found: error
           path: |
             ${{ runner.temp }}/knot-security/verify/**/*.json

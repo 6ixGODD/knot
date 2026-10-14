@@ -17,8 +17,10 @@ def main():
     if args.seconds_per_target<60: parser.error('At least 60 seconds per target is required')
     runner=Runner(args.out)
     nightly=os.environ.get('KNOT_NIGHTLY','nightly-2026-08-29')
-    version=runner.run('fuzz-version',['cargo','fuzz','--version'])
-    if version.strip()!='cargo-fuzz 0.13.2': raise RuntimeError('Install cargo-fuzz 0.13.2 with --locked')
+    version=runner.run('fuzz-version',['cargo','+'+nightly,'fuzz','--version'])
+    # rustup diagnostics share the captured log but are not the tool version.
+    versions=re.findall(r'^cargo-fuzz (\S+)\s*$',version,re.M)
+    if versions!=['0.13.2']: raise RuntimeError('Install cargo-fuzz 0.13.2 with --locked')
     rustc=runner.run('nightly',['rustc','+'+nightly,'-vV'])
     if 'commit-hash: 17fd5b8a37b6667b6cc137f3cc35f09759768a3b' not in rustc: raise RuntimeError('Unexpected nightly compiler')
     # cargo-fuzz creates its own artifacts directory under the fuzz manifest.
@@ -32,7 +34,7 @@ def main():
     shutil.copy2(ROOT/'tests/fuzz/Cargo.lock',project/'Cargo.lock')
     runner.run('fetch',['cargo','+'+nightly,'fetch','--manifest-path',project/'Cargo.toml','--locked'])
     env=dict(runner.env,CARGO_TARGET_DIR=str(runner.out/'cargo-target'),CARGO_NET_OFFLINE='true')
-    evidence=dict(passed=False,secondsPerTarget=args.seconds_per_target,seed=20261014,tool=version.strip(),rustc=rustc,lockSha256=sha(ROOT/'tests/fuzz/Cargo.lock'),targets=[])
+    evidence=dict(passed=False,secondsPerTarget=args.seconds_per_target,seed=20261014,tool='cargo-fuzz '+versions[0],rustc=rustc,lockSha256=sha(ROOT/'tests/fuzz/Cargo.lock'),targets=[])
     def save(): (runner.out/'evidence.json').write_text(json.dumps(evidence,indent=2)+'\n',encoding='utf-8')
     save()
     for target in ['product','state','event','ast','operations']:
