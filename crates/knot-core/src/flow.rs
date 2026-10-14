@@ -37,6 +37,7 @@ pub(crate) fn availability(
     model: &CompiledModel,
     index: usize,
     facts: &Facts,
+    selected: Option<&Answer>,
     budget: &mut CallBudget,
 ) -> Result<Vec<AvailableOption>, KnotError> {
     state::options(&model.product().questions[index])
@@ -47,7 +48,14 @@ pub(crate) fn availability(
             Ok(AvailableOption {
                 id: o.id.clone(),
                 label: o.label.clone(),
-                enabled: if o.enabled_when.is_some() {
+                // Answer validation needs only selected options. A current question passes None
+                // and obtains the complete availability list for its public snapshot.
+                enabled: if o.enabled_when.is_some()
+                    && selected.is_none_or(|answer| match answer {
+                        Answer::Text(value) => value == o.id.as_str(),
+                        Answer::Multi(values) => values.contains(&o.id),
+                        _ => false,
+                    }) {
                     at(
                         model,
                         facts,
@@ -174,12 +182,14 @@ pub(crate) fn walk(
         let q = &product.questions[index];
         path.push(q.id().clone());
         let facts = state::facts(model, &answers, budget)?;
-        let options = availability(model, index, &facts, budget)?;
         let answer = state.answers.get(q.id());
+        let mut options = availability(model, index, &facts, answer, budget)?;
         let disabled = answer
             .map(|a| disabled(model, index, a, &options))
             .unwrap_or_default();
         if !disabled.is_empty() {
+            // A cleared answer makes this the current question: restore all visible choices.
+            options = availability(model, index, &facts, None, budget)?;
             removals.insert(
                 index,
                 AnswerChange {

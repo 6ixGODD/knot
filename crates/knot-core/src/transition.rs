@@ -54,7 +54,7 @@ pub fn apply(
             .filter_map(|other| old.answers.get(other).map(|a| (other.clone(), a.clone())))
             .collect();
         let facts = state::facts(model, &preceding, &mut budget)?;
-        let available = flow::availability(model, index, &facts, &mut budget)?;
+        let available = flow::availability(model, index, &facts, Some(&value), &mut budget)?;
         let disabled = flow::disabled(model, index, &value, &available);
         if !disabled.is_empty() {
             let mut e = KnotError::new("INVALID_OPTION", &state::pointer(id));

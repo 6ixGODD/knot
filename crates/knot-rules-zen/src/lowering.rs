@@ -2,6 +2,7 @@
 use knot_rules::{Condition, Field, Scalar};
 use knot_schema::KnotError;
 use serde_json::Value;
+use std::collections::BTreeSet;
 
 pub(crate) fn scalar(value: &Scalar) -> Result<Value, KnotError> {
     match value {
@@ -19,11 +20,13 @@ pub(crate) struct Lowered {
     pub expression: String,
     pub constants: Vec<Value>,
     pub cost: u64,
+    pub fields: Vec<usize>,
 }
 pub(crate) fn lower(condition: &Condition) -> Result<Lowered, KnotError> {
     let mut constants = vec![];
     let mut cost = 256;
-    let expression = node(condition, &mut constants, &mut cost)?;
+    let mut fields = BTreeSet::new();
+    let expression = node(condition, &mut constants, &mut cost, &mut fields)?;
     // Expression parsing/graph work and immutable constant conversion are also prepaid.
     cost += expression.len() as u64 * 8
         + constants
@@ -34,6 +37,7 @@ pub(crate) fn lower(condition: &Condition) -> Result<Lowered, KnotError> {
         expression,
         constants,
         cost,
+        fields: fields.into_iter().collect(),
     })
 }
 fn comparison(
@@ -42,7 +46,9 @@ fn comparison(
     op: &str,
     constants: &mut Vec<Value>,
     cost: &mut u64,
+    fields: &mut BTreeSet<usize>,
 ) -> Result<String, KnotError> {
+    fields.insert(field.index);
     let index = constants.len();
     constants.push(scalar(value)?);
     *cost += 256; // >= 128 UTF-8 bytes, fixed decimal compare and indexing/boolean overhead.
@@ -55,6 +61,7 @@ fn node(
     condition: &Condition,
     constants: &mut Vec<Value>,
     cost: &mut u64,
+    fields: &mut BTreeSet<usize>,
 ) -> Result<String, KnotError> {
     *cost += 16;
     Ok(match condition {
@@ -66,31 +73,35 @@ fn node(
             };
             let parts = nodes
                 .iter()
-                .map(|n| node(n, constants, cost))
+                .map(|n| node(n, constants, cost, fields))
                 .collect::<Result<Vec<_>, _>>()?;
             balanced(&parts, op)
         }
-        Condition::Not(n) => format!("not({})", node(n, constants, cost)?),
-        Condition::Exists(f) => format!("p[{}]", f.index),
-        Condition::Eq(f, v) => comparison(*f, v, "==", constants, cost)?,
-        Condition::Ne(f, v) => comparison(*f, v, "!=", constants, cost)?,
-        Condition::Gt(f, v) => comparison(*f, v, ">", constants, cost)?,
-        Condition::Gte(f, v) => comparison(*f, v, ">=", constants, cost)?,
-        Condition::Lt(f, v) => comparison(*f, v, "<", constants, cost)?,
-        Condition::Lte(f, v) => comparison(*f, v, "<=", constants, cost)?,
+        Condition::Not(n) => format!("not({})", node(n, constants, cost, fields)?),
+        Condition::Exists(f) => {
+            fields.insert(f.index);
+            format!("p[{}]", f.index)
+        }
+        Condition::Eq(f, v) => comparison(*f, v, "==", constants, cost, fields)?,
+        Condition::Ne(f, v) => comparison(*f, v, "!=", constants, cost, fields)?,
+        Condition::Gt(f, v) => comparison(*f, v, ">", constants, cost, fields)?,
+        Condition::Gte(f, v) => comparison(*f, v, ">=", constants, cost, fields)?,
+        Condition::Lt(f, v) => comparison(*f, v, "<", constants, cost, fields)?,
+        Condition::Lte(f, v) => comparison(*f, v, "<=", constants, cost, fields)?,
         Condition::Between(f, lo, hi) => format!(
             "({} and {})",
-            comparison(*f, lo, ">=", constants, cost)?,
-            comparison(*f, hi, "<=", constants, cost)?
+            comparison(*f, lo, ">=", constants, cost, fields)?,
+            comparison(*f, hi, "<=", constants, cost, fields)?
         ),
         Condition::In(f, values) => {
             let parts = values
                 .iter()
-                .map(|v| comparison(*f, v, "==", constants, cost))
+                .map(|v| comparison(*f, v, "==", constants, cost, fields))
                 .collect::<Result<Vec<_>, _>>()?;
             balanced(&parts, " or ")
         }
         Condition::Contains(f, id) => {
+            fields.insert(f.index);
             let index = constants.len();
             constants.push(Value::String(id.as_str().into()));
             *cost += 256 * 256; // bounded full scan, 256 members of at most 128 UTF-8 bytes.
