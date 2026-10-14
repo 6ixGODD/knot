@@ -143,7 +143,7 @@ def main():
     content += 'set_property(TARGET Knot::Static PROPERTY INTERFACE_LINK_LIBRARIES "' + ';'.join(cmake_native).replace('"','\\"') + '")\n'
     content += 'set_property(TARGET Knot::Static PROPERTY INTERFACE_LINK_OPTIONS "' + ';'.join(cmake_options).replace('"','\\"') + '")\n'
     targets.write_text(content,encoding='utf-8')
-    metadata = json.loads(runner.cargo('metadata','metadata','--format-version','1','--locked'))
+    metadata = json.loads(runner.run('metadata',['cargo','metadata','--format-version','1','--locked'],separate_stderr=True))
     notice_index_path = ROOT/'tools/package/notices/index.json'
     notice_index = json.loads(notice_index_path.read_text(encoding='utf-8')) if notice_index_path.is_file() else {}
     packages = []

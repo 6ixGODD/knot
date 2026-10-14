@@ -1,5 +1,6 @@
 """Bounded subprocess execution and evidence shared by verification entry points."""
 import hashlib
+from contextlib import ExitStack
 import json
 import os
 from pathlib import Path
@@ -56,7 +57,7 @@ class Runner:
             existing = shlex.split(self.env.get(key, ''))
             self.env[key] = shlex.join(existing + [flag for flag in flags if flag not in existing])
 
-    def run(self, name, argv, *, cwd=ROOT, env=None, timeout=7200):
+    def run(self, name, argv, *, cwd=ROOT, env=None, timeout=7200, separate_stderr=False):
         log = self.out / (name + '.log')
         if log.exists():
             index = 2
@@ -66,8 +67,14 @@ class Runner:
         start = time.monotonic()
         record = dict(name=name, argv=[str(a) for a in argv], cwd=str(cwd), exitCode=None, timedOut=False, log=log.name)
         try:
-            with log.open('wb') as stream:
-                process = subprocess.Popen(record['argv'], cwd=cwd, env=env or self.env, stdout=stream, stderr=subprocess.STDOUT, start_new_session=sys.platform != 'win32')
+            with ExitStack() as stack:
+                stream = stack.enter_context(log.open('wb'))
+                stderr = subprocess.STDOUT
+                if separate_stderr:
+                    error_log = log.with_name(log.stem + '-stderr.log')
+                    record['stderrLog'] = error_log.name
+                    stderr = stack.enter_context(error_log.open('wb'))
+                process = subprocess.Popen(record['argv'], cwd=cwd, env=env or self.env, stdout=stream, stderr=stderr, start_new_session=sys.platform != 'win32')
                 try:
                     record['exitCode'] = process.wait(timeout=timeout)
                 except subprocess.TimeoutExpired:

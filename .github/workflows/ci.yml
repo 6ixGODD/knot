@@ -144,3 +144,4 @@ jobs:
             ${{ runner.temp }}/knot-security/verify/**/*.json
             ${{ runner.temp }}/knot-security/verify/**/*.log
             ${{ runner.temp }}/knot-security/verify/fuzz/artifacts/**
+            ${{ runner.temp }}/knot-security/verify/fuzz/corpus/**
