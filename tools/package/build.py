@@ -101,13 +101,12 @@ def main():
         for source, dest in [(dynamic,'bin/knot.dll'),(output/'knot_ffi.lib','lib/static/knot.lib'),(output/'knot.exe','bin/knot.exe')]: copy(source,dest)
         for mode in ['shared','static']: copy(bridge/f'Release/knot_cpp_{mode}.lib',f'lib/cpp/knot_cpp_{mode}.lib')
         # Resolve dumpbin from the selected Visual Studio compiler installation.
-        dumpbin = shutil.which('dumpbin')
-        if not dumpbin:
-            install = next((p for p in Path(cmake()).parents if (p/'VC/Tools/MSVC').is_dir()), None)
-            if install is None: raise RuntimeError('Cannot locate Visual Studio tools')
-            candidates = sorted(install.glob('VC/Tools/MSVC/*/bin/Hostx64/x64/dumpbin.exe'))
-            if not candidates: raise RuntimeError('dumpbin required for production exports')
-            dumpbin = str(candidates[-1])
+        selected_compiler = re.search(r'set\(CMAKE_CXX_COMPILER "([^"\n]+)"\)', compiler_info)
+        if not selected_compiler: raise RuntimeError('Missing selected MSVC compiler path')
+        dumpbin_path = Path(selected_compiler.group(1)).with_name('dumpbin.exe')
+        if not dumpbin_path.is_absolute() or not dumpbin_path.is_file():
+            raise RuntimeError('dumpbin required beside the selected MSVC compiler')
+        dumpbin = str(dumpbin_path)
         exports_text = runner.run('exports',[dumpbin,'/exports',dynamic])
         # dumpbin may append an ICF/debug-symbol alias after the exported name.
         exports = set(re.findall(r'^\s*\d+\s+[0-9A-F]+\s+[0-9A-F]+\s+(\S+)(?:\s+=.*)?\s*$', exports_text,re.M))
