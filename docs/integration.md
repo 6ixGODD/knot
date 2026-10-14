@@ -28,3 +28,21 @@ The [Python smoke](../examples/python/smoke.py) takes library, model and events 
 The [Go binding](../bindings/go/knot.go) exposes `Compile`, `Initial`, `Apply`, `Evaluate`, `Close` and raw owning JSON bytes. Use Go 1.26.4 as frozen in go.mod, enable cgo and provide CGO_CFLAGS for the package include and CGO_LDFLAGS for exactly one native library. On Windows use a cgo-compatible C compiler and the shared C ABI, not the MSVC C++ bridge. The [Go example](../examples/go/smoke.go) runs from the binding module with `go run ../../examples/go/smoke.go <speaker.json> <speaker-events.json>`. Always defer Close after successful Compile. A copied Model shares the same closed state; it is not a new native model.
 
 Production language equivalence, three-platform client tests, clean offline package relocation, loader paths and first-time developer consumption remain required integration checks. Do not distribute test boundary libraries. Packages must carry contract schemas, examples, exact toolchain/target/configuration/CRT metadata, checksums and dependency notices; KNOT's own license remains a release prerequisite.
+
+
+## Command-line inspection and simulation
+
+The package also includes `bin/knot` (`bin/knot.exe` on Windows). Add that directory to PATH or use the executable's absolute path.
+
+```text
+knot validate product.json
+knot inspect product.json
+knot simulate product.json --events events.json
+knot explain product.json --state state.json
+```
+
+`validate` compiles the product and returns model identity and diagnostics. `inspect` also returns questions, rule count, flow, pricing and visual definitions. `explain` strictly restores the supplied full State and returns its complete evaluation result. All commands use the same compiler and configuration core as the native API.
+
+`simulate` accepts a JSON array of at most 10,000 events and a file of at most 16 MiB. It writes one JSON object per line with `schemaVersion`, `step` and `result`: step 0 is the initial configuration; later steps contain successful results or the first error. Admission failures before the initial configuration use a step 0 error envelope. Processing stops at that error. Earlier output lines remain valid; the whole event file is not a transaction.
+
+Exit status is 0 for success, 2 for usage or file/output I/O failure, 3 for model/state/event rejection, and 4 for internal failure. Business errors are JSON on stdout; usage and I/O diagnostics use stderr. A broken output pipe is a failure. No command downloads models or dependencies.

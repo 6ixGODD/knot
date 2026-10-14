@@ -118,3 +118,47 @@ fn speaker_sequence_and_first_error_stop() {
     assert_eq!(lines.len(), 3);
     assert_eq!(lines[2]["result"]["error"]["code"], "REVISION_CONFLICT");
 }
+
+#[test]
+fn simulation_admission_and_file_limits() {
+    let model = path("examples/speaker.json");
+    let directory =
+        PathBuf::from(std::env::var_os("CARGO_TARGET_DIR").unwrap()).join("cli-admission");
+    std::fs::create_dir_all(&directory).unwrap();
+    let file = directory.join("events.json");
+    let cases = [
+        (b"[".to_vec(), "BAD_JSON"),
+        (b"{}".to_vec(), "BAD_SCHEMA"),
+        (
+            serde_json::to_vec(&vec![serde_json::Value::Null; 10001]).unwrap(),
+            "RESOURCE_LIMIT",
+        ),
+    ];
+    for (input, code) in cases {
+        std::fs::write(&file, input).unwrap();
+        let output = run(&[
+            "simulate",
+            model.to_str().unwrap(),
+            "--events",
+            file.to_str().unwrap(),
+        ]);
+        assert_eq!(output.status.code(), Some(3));
+        assert!(output.stderr.is_empty());
+        let value: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+        assert_eq!(value["step"], 0);
+        assert_eq!(value["result"]["error"]["code"], code);
+    }
+    std::fs::File::create(&file)
+        .unwrap()
+        .set_len(16 * 1024 * 1024 + 1)
+        .unwrap();
+    let output = run(&[
+        "simulate",
+        model.to_str().unwrap(),
+        "--events",
+        file.to_str().unwrap(),
+    ]);
+    assert_eq!(output.status.code(), Some(2));
+    assert!(output.stdout.is_empty());
+    assert!(!output.stderr.is_empty());
+}
