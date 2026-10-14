@@ -17,7 +17,14 @@ def main():
     if 'commit-hash: 17fd5b8a37b6667b6cc137f3cc35f09759768a3b' not in version: raise RuntimeError('Unexpected nightly compiler')
     env=dict(runner.env,CARGO_TARGET_DIR=str(runner.out/'miri-target'))
     runner.run('miri',['cargo','+'+nightly,'miri','test','--manifest-path',ROOT/'tests/ffi/memory/Cargo.toml','--locked'],env=env)
-    env=dict(runner.env,CARGO_TARGET_DIR=str(runner.out/'asan-target'),RUSTFLAGS='-Zsanitizer=address',RUSTDOCFLAGS='-Zsanitizer=address',ASAN_OPTIONS='detect_leaks=1:halt_on_error=1',CC='clang',CXX='clang++',CFLAGS='-fsanitize=address -fno-omit-frame-pointer',CXXFLAGS='-fsanitize=address -fno-omit-frame-pointer')
+    # Cargo clears target rustflags for host build dependencies even when the
+    # triples coincide. Global CFLAGS would still instrument QuickJS linked
+    # into a proc macro, which the unsanitized rustc cannot load.
+    for name in ('asan-cc','asan-cxx'):
+        wrapper=runner.out/name
+        wrapper.write_text((ROOT/'tools/verify/asan_compiler.py').read_text(encoding='utf-8'),encoding='utf-8',newline='\n')
+        wrapper.chmod(0o755)
+    env=dict(runner.env,CARGO_TARGET_DIR=str(runner.out/'asan-target'),RUSTFLAGS='-Zsanitizer=address',RUSTDOCFLAGS='-Zsanitizer=address',ASAN_OPTIONS='detect_leaks=1:halt_on_error=1',CC=str(runner.out/'asan-cc'),CXX=str(runner.out/'asan-cxx'))
     runner.run('asan',['cargo','+'+nightly,'test','-Zbuild-std','--target','x86_64-unknown-linux-gnu','-p','knot-ffi','--test','ffi_cases','--locked'],env=env)
     evidence['passed']=True;evidence['rustc']=version
     (runner.out/'evidence.json').write_text(json.dumps(evidence,indent=2)+'\n',encoding='utf-8')

@@ -24,6 +24,8 @@ def main():
     env['CGO_ENABLED'] = '1'
     env['CGO_CFLAGS'] = '-I "' + fixture['include'] + '"'
     env['CGO_LDFLAGS'] = '"' + fixture['linkLibrary'] + '"'
+    if sys.platform != 'win32':
+        env['CGO_LDFLAGS'] += ' "-Wl,-rpath,' + str(Path(fixture['library']).parent) + '"'
     env['PATH'] = str(Path(fixture['library']).parent) + os.pathsep + env.get('PATH', '')
     env['GOCACHE'] = str(build.parent / 'go-cache')
     env['GOTMPDIR'] = str(build.parent / 'go-tmp')

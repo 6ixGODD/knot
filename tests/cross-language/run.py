@@ -109,6 +109,7 @@ def main():
     goenv['CGO_CFLAGS']='-I "'+str(sdk/'include')+'"'
     linkdir=sdk/'lib/shared' if sys.platform=='win32' else sdk/'lib'
     goenv['CGO_LDFLAGS']='-L "'+str(linkdir)+'" -lknot'
+    if sys.platform!='win32': goenv['CGO_LDFLAGS']+=' "-Wl,-rpath,'+str(linkdir)+'"'
     go=runner.run('go-smoke',['go','run',ROOT/'examples/go/smoke.go',ROOT/'contracts/examples/speaker.json',ROOT/'contracts/examples/speaker-events.json'],cwd=ROOT/'bindings/go',env=goenv)
     outputs=[json.loads(line) for line in go.splitlines() if line.startswith('{')]
     if [v['snapshot']['price']['totalMinor'] for v in outputs[-2:]] != [282800,159900]: raise RuntimeError('Go Speaker output')
