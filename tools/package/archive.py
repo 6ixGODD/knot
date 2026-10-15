@@ -5,18 +5,38 @@ import shutil
 
 
 def contains_workspace_path(path, roots):
-    needles = {value.encode(encoding).lower() for root in roots
+    needles = {(value.encode(encoding).lower(), encoding) for root in roots
                for value in (str(root), root.as_posix(), str(root).replace('/', '\\'))
                for encoding in ('utf-8', 'utf-16-le')}
-    overlap = max(map(len, needles)) - 1
+    patterns = []
+    for needle, encoding in needles:
+        # A relative component such as src/workspace is not the absolute
+        # /workspace root. Likewise /workspace-other is a different root.
+        before = {char.encode(encoding) for char in 'abcdefghijklmnopqrstuvwxyz0123456789_./\\:-'}
+        after = {char.encode(encoding) for char in 'abcdefghijklmnopqrstuvwxyz0123456789_.-'}
+        patterns.append((needle, 2 if encoding == 'utf-16-le' else 1, before, after))
+    overlap = max(len(needle) for needle, _ in needles) + 4
     with path.open('rb') as stream:
         tail = b''
-        while chunk := stream.read(1024 * 1024):
+        while True:
+            chunk = stream.read(1024 * 1024)
             data = (tail + chunk).lower()
-            if any(needle in data for needle in needles):
-                return True
+            for needle, width, before, after in patterns:
+                offset = 0
+                while (start := data.find(needle, offset)) >= 0:
+                    end = start + len(needle)
+                    offset = start + 1
+                    # The overlap's leading bytes lost their preceding context;
+                    # those matches were already considered in the prior chunk.
+                    if tail and start < width:
+                        continue
+                    if chunk and end + width > len(data):
+                        continue
+                    if data[max(0, start-width):start] not in before and data[end:end+width] not in after:
+                        return True
+            if not chunk:
+                return False
             tail = data[-overlap:]
-    return False
 
 
 def normalize_coff(runner, librarian, source, destination, objcopy, roots):

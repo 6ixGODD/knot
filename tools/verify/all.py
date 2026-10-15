@@ -36,6 +36,7 @@ def main():
         runner.run('bindings-clients',[sys.executable,ROOT/'tests/bindings/run_native_clients.py','--build-dir',components,'--config','Release'],env=client_env)
         runner.run('docs',[sys.executable,ROOT/'tests/bindings/check_docs.py','--contracts',ROOT/'contracts','--out',runner.out/'docs'])
         package=runner.out/'package'
+        runner.run('package-paths',[sys.executable,ROOT/'tests/package/test_archive_paths.py'])
         runner.run('package',[sys.executable,ROOT/'tools/package/build.py','--out',package])
         runner.run('cross-language',[sys.executable,ROOT/'tests/cross-language/run.py','--out',runner.out/'cross-language','--package-dir',package])
         consume_env=dict(runner.env,CMAKE=cmake())
