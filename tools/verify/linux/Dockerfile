@@ -2,7 +2,7 @@ ARG BASE_IMAGE=ubuntu:24.04@sha256:33ceb71981b602c1a7443a53469e4dba065f7503eab30
 FROM ${BASE_IMAGE} AS native
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential ca-certificates clang cmake curl git libssl-dev llvm \
-    ninja-build pkg-config python3 python-is-python3 unzip \
+    ninja-build pkg-config python3 python-is-python3 time unzip \
     && rm -rf /var/lib/apt/lists/*
 ENV RUSTUP_HOME=/usr/local/rustup CARGO_HOME=/usr/local/cargo
 ENV PATH=/usr/local/cargo/bin:/usr/local/go/bin:${PATH}
