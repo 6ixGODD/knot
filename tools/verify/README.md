@@ -30,6 +30,27 @@ runs both gates sequentially on hosts with enough disk space.
 `--stage all` requires both stages; unsupported security tooling is a failure.
 A Windows native pass is not a security or cross-platform pass.
 
+## Local Linux containers
+
+Use Docker with Linux amd64 containers. The verification image provides Ubuntu
+24.04, Rust 1.97.1, Go 1.26.4 and native build tools. The separate security image
+also contains the pinned nightly, Miri and cargo-fuzz. Images contain tools only;
+source and Git metadata are mounted read-only. Keep outputs and persistent caches
+outside the checkout, and choose a fresh output directory for each invocation.
+
+```text
+python tools/verify/linux.py --build --stage native --cache <absolute-cache> --out <absolute-output>/native
+python tools/verify/linux.py --build --stage memory --cache <absolute-cache> --out <absolute-output>/memory
+python tools/verify/linux.py --stage fuzz --cache <absolute-cache> --out <absolute-output>/fuzz
+python tools/verify/linux.py --build --stage consumer --cache <absolute-cache> --package-dir <absolute-output>/native/verify/package --out <absolute-output>/consumer
+```
+
+Omit `--build` to reuse an installed image. Run stages serially when sharing a
+cache. The consumer container has no Rust toolchain, no source mount and no
+network. Image identity, Docker commands, exit codes and test logs remain in the
+output directory. `--base-image` can reuse an existing Ubuntu image with Rust;
+the default build uses the pinned Ubuntu digest in `linux/Dockerfile`.
+
 Native CI disables development/test debug information and incremental output to
 fit hosted runners. Debug assertions, overflow checks and Release settings remain
 unchanged. Memory CI keeps line tables for sanitizer diagnostics.
