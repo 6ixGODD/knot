@@ -5,6 +5,7 @@ from pathlib import Path
 import subprocess
 import sys
 import time
+import uuid
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -13,6 +14,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--cache', type=Path, required=True)
+    parser.add_argument('--cache-volume', help='Dedicated Docker volume for Linux caches and build outputs')
     parser.add_argument('--stage', choices=['native', 'fuzz', 'memory', 'consumer'], default='native')
     parser.add_argument('--build', action='store_true')
     parser.add_argument('--base-image', help='Optional existing Ubuntu/Rust image to reuse while building')
@@ -50,9 +52,21 @@ def main():
     image = inspection['Id']
     evidence = dict(passed=False, stage=args.stage, imageId=image,
                     architecture=inspection['Architecture'], os=inspection['Os'])
+    volume = args.cache_volume
+    run_path = 'runs/' + uuid.uuid4().hex
+    if volume:
+        run('volume-create', ['docker', 'volume', 'create', volume])
+        run('volume-prepare', ['docker', 'run', '--rm', '--network', 'none',
+            '--mount', f'type=volume,source={volume},target=/cache', image,
+            'python3', '-c', 'from pathlib import Path; import sys; '
+            '[Path("/cache", p).mkdir(parents=True, exist_ok=True) for p in sys.argv[1:]]',
+            'registry', 'git', run_path])
+        evidence.update(cacheVolume=volume, outputSubpath=run_path,
+                        exportExcludes=['cargo-target', 'asan-target', 'miri-target'])
     (out / 'docker-evidence.json').write_text(json.dumps(evidence, indent=2) + '\n', encoding='utf-8')
     command = ['docker', 'run', '--rm', '--init', '--cpus', '2', '--memory', '6g',
-               '--mount', f'type=bind,source={out},target=/evidence']
+               '--mount', (f'type=volume,source={volume},target=/evidence,volume-subpath={run_path}'
+                           if volume else f'type=bind,source={out},target=/evidence')]
     if args.stage == 'consumer':
         if not args.package_dir:
             parser.error('--package-dir is required for consumer')
@@ -67,16 +81,29 @@ def main():
         relative = git_dir.relative_to(git_common).as_posix()
         command += ['--mount', f'type=bind,source={ROOT},target=/workspace,readonly',
                     '--mount', f'type=bind,source={git_common},target=/git,readonly',
-                    '--mount', f'type=bind,source={cache},target=/cache']
+                    '--mount', (f'type=volume,source={volume},target=/cache' if volume
+                                else f'type=bind,source={cache},target=/cache')]
         for folder, destination in [('registry', '/usr/local/cargo/registry'), ('git', '/usr/local/cargo/git')]:
             (cache / folder).mkdir(exist_ok=True)
-            command += ['--mount', f'type=bind,source={cache / folder},target={destination}']
+            command += ['--mount', (f'type=volume,source={volume},target={destination},volume-subpath={folder}'
+                                   if volume else f'type=bind,source={cache / folder},target={destination}')]
         for key, value in dict(CARGO_TARGET_DIR='/cache/cargo-target', GIT_DIR='/git/' + relative,
                                GIT_WORK_TREE='/workspace', GIT_OPTIONAL_LOCKS='0', GIT_CONFIG_COUNT='1',
                                GIT_CONFIG_KEY_0='safe.directory', GIT_CONFIG_VALUE_0='/workspace').items():
             command += ['--env', key + '=' + value]
         command += [image, 'python3', 'tools/verify/all.py', '--stage', args.stage, '--out', '/evidence/verify']
-    run('verify', command)
+    try:
+        run('verify', command)
+    finally:
+        if volume:
+            run('evidence-export', ['docker', 'run', '--rm', '--network', 'none',
+                '--mount', f'type=volume,source={volume},target=/result,readonly,volume-subpath={run_path}',
+                '--mount', f'type=bind,source={out},target=/export', image, 'python3', '-c',
+                'from pathlib import Path; import shutil; '
+                '[(shutil.copytree(p, Path("/export")/p.name, '
+                'ignore=shutil.ignore_patterns("cargo-target", "asan-target", "miri-target")) '
+                'if p.is_dir() else shutil.copy2(p, Path("/export")/p.name)) '
+                'for p in Path("/result").iterdir()]'])
     evidence['passed'] = True
     (out / 'docker-evidence.json').write_text(json.dumps(evidence, indent=2) + '\n', encoding='utf-8')
 

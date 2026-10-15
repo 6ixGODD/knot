@@ -51,6 +51,16 @@ network. Image identity, Docker commands, exit codes and test logs remain in the
 output directory. `--base-image` can reuse an existing Ubuntu image with Rust;
 the default build uses the pinned Ubuntu digest in `linux/Dockerfile`.
 
+On Docker Desktop, add `--cache-volume <dedicated-volume-name>` to keep caches
+and build outputs on the Linux filesystem instead of a Windows bind mount.
+Use the same volume for serial stages. The runner creates it if necessary and
+records the volume name and unique run subdirectory in `docker-evidence.json`.
+Logs and deliverables are exported to `--out` even when verification fails;
+Cargo, ASan and Miri target directories remain in the volume for diagnosis.
+The original host cache is not moved or deleted. `--cache` still identifies the
+host cache location for runs without a volume. Source and Git remain read-only.
+Do not remove the volume while a run is active or before exporting its evidence.
+
 Native CI disables development/test debug information and incremental output to
 fit hosted runners. Debug assertions, overflow checks and Release settings remain
 unchanged. Memory CI keeps line tables for sanitizer diagnostics.
