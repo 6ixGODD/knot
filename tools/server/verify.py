@@ -74,7 +74,15 @@ def main():
                         client += ["--ca", str(certs / "ca.pem"), "--cert", str(certs / "client.pem"), "--key", str(certs / "client-key.pem"), "--server-name", "localhost"]
                     else:
                         client += ["--plaintext"]
-                    run.run(mode + "-go-client", client, timeout=40)
+                    events = json.loads((args.contracts / "examples/speaker-events.json").read_text())
+                    prefix = run.out / "speaker-selected-events.json"
+                    prefix.write_text(json.dumps(events[:-1]) + "\n")
+                    selected = list(client)
+                    selected[selected.index("--events") + 1] = str(prefix)
+                    for label, call, expected in (("selected", selected, 282800), ("reverted", client, 159900)):
+                        output = json.loads(run.run(mode + "-go-" + label, call, timeout=40))
+                        if output["snapshot"]["price"]["totalMinor"] != expected:
+                            raise RuntimeError("Go Speaker price mismatch")
                 process.send_signal(signal.CTRL_BREAK_EVENT if os.name == "nt" else signal.SIGTERM)
                 code = process.wait(timeout=15)
                 records.append(dict(mode=mode, argv=command, exitCode=code, seconds=time.monotonic()-started))

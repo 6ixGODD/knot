@@ -25,6 +25,8 @@ def main():
     parser.add_argument("--image", required=True)
     for name in ("probe", "contracts", "out"):
         parser.add_argument("--" + name, required=True, type=Path)
+    parser.add_argument("--go-client", required=True, type=Path)
+    parser.add_argument("--model-manifest", required=True, type=Path)
     args = parser.parse_args()
     run = Runner(args.out)
     (run.out / "evidence.json").write_text('{"passed":false}\n')
@@ -45,6 +47,12 @@ def main():
         if case["modelValidation"] == "valid":
             shutil.copyfile(contracts / "golden" / case["id"] / "model.json", models / (case["id"] + ".json"))
     certs = Path(__file__).resolve().parents[2] / "tests/server/certs"
+    shutil.copyfile(contracts / "examples/speaker.json", models / "speaker.json")
+    identities = json.loads(subprocess.check_output([str(args.model_manifest.resolve()), str(models / "speaker.json")]))
+    speaker_digest = identities[0]["modelDigest"]
+    events = json.loads((contracts / "examples/speaker-events.json").read_text())
+    prefix = run.out / "speaker-selected-events.json"
+    prefix.write_text(json.dumps(events[:-1]) + "\n")
     records = []
     for tls in (False, True):
         mode = "mtls" if tls else "plaintext"
@@ -76,6 +84,15 @@ def main():
             if tls:
                 probe += ["--ca", str(certs / "ca.pem"), "--cert", str(certs / "client.pem"), "--key", str(certs / "client-key.pem"), "--server-name", "localhost"]
             run.run(mode + "-golden", probe, timeout=180)
+            client = [str(args.go_client.resolve()), "--endpoint", f"127.0.0.1:{host_port}", "--digest", speaker_digest]
+            if tls:
+                client += ["--ca", str(certs / "ca.pem"), "--cert", str(certs / "client.pem"), "--key", str(certs / "client-key.pem"), "--server-name", "localhost"]
+            else:
+                client += ["--plaintext"]
+            for label, path, expected in (("selected", prefix, 282800), ("reverted", contracts / "examples/speaker-events.json", 159900)):
+                result = json.loads(run.run(mode + "-go-" + label, client + ["--events", str(path)], timeout=40))
+                if result["snapshot"]["price"]["totalMinor"] != expected:
+                    raise RuntimeError("Go Speaker price mismatch")
             run.run(mode + "-uid", ["docker", "exec", name, "id", "-u"], timeout=10)
             if (run.out / (mode + "-uid.log")).read_text().strip() != "10001":
                 raise RuntimeError("process is not nonroot")
