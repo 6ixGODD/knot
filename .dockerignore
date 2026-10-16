@@ -11,6 +11,7 @@
 !tools/server/toolchain-lock.json
 !tools/server/license-status.json
 !tools/server/notices.py
+!tools/server/notices/**
 !tools/package/notices/**
 **/tests/**
 **/examples/**

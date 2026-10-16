@@ -145,6 +145,9 @@ def main():
     metadata = json.loads(runner.run('metadata',['cargo','metadata','--format-version','1','--locked'],separate_stderr=True))
     notice_index_path = ROOT/'tools/package/notices/index.json'
     notice_index = json.loads(notice_index_path.read_text(encoding='utf-8')) if notice_index_path.is_file() else {}
+    service_notices = ROOT / "tools/server/notices/index.json"
+    if service_notices.is_file():
+        notice_index.update(json.loads(service_notices.read_text(encoding="utf-8")))
     packages = []
     notice_revision_gaps = []
     for package in metadata['packages']:

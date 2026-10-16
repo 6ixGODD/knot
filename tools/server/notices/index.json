@@ -1,0 +1,32 @@
+{
+  "tonic-prost-0.14.6": {
+    "repository": "https://github.com/hyperium/tonic",
+    "revision": "6cb6056b5a748bc5a29bd48f4602dbc4e552bb7d",
+    "pathInVcs": "tonic-prost",
+    "license": "MIT",
+    "notices": [
+      {
+        "path": "tools/server/notices/tonic-LICENSE",
+        "url": "https://raw.githubusercontent.com/hyperium/tonic/6cb6056b5a748bc5a29bd48f4602dbc4e552bb7d/LICENSE",
+        "sha256": "e24a56698aa6feaf3a02272b3624f9dc255d982970c5ed97ac4525a95056a5b3",
+        "revision": "6cb6056b5a748bc5a29bd48f4602dbc4e552bb7d",
+        "publishedRevisionMatched": true
+      }
+    ]
+  },
+  "tonic-prost-build-0.14.6": {
+    "repository": "https://github.com/hyperium/tonic",
+    "revision": "6cb6056b5a748bc5a29bd48f4602dbc4e552bb7d",
+    "pathInVcs": "tonic-prost-build",
+    "license": "MIT",
+    "notices": [
+      {
+        "path": "tools/server/notices/tonic-LICENSE",
+        "url": "https://raw.githubusercontent.com/hyperium/tonic/6cb6056b5a748bc5a29bd48f4602dbc4e552bb7d/LICENSE",
+        "sha256": "e24a56698aa6feaf3a02272b3624f9dc255d982970c5ed97ac4525a95056a5b3",
+        "revision": "6cb6056b5a748bc5a29bd48f4602dbc4e552bb7d",
+        "publishedRevisionMatched": true
+      }
+    ]
+  }
+}

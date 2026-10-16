@@ -14,6 +14,7 @@ def collect(output):
     output.mkdir(parents=True, exist_ok=False)
     metadata = json.loads(subprocess.check_output(["cargo", "metadata", "--locked", "--format-version", "1"], cwd=ROOT))
     index = json.loads((ROOT / "tools/package/notices/index.json").read_text())
+    index.update(json.loads((ROOT / "tools/server/notices/index.json").read_text()))
     records = []
     for package in metadata["packages"]:
         if package["source"] is None:
