@@ -26,6 +26,12 @@
     "builder": "rust:1.97.1-bookworm@sha256:0e2bcaef56d041a486784e54104a81aebe0da44bd03019bd70bc0401e42e4a97",
     "runtime": "debian:bookworm-slim@sha256:7c7b2c966bc9ee8cedfeef67e0e279108992c77681fa595db4a9d65c06ccc587",
     "buildkit": "moby/buildkit:v0.34.0@sha256:b059f8d7226d0b326bc871af489a5dddf65e36af4d20d14251b072974d9ee87c",
-    "skopeo": "quay.io/skopeo/stable@sha256:97772f3c64fd2fba720b2bafaf37239dc44d8b1c625c8383c64044832efe9ed9"
+    "skopeo": "quay.io/skopeo/stable@sha256:21166cf49870fb060137aef3e729e46bda95852a2b6241b62a6c02ab1c06c3c0"
+  },
+  "skopeo": {
+    "version": "1.22.3",
+    "commit": "92397d5ba399784c6e2f9f229a4244b724743dba",
+    "platform": "linux/amd64",
+    "source": "https://quay.io/repository/skopeo/stable"
   }
 }

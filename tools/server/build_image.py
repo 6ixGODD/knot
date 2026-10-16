@@ -40,7 +40,10 @@ def main():
     tag = "knot-internal:" + version + "-" + commit[:12]
     run.run("oci-build", [buildx, "build", "--builder", args.builder, "--platform", "linux/amd64", "--provenance=mode=max", "--sbom=true", "--build-arg", "SOURCE_COMMIT=" + commit, "--build-arg", "WORKSPACE_VERSION=" + version, "--metadata-file", str(run.out / "build-metadata.json"), "--output", "type=oci,dest=" + str(layout) + ",tar=false,name=" + tag, str(context)], timeout=10800)
     evidence = inspect_layout(layout)
-    run.run("skopeo-version", ["docker", "run", "--rm", lock["images"]["skopeo"], "--version"], timeout=300)
+    skopeo_version = run.run("skopeo-version", ["docker", "run", "--rm", lock["images"]["skopeo"], "--version"], timeout=300).strip()
+    expected_skopeo = "skopeo version " + lock["skopeo"]["version"] + " commit: " + lock["skopeo"]["commit"]
+    if skopeo_version != expected_skopeo:
+        raise RuntimeError("Skopeo version mismatch")
     run.run("runtime-import", ["docker", "run", "--rm", "--mount", "type=bind,src=" + str(layout) + ",dst=/layout,readonly", "--volume", "/var/run/docker.sock:/var/run/docker.sock", lock["images"]["skopeo"], "--override-os", "linux", "--override-arch", "amd64", "copy", "oci:/layout", "docker-daemon:" + tag], timeout=300)
     image = json.loads(subprocess.check_output(["docker", "image", "inspect", tag], encoding="utf-8"))[0]
     if image["Id"] != evidence["configDigest"] or image["RootFS"]["Layers"] != evidence["runtimeConfig"]["rootfs"]["diff_ids"]:
@@ -58,7 +61,7 @@ def main():
         raise RuntimeError("reloaded archive identity changed")
     from common import sha
     evidence.update(archive=archive.name, archiveSha256=sha(archive), reloadedImageId=reloaded["Id"])
-    evidence.update(passed=True, sourceCommit=commit, workspaceVersion=version, image=tag, distribution="internal-candidate", buildxVersion=actual.strip())
+    evidence.update(passed=True, sourceCommit=commit, workspaceVersion=version, image=tag, distribution="internal-candidate", buildxVersion=actual.strip(), skopeoVersion=skopeo_version)
     (run.out / "evidence.json").write_text(json.dumps(evidence, indent=2) + "\n")
 
 
