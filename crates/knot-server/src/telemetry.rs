@@ -68,3 +68,9 @@ impl Telemetry {
         let _=self.sender.try_send(serde_json::json!({"event":"metrics","activeRpc":active_rpc,"activeCompute":active_compute,"overload":self.overload.load(Ordering::Relaxed),"deadline":self.deadline.load(Ordering::Relaxed),"domainError":self.domain.load(Ordering::Relaxed),"fault":self.fault.load(Ordering::Relaxed)}));
     }
 }
+
+/// Install the redacted panic hook at an executable's process boundary.
+pub fn install_panic_hook() {
+    let log = Telemetry::default();
+    std::panic::set_hook(Box::new(move |_| log.panic()));
+}

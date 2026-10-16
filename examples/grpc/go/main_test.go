@@ -12,3 +12,11 @@ func TestMissingAndInvalidOutcome(t *testing.T) {
 		}
 	}
 }
+
+func TestRejectIncompleteError(t *testing.T) {
+	for _, raw := range []string{`{"error":{"code":"REVISION_CONFLICT"}}`, `{"schemaVersion":"1.0","error":{"code":"REVISION_CONFLICT"}}`} {
+		if _, err := errorCode([]byte(raw)); err == nil {
+			t.Fatal("incomplete error accepted")
+		}
+	}
+}

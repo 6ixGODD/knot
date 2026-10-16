@@ -30,7 +30,11 @@ def inspect_layout(directory):
         obj = json.loads(path.read_text())
         for child in obj.get("manifests", []) + obj.get("layers", []) + ([obj["config"]] if "config" in obj else []) + ([obj["subject"]] if "subject" in obj else []):
             visit(child)
+    if json.loads((directory / "oci-layout").read_text()).get("imageLayoutVersion") != "1.0.0":
+        raise ValueError("unsupported OCI layout version")
     index = json.loads((directory / "index.json").read_text())
+    if index.get("schemaVersion") != 2:
+        raise ValueError("unsupported OCI index version")
     if len(index["manifests"]) != 1:
         raise ValueError("expected one OCI layout image entry")
     top = index["manifests"][0]
@@ -54,4 +58,7 @@ def inspect_layout(directory):
             predicates.append(predicate)
     if not any("spdx" in p for p in predicates) or not any("slsa.dev/provenance" in p for p in predicates):
         raise ValueError("missing SBOM or provenance")
+    for path in (directory / "blobs/sha256").iterdir():
+        if not path.is_file() or "sha256:" + path.name not in seen:
+            raise ValueError("unreferenced or unsupported OCI blob")
     return dict(indexDigest=top["digest"], runtimeManifestDigest=runtime[0]["digest"], configDigest=manifest["config"]["digest"], runtimeConfig=config, predicates=predicates, verifiedBlobs=seen)

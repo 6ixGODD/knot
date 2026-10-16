@@ -14,6 +14,7 @@ from common import ROOT, Runner
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", required=True, type=Path)
+    parser.add_argument("--stage", choices=("native", "security"), default="native")
     args = parser.parse_args()
     run = Runner(args.out)
     (run.out / "evidence.json").write_text('{"passed":false}\n')
@@ -21,10 +22,21 @@ def main():
     run.run("bootstrap", [sys.executable, "tools/server/bootstrap.py", "--out", tools], timeout=300)
     receipt = json.loads((run.out / "bootstrap.log").read_text())
     run.env["PROTOC"] = receipt["protoc"]
-    run.env["CARGO_PROFILE_DEV_DEBUG"] = "0"
-    run.env["CARGO_PROFILE_TEST_DEBUG"] = "0"
+    debug = "line-tables-only" if args.stage == "security" else "0"
+    run.env["CARGO_PROFILE_DEV_DEBUG"] = debug
+    run.env["CARGO_PROFILE_TEST_DEBUG"] = debug
     run.env["CARGO_INCREMENTAL"] = "0"
     run.env["RUSTDOCFLAGS"] = "-D warnings"
+    if args.stage == "security":
+        for relative, cache in (("fuzz/cargo-target", "fuzz-target"), ("memory/miri-target", "miri-target"), ("memory/asan-target", "asan-target")):
+            target = tools.parent / "security" / cache
+            target.mkdir(parents=True, exist_ok=True)
+            alias = run.out / "verify" / relative
+            alias.parent.mkdir(parents=True, exist_ok=True)
+            alias.symlink_to(target, target_is_directory=True)
+        run.run("security", [sys.executable, "tools/verify/all.py", "--stage", "security", "--out", run.out / "verify"], timeout=14400)
+        (run.out / "evidence.json").write_text(json.dumps(dict(passed=True, platform="linux/amd64", security=True)) + "\n")
+        return
     run.run("native-regression", [sys.executable, "tools/verify/all.py", "--stage", "native", "--out", run.out / "native"], timeout=10800)
     run.run("server-build", ["cargo", "build", "-p", "knot-server", "--bins", "--examples", "--locked"])
     target = Path(run.env["CARGO_TARGET_DIR"])

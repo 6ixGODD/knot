@@ -43,19 +43,43 @@ func result(reply *knotv1.ConfigurationResponse) (json.RawMessage, error) {
 		}
 		return outcome.ResultJson, nil
 	case *knotv1.ConfigurationResponse_ErrorJson:
-		var envelope struct {
-			Error struct {
-				Code string `json:"code"`
-			} `json:"error"`
+		code, err := errorCode(outcome.ErrorJson)
+		if err != nil {
+			return nil, err
 		}
-		if err := json.Unmarshal(outcome.ErrorJson, &envelope); err != nil || envelope.Error.Code == "" {
-			return nil, errors.New("invalid error envelope")
-		}
-		return nil, fmt.Errorf("domain error: %s", envelope.Error.Code)
+		return nil, fmt.Errorf("domain error: %s", code)
 	default:
 		return nil, errors.New("missing outcome")
 	}
 }
+func errorCode(raw []byte) (string, error) {
+	invalid := errors.New("invalid error envelope")
+	var envelope map[string]json.RawMessage
+	if json.Unmarshal(raw, &envelope) != nil || len(envelope) != 2 || string(envelope["schemaVersion"]) != `"1.0"` {
+		return "", invalid
+	}
+	var detail map[string]json.RawMessage
+	if json.Unmarshal(envelope["error"], &detail) != nil || len(detail) != 5 {
+		return "", invalid
+	}
+	var code string
+	if json.Unmarshal(detail["code"], &code) != nil || code == "" {
+		return "", invalid
+	}
+	for _, name := range []string{"message", "path"} {
+		var value *string
+		if json.Unmarshal(detail[name], &value) != nil || value == nil {
+			return "", invalid
+		}
+	}
+	var rules []string
+	var fields map[string]json.RawMessage
+	if json.Unmarshal(detail["ruleIds"], &rules) != nil || rules == nil || json.Unmarshal(detail["details"], &fields) != nil || fields == nil {
+		return "", invalid
+	}
+	return code, nil
+}
+
 func state(reply *knotv1.ConfigurationResponse) ([]byte, error) {
 	raw, err := result(reply)
 	if err != nil {
@@ -160,12 +184,8 @@ func run() error {
 		if !ok {
 			return errors.New("expected revision conflict branch")
 		}
-		var envelope struct {
-			Error struct {
-				Code string `json:"code"`
-			} `json:"error"`
-		}
-		if json.Unmarshal(failure.ErrorJson, &envelope) != nil || envelope.Error.Code != "REVISION_CONFLICT" {
+		code, err := errorCode(failure.ErrorJson)
+		if err != nil || code != "REVISION_CONFLICT" {
 			return errors.New("unexpected domain error")
 		}
 	}

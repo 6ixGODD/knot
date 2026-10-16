@@ -96,12 +96,15 @@ def main():
             run.run(mode + "-uid", ["docker", "exec", name, "id", "-u"], timeout=10)
             if (run.out / (mode + "-uid.log")).read_text().strip() != "10001":
                 raise RuntimeError("process is not nonroot")
+            peak = int(run.run(mode + "-memory-peak", ["docker", "exec", name, "cat", "/sys/fs/cgroup/memory.peak"], timeout=10).strip())
+            if peak <= 0 or peak > 512 * 1024 * 1024:
+                raise RuntimeError("unexpected cgroup memory peak")
             run.run(mode + "-stop", ["docker", "stop", "--time", "15", name], timeout=20)
             state = json.loads(subprocess.check_output(["docker", "inspect", name], encoding="utf-8"))[0]["State"]
             if state["ExitCode"] != 0 or state["OOMKilled"]:
                 raise RuntimeError("container did not drain cleanly")
             run.run(mode + "-logs", ["docker", "logs", name], timeout=10)
-            records.append(dict(mode=mode, state=state))
+            records.append(dict(mode=mode, state=state, cgroupMemoryPeakBytes=peak, measurement="startup and Golden/Go workload; includes page cache"))
         finally:
             subprocess.run(["docker", "rm", "--force", name], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=30)
     # Scan an unstarted image filesystem, without mounted test certificates/models.

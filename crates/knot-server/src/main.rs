@@ -1,9 +1,5 @@
 #![forbid(unsafe_code)]
-use knot_server::{
-    admission::Admission, catalog, config, health, lifecycle::Lifecycle,
-    protocol::configuration_service_server::ConfigurationServiceServer, service::Service,
-    transport::Incoming,
-};
+use knot_server::{catalog, config, health};
 use std::{
     io::{self, Write},
     path::Path,
@@ -12,9 +8,7 @@ use std::{
 };
 use tonic::transport::{Certificate, Identity, Server, ServerTlsConfig};
 fn main() {
-    let panic_log = knot_server::telemetry::Telemetry::default();
-    // The executable owns the process hook; never log panic payloads from model evaluation.
-    std::panic::set_hook(Box::new(move |_| panic_log.panic()));
+    knot_server::telemetry::install_panic_hook();
     let args: Vec<_> = std::env::args_os().collect();
     let is_health = args.get(1).is_some_and(|v| v == "healthcheck");
     let matches = match config::parse(args, true) {
@@ -153,68 +147,13 @@ async fn run(m: &clap::ArgMatches) -> Result<i32, Box<dyn std::error::Error>> {
             return Ok(3);
         }
     };
-    let max = config::number(m, "max-compute")? as usize;
-    let life = Lifecycle::new(max);
-    let service = ConfigurationServiceServer::new(Service {
-        catalog,
-        lifecycle: life.clone(),
-    })
-    .max_decoding_message_size(1024 * 1024)
-    .max_encoding_message_size(4 * 1024 * 1024 + 1024);
-    let (reporter, health) = tonic_health::server::health_reporter();
-    reporter
-        .set_serving::<ConfigurationServiceServer<Service>>()
-        .await;
     let listener =
         tokio::net::TcpListener::bind(config::value(m, "listen").ok_or("listen")?).await?;
-    let incoming = Incoming::new(listener, config::number(m, "max-connections")? as usize);
-    let admission = Admission::new(
-        life.clone(),
-        Duration::from_millis(config::number(m, "request-timeout-ms")?),
-    );
-    let metrics_life = life.clone();
-    let metrics_admission = admission.clone();
-    let metrics = tokio::spawn(async move {
-        let mut interval = tokio::time::interval(Duration::from_secs(60));
-        loop {
-            interval.tick().await;
-            metrics_life.telemetry.snapshot(
-                64 - metrics_admission.available_business(),
-                max - metrics_life.compute.available_permits(),
-            );
-        }
-    });
-    let (shutdown_tx, shutdown_rx) = tokio::sync::oneshot::channel::<()>();
-    let network = builder
-        .max_concurrent_streams(8)
-        .http2_max_header_list_size(16384)
-        .initial_stream_window_size(65535)
-        .initial_connection_window_size(1048576)
-        .layer(admission)
-        .add_service(service)
-        .add_service(health)
-        .serve_with_incoming_shutdown(incoming, async {
-            let _ = shutdown_rx.await;
-        });
-    tokio::pin!(network);
-    life.telemetry.ready();
-    tokio::select! {
-        result=&mut network=>{return Ok(if result.is_ok(){0}else{4});},
-        _=signal()=>{life.drain();},
-        _=life.changed.notified()=>{}
-    }
-    metrics.abort();
-    reporter
-        .set_not_serving::<ConfigurationServiceServer<Service>>()
-        .await;
-    let _ = shutdown_tx.send(());
-    let code = knot_server::lifecycle::finish_shutdown(
-        network,
-        &life,
-        max,
-        Duration::from_millis(config::number(m, "shutdown-grace-ms")?),
-    )
-    .await;
-    life.telemetry.stopped(code);
-    Ok(code)
+    let limits = knot_server::runtime::Limits {
+        max_compute: config::number(m, "max-compute")? as usize,
+        max_connections: config::number(m, "max-connections")? as usize,
+        request_timeout: Duration::from_millis(config::number(m, "request-timeout-ms")?),
+        shutdown_grace: Duration::from_millis(config::number(m, "shutdown-grace-ms")?),
+    };
+    Ok(knot_server::runtime::serve(builder, listener, catalog, limits, signal()).await)
 }

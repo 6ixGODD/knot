@@ -109,3 +109,32 @@ fn configuration_boundaries() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(config::metadata()["schemaVersion"], "1.0");
     Ok(())
 }
+
+#[test]
+fn health_configuration_boundaries() -> Result<(), Box<dyn std::error::Error>> {
+    for spec in config::HEALTH {
+        if let (Some(min), Some(max)) = (spec.min, spec.max) {
+            for (n, valid) in [(min - 1, false), (min, true), (max, true), (max + 1, false)] {
+                let flag = format!("--{}", spec.flag);
+                let n = n.to_string();
+                let m = parse(&[
+                    "knot-server",
+                    "healthcheck",
+                    "--endpoint",
+                    "http://127.0.0.1:50051",
+                    &flag,
+                    &n,
+                ])?;
+                assert_eq!(
+                    config::validate(
+                        "healthcheck",
+                        m.subcommand_matches("healthcheck").ok_or("healthcheck")?
+                    )
+                    .is_ok(),
+                    valid
+                );
+            }
+        }
+    }
+    Ok(())
+}
