@@ -91,9 +91,9 @@ def main():
         copy(ROOT/filename,filename)
     for directory in ['contracts', 'examples']:
         for source in sorted((ROOT/directory).rglob('*')):
-            if source.is_file() and source.suffix not in ('.pyc',) and '__pycache__' not in source.parts:
+            if source.is_file() and source.suffix not in ('.pyc',) and '__pycache__' not in source.parts and not source.name.endswith('_test.go'):
                 copy(source, source.relative_to(ROOT))
-    public_docs = ['quickstart','integration','c-api','cpp-api','dsl-reference','state-machine','pricing','visual-ir','limits','troubleshooting']
+    public_docs = ['quickstart','integration','c-api','cpp-api','dsl-reference','state-machine','pricing','visual-ir','limits','troubleshooting','grpc-api','deployment']
     for name in public_docs: copy(ROOT/f'docs/{name}.md', f'docs/{name}.md')
     output = Path(runner.env['CARGO_TARGET_DIR'])/'release'
     if sys.platform == 'win32':
@@ -145,6 +145,9 @@ def main():
     metadata = json.loads(runner.run('metadata',['cargo','metadata','--format-version','1','--locked'],separate_stderr=True))
     notice_index_path = ROOT/'tools/package/notices/index.json'
     notice_index = json.loads(notice_index_path.read_text(encoding='utf-8')) if notice_index_path.is_file() else {}
+    service_notices = ROOT / "tools/server/notices/index.json"
+    if service_notices.is_file():
+        notice_index.update(json.loads(service_notices.read_text(encoding="utf-8")))
     packages = []
     notice_revision_gaps = []
     for package in metadata['packages']:

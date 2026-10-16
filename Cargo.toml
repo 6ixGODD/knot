@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/knot-schema", "crates/knot-core", "crates/knot-cli", "crates/knot-ffi", "crates/knot-rules", "crates/knot-rules-zen", "crates/knot-compiler"]
+members = ["crates/knot-server", "crates/knot-schema", "crates/knot-core", "crates/knot-cli", "crates/knot-ffi", "crates/knot-rules", "crates/knot-rules-zen", "crates/knot-compiler"]
 resolver = "3"
 
 [workspace.package]
