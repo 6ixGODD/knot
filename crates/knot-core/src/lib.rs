@@ -65,8 +65,13 @@ fn snapshot(
 ) -> Result<Snapshot, KnotError> {
     state::validate(model, state, budget)?;
     let walked = flow::walk(model, state, budget)?;
-    if !walked.removals.is_empty() {
-        return Err(KnotError::new("INVALID_STATE", "/answers"));
+    if let Some((_, removal)) = walked.removals.first_key_value() {
+        let path = if state.answers.contains_key(&removal.question_id) {
+            state::pointer(&removal.question_id)
+        } else {
+            "/skipped".into()
+        };
+        return Err(KnotError::new("INVALID_STATE", &path));
     }
     let facts = state::facts(model, &state.answers, budget)?;
     let price = price::derive(model, state, &facts, walked.flow.status, budget)?;

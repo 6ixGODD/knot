@@ -5,6 +5,7 @@ pub mod currency;
 
 pub mod error;
 pub mod parse;
+pub mod protocol;
 pub mod validation;
 pub mod value;
 pub mod wire;

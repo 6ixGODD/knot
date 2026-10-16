@@ -1738,6 +1738,7 @@ dependencies = [
  "knot-core",
  "knot-rules-zen",
  "knot-schema",
+ "serde",
  "serde_json",
 ]
 
@@ -1769,7 +1770,9 @@ dependencies = [
  "knot-core",
  "knot-rules-zen",
  "knot-schema",
+ "serde",
  "serde_json",
+ "tokio",
 ]
 
 [[package]]

@@ -1,10 +1,10 @@
 # Run the Speaker example
 
-This is the candidate-package integration procedure. The client source compiles in component tests; the complete production kernel and relocated package run remain pending. The two numbers below are **contract expectations**, not claimed observations of the production SDK.
+Use the internally supplied Windows x64 or Linux x64 SDK. The example prints `282800` followed by `159900` with either shared or static linkage.
 
-1. Obtain a local candidate SDK for your platform and matching C++ ABI/configuration. Extract it as `C:/sdk/knot` (or a corresponding absolute path on Linux/macOS). The package contains `include`, `lib`, `bin` on Windows, `contracts`, `examples`, `docs` and `licenses`.
-2. Use the complete `examples/CMakeLists.txt` below with `examples/c/smoke.c` and `examples/cpp/speaker.cpp` from the same package. CMake 3.23 syntax is used; Windows native-probe consumption was tested with CMake 3.29.5. Choose Release and the package's dynamic CRT on MSVC.
-3. Build and run using a trusted DLL directory. Consumers need a C/C++ compiler, not Rust, a rule-engine installation or a network download during CMake.
+1. Obtain the internal SDK for your platform and matching C++ ABI/configuration. Extract it as `C:/sdk/knot` (or a corresponding absolute path on Linux). The package contains `include`, `lib`, `bin`, `contracts`, `examples`, `docs` and `licenses`.
+2. Use the complete `examples/CMakeLists.txt` below with `examples/c/smoke.c` and `examples/cpp/speaker.cpp` from the same package. CMake 3.23 syntax is used; Windows package consumption was tested with CMake 3.29.5 and MSVC 19.41. Choose Release and the package's dynamic CRT on MSVC.
+3. Build and run using a trusted DLL directory. Consumers need a C/C++ compiler and CMake on PATH, not Rust, a rule-engine installation or a network download during CMake. Check `cmake --version` first. If Visual Studio's bundled CMake is not on PATH, use its installed `cmake.exe` absolute path in place of `cmake` below.
 
 ```powershell
 cmake -S C:/sdk/knot/examples -B build -DCMAKE_PREFIX_PATH=C:/sdk/knot -DKNOT_LINKAGE=shared
@@ -13,7 +13,7 @@ $env:PATH = "C:/sdk/knot/bin;" + $env:PATH
 ./build/Release/speaker.exe C:/sdk/knot/contracts/examples/speaker.json
 ```
 
-On a single-configuration Linux/macOS generator, also pass `-DCMAKE_BUILD_TYPE=Release` and run `./build/speaker`. Configure the loader with the package's absolute `lib` directory (`LD_LIBRARY_PATH` on Linux or `DYLD_LIBRARY_PATH` for a local macOS process), or deploy with an application-specific runpath. Do not search the current directory for libraries.
+On a single-configuration Linux generator, also pass `-DCMAKE_BUILD_TYPE=Release` and run `./build/speaker`. Set `LD_LIBRARY_PATH` to the package's absolute `lib` directory, or deploy with an application-specific runpath. Do not search the current directory for libraries.
 
 The shared C++ target is `Knot::CppShared`. [Static integration](integration.md) uses `Knot::CppStatic`.
 
@@ -85,6 +85,6 @@ int main(int argc, char **argv) {
 }
 ```
 
-All six events match [speaker-events.json](../contracts/examples/speaker-events.json). The first five answers have contract totalMinor `282800`; changing material to walnut has contract totalMinor `159900` and clears invalid downstream answers. The [model](../contracts/examples/speaker.json), [first expected result](../contracts/golden/T12/expected-result.json) and [changed expected result](../contracts/golden/T10/expected-result.json) are shipped together.
+All six events match [speaker-events.json](../contracts/examples/speaker-events.json). The first five answers produce totalMinor `282800`; changing material to walnut produces `159900` and clears invalid downstream answers. The [model](../contracts/examples/speaker.json), [first expected result](../contracts/golden/T12/expected-result.json) and [changed expected result](../contracts/golden/T10/expected-result.json) are shipped together.
 
 Save the complete returned State and replace the complete Snapshot on success. On failure, keep your old State. Unknown price is null, not zero; optional questions still need an answer or explicit skip. A final price is not payment authorization. Details: [state machine](state-machine.md).

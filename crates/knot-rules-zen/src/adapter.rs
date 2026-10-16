@@ -15,6 +15,7 @@ struct Entry {
     decision: zen_engine::Decision,
     constants: Vec<Value>,
     cost: u64,
+    fields: Vec<usize>,
 }
 struct Program {
     entries: Vec<Entry>,
@@ -49,6 +50,7 @@ impl RuleCompiler for ZenCompiler {
                     .map_err(|e| at_source(e, &sources[index]))?,
                 constants: lowered.constants,
                 cost: lowered.cost,
+                fields: lowered.fields,
             });
         }
         Ok(Arc::new(Program {
@@ -84,16 +86,13 @@ impl RuleProgram for Program {
         if facts.values().len() != self.fields.len() {
             return Err(KnotError::new("RULE_EVAL", ""));
         }
-        let mut data_cost = 256u64;
         for (value, kind) in facts.values().iter().zip(&self.fields) {
-            data_cost += match value {
-                None => 16,
-                Some(FactValue::Scalar(v)) if v.kind() == *kind => 1024,
-                Some(FactValue::Multi(v)) if *kind == FieldKind::Multi => {
-                    v.len() as u64 * 1024 + 16
-                }
+            match value {
+                None => {}
+                Some(FactValue::Scalar(v)) if v.kind() == *kind => {}
+                Some(FactValue::Multi(_)) if *kind == FieldKind::Multi => {}
                 _ => return Err(KnotError::new("RULE_EVAL", "")),
-            };
+            }
         }
         // Prepay all requested graphs, even when a condition short-circuits.
         if requested.is_empty() {
@@ -106,26 +105,37 @@ impl RuleProgram for Program {
                 .entries
                 .get(id.0)
                 .ok_or_else(|| KnotError::new("RULE_EVAL", ""))?;
+            // Every context keeps stable field indices, but unrelated values remain null.
+            // Preserve the existing per-slot/scalar/member costs for the data actually copied.
+            let mut data_cost = 256 + self.fields.len() as u64 * 16;
+            for index in &entry.fields {
+                data_cost += match &facts.values()[*index] {
+                    None => 0,
+                    Some(FactValue::Scalar(_)) => 1024 - 16,
+                    Some(FactValue::Multi(values)) => values.len() as u64 * 1024,
+                };
+            }
             budget.charge(entry.cost + data_cost)?;
         }
         crate::isolation::isolate(&self.faulted, || {
-            let mut present = Vec::with_capacity(facts.values().len());
-            let mut values = Vec::with_capacity(facts.values().len());
-            for value in facts.values() {
-                present.push(value.is_some());
-                values.push(match value {
-                    None => Value::Null,
-                    Some(FactValue::Scalar(v)) => lowering::scalar(v)?,
-                    Some(FactValue::Multi(v)) => Value::Array(
-                        v.iter()
-                            .map(|id| Value::String(id.as_str().into()))
-                            .collect(),
-                    ),
-                });
-            }
             let mut output = Vec::with_capacity(requested.len());
             for id in requested {
                 let entry = &self.entries[id.0];
+                let mut present = vec![false; self.fields.len()];
+                let mut values = vec![Value::Null; self.fields.len()];
+                for index in &entry.fields {
+                    let value = &facts.values()[*index];
+                    present[*index] = value.is_some();
+                    values[*index] = match value {
+                        None => Value::Null,
+                        Some(FactValue::Scalar(v)) => lowering::scalar(v)?,
+                        Some(FactValue::Multi(v)) => Value::Array(
+                            v.iter()
+                                .map(|id| Value::String(id.as_str().into()))
+                                .collect(),
+                        ),
+                    };
+                }
                 let context =
                     serde_json::from_value(json!({"p":present,"v":values,"c":entry.constants}))
                         .map_err(|_| KnotError::new("RULE_EVAL", ""))?;

@@ -1,0 +1,851 @@
+{
+  "ast_node-5.0.0": {
+    "repository": "https://github.com/swc-project/swc.git",
+    "revision": "00ec64fe9a4da0973f14721d7b6dc1f13cd75413",
+    "pathInVcs": "crates/ast_node",
+    "license": "Apache-2.0",
+    "notices": [
+      {
+        "path": "tools/package/notices/swc-project-swc-00ec64fe9a4da0973f14721d7b6dc1f13cd75413/LICENSE",
+        "url": "https://raw.githubusercontent.com/swc-project/swc/38c1799aa48ef4a3bac50e6ded82d7eafb7d691a/LICENSE",
+        "sha256": "d96eba1f1881334d50ffc144276dfa98e147a415e7c591ecdfcb81680361dc91",
+        "revision": "38c1799aa48ef4a3bac50e6ded82d7eafb7d691a",
+        "publishedRevisionMatched": false
+      }
+    ]
+  },
+  "base64-simd-0.8.0": {
+    "repository": "https://github.com/Nugine/simd",
+    "revision": "d74c030d9dc4f3cae02146d1f497ff62726ef09a",
+    "pathInVcs": "crates/base64-simd",
+    "license": "MIT",
+    "notices": [
+      {
+        "path": "tools/package/notices/Nugine-simd-d74c030d9dc4f3cae02146d1f497ff62726ef09a/LICENSE",
+        "url": "https://raw.githubusercontent.com/Nugine/simd/d74c030d9dc4f3cae02146d1f497ff62726ef09a/LICENSE",
+        "sha256": "71674605ec4c087fe9eb534e3e4f9e26eb2e4aabcd76a29fd156c6a844d44b3d",
+        "revision": "d74c030d9dc4f3cae02146d1f497ff62726ef09a",
+        "publishedRevisionMatched": true
+      }
+    ]
+  },
+  "better_scoped_tls-1.0.1": {
+    "repository": "https://github.com/swc-project/swc.git",
+    "revision": "832d537695a07e539660096883fab52bb7f10ecf",
+    "pathInVcs": "crates/better_scoped_tls",
+    "license": "Apache-2.0",
+    "notices": [
+      {
+        "path": "tools/package/notices/swc-project-swc-832d537695a07e539660096883fab52bb7f10ecf/LICENSE",
+        "url": "https://raw.githubusercontent.com/swc-project/swc/38c1799aa48ef4a3bac50e6ded82d7eafb7d691a/LICENSE",
+        "sha256": "d96eba1f1881334d50ffc144276dfa98e147a415e7c591ecdfcb81680361dc91",
+        "revision": "38c1799aa48ef4a3bac50e6ded82d7eafb7d691a",
+        "publishedRevisionMatched": false
+      }
+    ]
+  },
+  "bytes-str-0.2.9": {
+    "repository": "https://github.com/dudykr/ddbase.git",
+    "revision": "19f6487518dbebbc198346bfb979313ef457199e",
+    "pathInVcs": "crates/bytes-str",
+    "license": "Apache-2.0",
+    "notices": [
+      {
+        "path": "tools/package/notices/dudykr-ddbase-19f6487518dbebbc198346bfb979313ef457199e/LICENSE",
+        "url": "https://raw.githubusercontent.com/dudykr/ddbase/19f6487518dbebbc198346bfb979313ef457199e/LICENSE",
+        "sha256": "58d1e17ffe5109a7ae296caafcadfdbe6a7d176f0bc4ab01e12a689b0499d8bd",
+        "revision": "19f6487518dbebbc198346bfb979313ef457199e",
+        "publishedRevisionMatched": true
+      }
+    ]
+  },
+  "defmt-parser-1.0.0": {
+    "repository": "https://github.com/knurling-rs/defmt",
+    "revision": "4a8cdb44891ed57b8ff5a023b6bec7137c48708f",
+    "pathInVcs": "parser",
+    "license": "MIT OR Apache-2.0",
+    "notices": [
+      {
+        "path": "tools/package/notices/knurling-rs-defmt-4a8cdb44891ed57b8ff5a023b6bec7137c48708f/LICENSE-APACHE",
+        "url": "https://raw.githubusercontent.com/knurling-rs/defmt/4a8cdb44891ed57b8ff5a023b6bec7137c48708f/LICENSE-APACHE",
+        "sha256": "8173d5c29b4f956d532781d2b86e4e30f83e6b7878dce18c919451d6ba707c90",
+        "revision": "4a8cdb44891ed57b8ff5a023b6bec7137c48708f",
+        "publishedRevisionMatched": true
+      },
+      {
+        "path": "tools/package/notices/knurling-rs-defmt-4a8cdb44891ed57b8ff5a023b6bec7137c48708f/LICENSE-MIT",
+        "url": "https://raw.githubusercontent.com/knurling-rs/defmt/4a8cdb44891ed57b8ff5a023b6bec7137c48708f/LICENSE-MIT",
+        "sha256": "2710a622a896bba67356913d4d0492cab5465f61b2ecce6d880aeb483834fb50",
+        "revision": "4a8cdb44891ed57b8ff5a023b6bec7137c48708f",
+        "publishedRevisionMatched": true
+      }
+    ]
+  },
+  "from_variant-3.0.0": {
+    "repository": "https://github.com/swc-project/swc.git",
+    "revision": "00ec64fe9a4da0973f14721d7b6dc1f13cd75413",
+    "pathInVcs": "crates/from_variant",
+    "license": "Apache-2.0",
+    "notices": [
+      {
+        "path": "tools/package/notices/swc-project-swc-00ec64fe9a4da0973f14721d7b6dc1f13cd75413/LICENSE",
+        "url": "https://raw.githubusercontent.com/swc-project/swc/38c1799aa48ef4a3bac50e6ded82d7eafb7d691a/LICENSE",
+        "sha256": "d96eba1f1881334d50ffc144276dfa98e147a415e7c591ecdfcb81680361dc91",
+        "revision": "38c1799aa48ef4a3bac50e6ded82d7eafb7d691a",
+        "publishedRevisionMatched": false
+      }
+    ]
+  },
+  "jni-0.22.4": {
+    "repository": "https://github.com/jni-rs/jni-rs",
+    "revision": "5ae9458a4ec44c5318f37ddc7569c1d4ae8a69e7",
+    "pathInVcs": "crates/jni",
+    "license": "MIT OR Apache-2.0",
+    "notices": [
+      {
+        "path": "tools/package/notices/jni-rs-jni-rs-5ae9458a4ec44c5318f37ddc7569c1d4ae8a69e7/LICENSE-APACHE",
+        "url": "https://raw.githubusercontent.com/jni-rs/jni-rs/5ae9458a4ec44c5318f37ddc7569c1d4ae8a69e7/LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+        "revision": "5ae9458a4ec44c5318f37ddc7569c1d4ae8a69e7",
+        "publishedRevisionMatched": true
+      },
+      {
+        "path": "tools/package/notices/jni-rs-jni-rs-5ae9458a4ec44c5318f37ddc7569c1d4ae8a69e7/LICENSE-MIT",
+        "url": "https://raw.githubusercontent.com/jni-rs/jni-rs/5ae9458a4ec44c5318f37ddc7569c1d4ae8a69e7/LICENSE-MIT",
+        "sha256": "fea1d5bf3dd71605ce5d7d2ff695c1837e914c77195e523a86b5391716477960",
+        "revision": "5ae9458a4ec44c5318f37ddc7569c1d4ae8a69e7",
+        "publishedRevisionMatched": true
+      }
+    ]
+  },
+  "jni-macros-0.22.4": {
+    "repository": "https://github.com/jni-rs/jni-rs",
+    "revision": "33045a124105c939d1e2cbdcb5a39e5d868ffa03",
+    "pathInVcs": "crates/jni-macros",
+    "license": "MIT OR Apache-2.0",
+    "notices": [
+      {
+        "path": "tools/package/notices/jni-rs-jni-rs-33045a124105c939d1e2cbdcb5a39e5d868ffa03/LICENSE-APACHE",
+        "url": "https://raw.githubusercontent.com/jni-rs/jni-rs/33045a124105c939d1e2cbdcb5a39e5d868ffa03/LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+        "revision": "33045a124105c939d1e2cbdcb5a39e5d868ffa03",
+        "publishedRevisionMatched": true
+      },
+      {
+        "path": "tools/package/notices/jni-rs-jni-rs-33045a124105c939d1e2cbdcb5a39e5d868ffa03/LICENSE-MIT",
+        "url": "https://raw.githubusercontent.com/jni-rs/jni-rs/33045a124105c939d1e2cbdcb5a39e5d868ffa03/LICENSE-MIT",
+        "sha256": "fea1d5bf3dd71605ce5d7d2ff695c1837e914c77195e523a86b5391716477960",
+        "revision": "33045a124105c939d1e2cbdcb5a39e5d868ffa03",
+        "publishedRevisionMatched": true
+      }
+    ]
+  },
+  "jni-sys-macros-0.4.1": {
+    "repository": "https://github.com/jni-rs/jni-sys",
+    "revision": "64d77b7a5f119d7b55b4e2c169a4668067ff59e6",
+    "pathInVcs": "jni-sys-macros",
+    "license": "MIT OR Apache-2.0",
+    "notices": [
+      {
+        "path": "tools/package/notices/jni-rs-jni-sys-64d77b7a5f119d7b55b4e2c169a4668067ff59e6/LICENSE-APACHE",
+        "url": "https://raw.githubusercontent.com/jni-rs/jni-sys/64d77b7a5f119d7b55b4e2c169a4668067ff59e6/LICENSE-APACHE",
+        "sha256": "c6596eb7be8581c18be736c846fb9173b69eccf6ef94c5135893ec56bd92ba08",
+        "revision": "64d77b7a5f119d7b55b4e2c169a4668067ff59e6",
+        "publishedRevisionMatched": true
+      },
+      {
+        "path": "tools/package/notices/jni-rs-jni-sys-64d77b7a5f119d7b55b4e2c169a4668067ff59e6/LICENSE-MIT",
+        "url": "https://raw.githubusercontent.com/jni-rs/jni-sys/64d77b7a5f119d7b55b4e2c169a4668067ff59e6/LICENSE-MIT",
+        "sha256": "1d85bd754b04ceec93e98e890edd1fa3c6a22e81bcb32135806beeccefa51cd1",
+        "revision": "64d77b7a5f119d7b55b4e2c169a4668067ff59e6",
+        "publishedRevisionMatched": true
+      }
+    ]
+  },
+  "json_dotpath-1.1.0": {
+    "repository": "https://git.ondrovo.com/packages/json_dotpath",
+    "revision": "1d929a83c86bce3aa2a53249bd339e3431ff90b5",
+    "pathInVcs": "",
+    "license": "MIT",
+    "missingSeparateNotice": true,
+    "notices": [
+      {
+        "path": "tools/package/notices/json_dotpath-1.1.0/UPSTREAM-Cargo.toml",
+        "url": "https://git.ondrovo.com/packages/json_dotpath",
+        "revision": "1d929a83c86bce3aa2a53249bd339e3431ff90b5",
+        "publishedRevisionMatched": true,
+        "sha256": "aca9057b8426a8d2bb217e29a6f0cea9815de532cbee187d047df972db004fbc"
+      }
+    ]
+  },
+  "jsonschema-macros-0.58.6": {
+    "repository": "https://github.com/Stranger6667/jsonschema",
+    "revision": "55ac1664384793c5d3b20745d3f9c169dfe2c06f",
+    "pathInVcs": "crates/jsonschema-macros",
+    "license": "MIT",
+    "notices": [
+      {
+        "path": "tools/package/notices/Stranger6667-jsonschema-55ac1664384793c5d3b20745d3f9c169dfe2c06f/LICENSE",
+        "url": "https://raw.githubusercontent.com/Stranger6667/jsonschema/55ac1664384793c5d3b20745d3f9c169dfe2c06f/LICENSE",
+        "sha256": "117829c3ca21efb132d81a44b55363d395ab8eea18526873bc828da4c0e5f038",
+        "revision": "55ac1664384793c5d3b20745d3f9c169dfe2c06f",
+        "publishedRevisionMatched": true
+      }
+    ]
+  },
+  "jsonschema-macros-core-0.58.6": {
+    "repository": "https://github.com/Stranger6667/jsonschema",
+    "revision": "55ac1664384793c5d3b20745d3f9c169dfe2c06f",
+    "pathInVcs": "crates/jsonschema-macros-core",
+    "license": "MIT",
+    "notices": [
+      {
+        "path": "tools/package/notices/Stranger6667-jsonschema-55ac1664384793c5d3b20745d3f9c169dfe2c06f/LICENSE",
+        "url": "https://raw.githubusercontent.com/Stranger6667/jsonschema/55ac1664384793c5d3b20745d3f9c169dfe2c06f/LICENSE",
+        "sha256": "117829c3ca21efb132d81a44b55363d395ab8eea18526873bc828da4c0e5f038",
+        "revision": "55ac1664384793c5d3b20745d3f9c169dfe2c06f",
+        "publishedRevisionMatched": true
+      }
+    ]
+  },
+  "jsonschema-regex-0.49.9": {
+    "repository": "https://github.com/Stranger6667/jsonschema",
+    "revision": "4ad172231ae487511bfc4cf3199d7edab328923b",
+    "pathInVcs": "crates/jsonschema-regex",
+    "license": "MIT",
+    "notices": [
+      {
+        "path": "tools/package/notices/Stranger6667-jsonschema-4ad172231ae487511bfc4cf3199d7edab328923b/LICENSE",
+        "url": "https://raw.githubusercontent.com/Stranger6667/jsonschema/4ad172231ae487511bfc4cf3199d7edab328923b/LICENSE",
+        "sha256": "117829c3ca21efb132d81a44b55363d395ab8eea18526873bc828da4c0e5f038",
+        "revision": "4ad172231ae487511bfc4cf3199d7edab328923b",
+        "publishedRevisionMatched": true
+      }
+    ]
+  },
+  "jsonschema-regex-0.58.6": {
+    "repository": "https://github.com/Stranger6667/jsonschema",
+    "revision": "55ac1664384793c5d3b20745d3f9c169dfe2c06f",
+    "pathInVcs": "crates/jsonschema-regex",
+    "license": "MIT",
+    "notices": [
+      {
+        "path": "tools/package/notices/Stranger6667-jsonschema-55ac1664384793c5d3b20745d3f9c169dfe2c06f/LICENSE",
+        "url": "https://raw.githubusercontent.com/Stranger6667/jsonschema/55ac1664384793c5d3b20745d3f9c169dfe2c06f/LICENSE",
+        "sha256": "117829c3ca21efb132d81a44b55363d395ab8eea18526873bc828da4c0e5f038",
+        "revision": "55ac1664384793c5d3b20745d3f9c169dfe2c06f",
+        "publishedRevisionMatched": true
+      }
+    ]
+  },
+  "jsonschema-value-0.49.9": {
+    "repository": "https://github.com/Stranger6667/jsonschema",
+    "revision": "4ad172231ae487511bfc4cf3199d7edab328923b",
+    "pathInVcs": "crates/jsonschema-value",
+    "license": "MIT",
+    "notices": [
+      {
+        "path": "tools/package/notices/Stranger6667-jsonschema-4ad172231ae487511bfc4cf3199d7edab328923b/LICENSE",
+        "url": "https://raw.githubusercontent.com/Stranger6667/jsonschema/4ad172231ae487511bfc4cf3199d7edab328923b/LICENSE",
+        "sha256": "117829c3ca21efb132d81a44b55363d395ab8eea18526873bc828da4c0e5f038",
+        "revision": "4ad172231ae487511bfc4cf3199d7edab328923b",
+        "publishedRevisionMatched": true
+      }
+    ]
+  },
+  "jsonschema-value-0.58.6": {
+    "repository": "https://github.com/Stranger6667/jsonschema",
+    "revision": "55ac1664384793c5d3b20745d3f9c169dfe2c06f",
+    "pathInVcs": "crates/jsonschema-value",
+    "license": "MIT",
+    "notices": [
+      {
+        "path": "tools/package/notices/Stranger6667-jsonschema-55ac1664384793c5d3b20745d3f9c169dfe2c06f/LICENSE",
+        "url": "https://raw.githubusercontent.com/Stranger6667/jsonschema/55ac1664384793c5d3b20745d3f9c169dfe2c06f/LICENSE",
+        "sha256": "117829c3ca21efb132d81a44b55363d395ab8eea18526873bc828da4c0e5f038",
+        "revision": "55ac1664384793c5d3b20745d3f9c169dfe2c06f",
+        "publishedRevisionMatched": true
+      }
+    ]
+  },
+  "par-core-2.0.0": {
+    "repository": "https://github.com/dudykr/ddbase.git",
+    "revision": "d46ef439d30d2b64eb87d4e197929548b51b21be",
+    "pathInVcs": "crates/par-core",
+    "license": "Apache-2.0",
+    "notices": [
+      {
+        "path": "tools/package/notices/dudykr-ddbase-d46ef439d30d2b64eb87d4e197929548b51b21be/LICENSE",
+        "url": "https://raw.githubusercontent.com/dudykr/ddbase/d46ef439d30d2b64eb87d4e197929548b51b21be/LICENSE",
+        "sha256": "58d1e17ffe5109a7ae296caafcadfdbe6a7d176f0bc4ab01e12a689b0499d8bd",
+        "revision": "d46ef439d30d2b64eb87d4e197929548b51b21be",
+        "publishedRevisionMatched": true
+      }
+    ]
+  },
+  "r-efi-5.3.0": {
+    "repository": "https://github.com/r-efi/r-efi",
+    "revision": "97b55bed1c2c91dcbf787674849f05337ff80b33",
+    "pathInVcs": "",
+    "license": "MIT OR Apache-2.0 OR LGPL-2.1-or-later",
+    "missingSeparateNotice": true,
+    "notices": [
+      {
+        "path": "tools/package/notices/r-efi-r-efi-97b55bed1c2c91dcbf787674849f05337ff80b33/UPSTREAM-Cargo.toml.orig",
+        "url": "https://github.com/r-efi/r-efi",
+        "revision": "97b55bed1c2c91dcbf787674849f05337ff80b33",
+        "publishedRevisionMatched": true,
+        "missingSeparateNotice": true,
+        "sha256": "57b6d9b9a1b6524f6b4dcc1dd24970ac03e6959786a6cfedaec9ba52878b4d3e"
+      },
+      {
+        "path": "tools/package/notices/r-efi-r-efi-97b55bed1c2c91dcbf787674849f05337ff80b33/UPSTREAM-README.md",
+        "url": "https://github.com/r-efi/r-efi",
+        "revision": "97b55bed1c2c91dcbf787674849f05337ff80b33",
+        "publishedRevisionMatched": true,
+        "missingSeparateNotice": true,
+        "sha256": "420f65fec3ba2e89d49da51b222d2881d26959037a7b7d3794143db4bd4627b1"
+      },
+      {
+        "path": "tools/package/notices/r-efi-r-efi-97b55bed1c2c91dcbf787674849f05337ff80b33/UPSTREAM-AUTHORS",
+        "url": "https://github.com/r-efi/r-efi",
+        "revision": "97b55bed1c2c91dcbf787674849f05337ff80b33",
+        "publishedRevisionMatched": true,
+        "missingSeparateNotice": true,
+        "sha256": "ff92bed461f50338dd703a9ba9aee496a425957873df1d91192776e4bdf5dda7"
+      }
+    ]
+  },
+  "r-efi-6.0.0": {
+    "repository": "https://github.com/r-efi/r-efi",
+    "revision": "7e1b0322d31d625f81a5656096330934f9cd835d",
+    "pathInVcs": "",
+    "license": "MIT OR Apache-2.0 OR LGPL-2.1-or-later",
+    "missingSeparateNotice": true,
+    "notices": [
+      {
+        "path": "tools/package/notices/r-efi-r-efi-7e1b0322d31d625f81a5656096330934f9cd835d/UPSTREAM-Cargo.toml.orig",
+        "url": "https://github.com/r-efi/r-efi",
+        "revision": "7e1b0322d31d625f81a5656096330934f9cd835d",
+        "publishedRevisionMatched": true,
+        "missingSeparateNotice": true,
+        "sha256": "b8e89c393831c2161b6d390bd40422910ac34f02903ad39edd85ec38d4513fef"
+      },
+      {
+        "path": "tools/package/notices/r-efi-r-efi-7e1b0322d31d625f81a5656096330934f9cd835d/UPSTREAM-README.md",
+        "url": "https://github.com/r-efi/r-efi",
+        "revision": "7e1b0322d31d625f81a5656096330934f9cd835d",
+        "publishedRevisionMatched": true,
+        "missingSeparateNotice": true,
+        "sha256": "420f65fec3ba2e89d49da51b222d2881d26959037a7b7d3794143db4bd4627b1"
+      },
+      {
+        "path": "tools/package/notices/r-efi-r-efi-7e1b0322d31d625f81a5656096330934f9cd835d/UPSTREAM-AUTHORS",
+        "url": "https://github.com/r-efi/r-efi",
+        "revision": "7e1b0322d31d625f81a5656096330934f9cd835d",
+        "publishedRevisionMatched": true,
+        "missingSeparateNotice": true,
+        "sha256": "d027e91dbc9cdbb2f1190068e498bd6b61cff022b6a032b191021ba658d96111"
+      }
+    ]
+  },
+  "rquickjs-core-0.10.0": {
+    "repository": "https://github.com/DelSkayn/rquickjs.git",
+    "revision": "b567ffd29b7db3d09b4208beb05b37c63e104606",
+    "pathInVcs": "core",
+    "license": "MIT",
+    "missingSeparateNotice": false,
+    "notices": [
+      {
+        "path": "tools/package/notices/DelSkayn-rquickjs-b567ffd29b7db3d09b4208beb05b37c63e104606/LICENSE",
+        "url": "https://raw.githubusercontent.com/DelSkayn/rquickjs/b567ffd29b7db3d09b4208beb05b37c63e104606/LICENSE",
+        "sha256": "0517c7f76916dcc6557b3c0e1c077f14dd05bfe8e0d7d2a2fa298fe0d49a790a",
+        "revision": "b567ffd29b7db3d09b4208beb05b37c63e104606",
+        "publishedRevisionMatched": true
+      }
+    ]
+  },
+  "rquickjs-macro-0.10.0": {
+    "repository": "https://github.com/DelSkayn/rquickjs.git",
+    "revision": "96987d4c61a203ce4468331a8a8c81f285e67171",
+    "pathInVcs": "macro",
+    "license": "MIT",
+    "missingSeparateNotice": false,
+    "notices": [
+      {
+        "path": "tools/package/notices/DelSkayn-rquickjs-96987d4c61a203ce4468331a8a8c81f285e67171/LICENSE",
+        "url": "https://raw.githubusercontent.com/DelSkayn/rquickjs/96987d4c61a203ce4468331a8a8c81f285e67171/LICENSE",
+        "sha256": "0517c7f76916dcc6557b3c0e1c077f14dd05bfe8e0d7d2a2fa298fe0d49a790a",
+        "revision": "96987d4c61a203ce4468331a8a8c81f285e67171",
+        "publishedRevisionMatched": true
+      }
+    ]
+  },
+  "rustls-platform-verifier-android-0.2.0": {
+    "repository": "https://github.com/rustls/rustls-platform-verifier",
+    "revision": "252e25161a91af476cbea620e29d277592d27ec7",
+    "pathInVcs": "android-release-support",
+    "license": "MIT OR Apache-2.0",
+    "missingSeparateNotice": false,
+    "notices": [
+      {
+        "path": "tools/package/notices/rustls-rustls-platform-verifier-252e25161a91af476cbea620e29d277592d27ec7/LICENSE-APACHE",
+        "url": "https://raw.githubusercontent.com/rustls/rustls-platform-verifier/252e25161a91af476cbea620e29d277592d27ec7/LICENSE-APACHE",
+        "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+        "revision": "252e25161a91af476cbea620e29d277592d27ec7",
+        "publishedRevisionMatched": true
+      },
+      {
+        "path": "tools/package/notices/rustls-rustls-platform-verifier-252e25161a91af476cbea620e29d277592d27ec7/LICENSE-MIT",
+        "url": "https://raw.githubusercontent.com/rustls/rustls-platform-verifier/252e25161a91af476cbea620e29d277592d27ec7/LICENSE-MIT",
+        "sha256": "1c7cf76689c837a68ed8d704994e52a0f2940c087958f860d17f3186afbdcc0c",
+        "revision": "252e25161a91af476cbea620e29d277592d27ec7",
+        "publishedRevisionMatched": true
+      }
+    ]
+  },
+  "string_enum-1.0.2": {
+    "repository": "https://github.com/swc-project/swc.git",
+    "revision": "0ce4fd737e260c0cbfffcfdb19f269a9cc221ef4",
+    "pathInVcs": "crates/string_enum",
+    "license": "Apache-2.0",
+    "missingSeparateNotice": false,
+    "notices": [
+      {
+        "path": "tools/package/notices/swc-project-swc-0ce4fd737e260c0cbfffcfdb19f269a9cc221ef4/LICENSE",
+        "url": "https://raw.githubusercontent.com/swc-project/swc/38c1799aa48ef4a3bac50e6ded82d7eafb7d691a/LICENSE",
+        "sha256": "d96eba1f1881334d50ffc144276dfa98e147a415e7c591ecdfcb81680361dc91",
+        "revision": "38c1799aa48ef4a3bac50e6ded82d7eafb7d691a",
+        "publishedRevisionMatched": false
+      }
+    ]
+  },
+  "swc_allocator-4.0.1": {
+    "repository": "https://github.com/swc-project/swc.git",
+    "revision": "0ce4fd737e260c0cbfffcfdb19f269a9cc221ef4",
+    "pathInVcs": "crates/swc_allocator",
+    "license": "Apache-2.0",
+    "missingSeparateNotice": false,
+    "notices": [
+      {
+        "path": "tools/package/notices/swc-project-swc-0ce4fd737e260c0cbfffcfdb19f269a9cc221ef4/LICENSE",
+        "url": "https://raw.githubusercontent.com/swc-project/swc/38c1799aa48ef4a3bac50e6ded82d7eafb7d691a/LICENSE",
+        "sha256": "d96eba1f1881334d50ffc144276dfa98e147a415e7c591ecdfcb81680361dc91",
+        "revision": "38c1799aa48ef4a3bac50e6ded82d7eafb7d691a",
+        "publishedRevisionMatched": false
+      }
+    ]
+  },
+  "swc_atoms-9.0.3": {
+    "repository": "https://github.com/swc-project/swc.git",
+    "revision": "5507eb8d37c025dbe25c68e03f8c6381db976603",
+    "pathInVcs": "crates/swc_atoms",
+    "license": "Apache-2.0",
+    "missingSeparateNotice": false,
+    "notices": [
+      {
+        "path": "tools/package/notices/swc-project-swc-5507eb8d37c025dbe25c68e03f8c6381db976603/LICENSE",
+        "url": "https://raw.githubusercontent.com/swc-project/swc/38c1799aa48ef4a3bac50e6ded82d7eafb7d691a/LICENSE",
+        "sha256": "d96eba1f1881334d50ffc144276dfa98e147a415e7c591ecdfcb81680361dc91",
+        "revision": "38c1799aa48ef4a3bac50e6ded82d7eafb7d691a",
+        "publishedRevisionMatched": false
+      }
+    ]
+  },
+  "swc_common-23.0.2": {
+    "repository": "https://github.com/swc-project/swc.git",
+    "revision": "a2a8ad9118b8bc3ced5d4cc1dd74f10b0ffb17e1",
+    "pathInVcs": "crates/swc_common",
+    "license": "Apache-2.0",
+    "missingSeparateNotice": false,
+    "notices": [
+      {
+        "path": "tools/package/notices/swc-project-swc-a2a8ad9118b8bc3ced5d4cc1dd74f10b0ffb17e1/LICENSE",
+        "url": "https://raw.githubusercontent.com/swc-project/swc/38c1799aa48ef4a3bac50e6ded82d7eafb7d691a/LICENSE",
+        "sha256": "d96eba1f1881334d50ffc144276dfa98e147a415e7c591ecdfcb81680361dc91",
+        "revision": "38c1799aa48ef4a3bac50e6ded82d7eafb7d691a",
+        "publishedRevisionMatched": false
+      }
+    ]
+  },
+  "swc_config-5.0.0": {
+    "repository": "https://github.com/swc-project/swc.git",
+    "revision": "0efb343cddcc899eead908a5f826387671228ef8",
+    "pathInVcs": "crates/swc_config",
+    "license": "Apache-2.0",
+    "missingSeparateNotice": false,
+    "notices": [
+      {
+        "path": "tools/package/notices/swc-project-swc-0efb343cddcc899eead908a5f826387671228ef8/LICENSE",
+        "url": "https://raw.githubusercontent.com/swc-project/swc/38c1799aa48ef4a3bac50e6ded82d7eafb7d691a/LICENSE",
+        "sha256": "d96eba1f1881334d50ffc144276dfa98e147a415e7c591ecdfcb81680361dc91",
+        "revision": "38c1799aa48ef4a3bac50e6ded82d7eafb7d691a",
+        "publishedRevisionMatched": false
+      }
+    ]
+  },
+  "swc_config_macro-1.0.1": {
+    "repository": "https://github.com/swc-project/swc.git",
+    "revision": "832d537695a07e539660096883fab52bb7f10ecf",
+    "pathInVcs": "crates/swc_config_macro",
+    "license": "Apache-2.0",
+    "notices": [
+      {
+        "path": "tools/package/notices/swc-project-swc-00ec64fe9a4da0973f14721d7b6dc1f13cd75413/LICENSE",
+        "url": "https://raw.githubusercontent.com/swc-project/swc/38c1799aa48ef4a3bac50e6ded82d7eafb7d691a/LICENSE",
+        "sha256": "d96eba1f1881334d50ffc144276dfa98e147a415e7c591ecdfcb81680361dc91",
+        "revision": "38c1799aa48ef4a3bac50e6ded82d7eafb7d691a",
+        "publishedRevisionMatched": false
+      }
+    ]
+  },
+  "swc_ecma_ast-25.0.0": {
+    "repository": "https://github.com/swc-project/swc.git",
+    "revision": "5507eb8d37c025dbe25c68e03f8c6381db976603",
+    "pathInVcs": "crates/swc_ecma_ast",
+    "license": "Apache-2.0",
+    "notices": [
+      {
+        "path": "tools/package/notices/swc-project-swc-00ec64fe9a4da0973f14721d7b6dc1f13cd75413/LICENSE",
+        "url": "https://raw.githubusercontent.com/swc-project/swc/38c1799aa48ef4a3bac50e6ded82d7eafb7d691a/LICENSE",
+        "sha256": "d96eba1f1881334d50ffc144276dfa98e147a415e7c591ecdfcb81680361dc91",
+        "revision": "38c1799aa48ef4a3bac50e6ded82d7eafb7d691a",
+        "publishedRevisionMatched": false
+      }
+    ]
+  },
+  "swc_ecma_codegen-28.0.2": {
+    "repository": "https://github.com/swc-project/swc.git",
+    "revision": "a2a8ad9118b8bc3ced5d4cc1dd74f10b0ffb17e1",
+    "pathInVcs": "crates/swc_ecma_codegen",
+    "license": "Apache-2.0",
+    "notices": [
+      {
+        "path": "tools/package/notices/swc-project-swc-00ec64fe9a4da0973f14721d7b6dc1f13cd75413/LICENSE",
+        "url": "https://raw.githubusercontent.com/swc-project/swc/38c1799aa48ef4a3bac50e6ded82d7eafb7d691a/LICENSE",
+        "sha256": "d96eba1f1881334d50ffc144276dfa98e147a415e7c591ecdfcb81680361dc91",
+        "revision": "38c1799aa48ef4a3bac50e6ded82d7eafb7d691a",
+        "publishedRevisionMatched": false
+      }
+    ]
+  },
+  "swc_ecma_codegen_macros-2.0.2": {
+    "repository": "https://github.com/swc-project/swc.git",
+    "revision": "0ce4fd737e260c0cbfffcfdb19f269a9cc221ef4",
+    "pathInVcs": "crates/swc_ecma_codegen_macros",
+    "license": "Apache-2.0",
+    "notices": [
+      {
+        "path": "tools/package/notices/swc-project-swc-00ec64fe9a4da0973f14721d7b6dc1f13cd75413/LICENSE",
+        "url": "https://raw.githubusercontent.com/swc-project/swc/38c1799aa48ef4a3bac50e6ded82d7eafb7d691a/LICENSE",
+        "sha256": "d96eba1f1881334d50ffc144276dfa98e147a415e7c591ecdfcb81680361dc91",
+        "revision": "38c1799aa48ef4a3bac50e6ded82d7eafb7d691a",
+        "publishedRevisionMatched": false
+      }
+    ]
+  },
+  "swc_ecma_hooks-0.9.0": {
+    "repository": "https://github.com/swc-project/swc.git",
+    "revision": "5507eb8d37c025dbe25c68e03f8c6381db976603",
+    "pathInVcs": "crates/swc_ecma_hooks",
+    "license": "Apache-2.0",
+    "notices": [
+      {
+        "path": "tools/package/notices/swc-project-swc-00ec64fe9a4da0973f14721d7b6dc1f13cd75413/LICENSE",
+        "url": "https://raw.githubusercontent.com/swc-project/swc/38c1799aa48ef4a3bac50e6ded82d7eafb7d691a/LICENSE",
+        "sha256": "d96eba1f1881334d50ffc144276dfa98e147a415e7c591ecdfcb81680361dc91",
+        "revision": "38c1799aa48ef4a3bac50e6ded82d7eafb7d691a",
+        "publishedRevisionMatched": false
+      }
+    ]
+  },
+  "swc_ecma_parser-41.1.2": {
+    "repository": "https://github.com/swc-project/swc.git",
+    "revision": "914960062fd2e9ced57f4187b835d6d8bb01c437",
+    "pathInVcs": "crates/swc_ecma_parser",
+    "license": "Apache-2.0",
+    "notices": [
+      {
+        "path": "tools/package/notices/swc-project-swc-00ec64fe9a4da0973f14721d7b6dc1f13cd75413/LICENSE",
+        "url": "https://raw.githubusercontent.com/swc-project/swc/38c1799aa48ef4a3bac50e6ded82d7eafb7d691a/LICENSE",
+        "sha256": "d96eba1f1881334d50ffc144276dfa98e147a415e7c591ecdfcb81680361dc91",
+        "revision": "38c1799aa48ef4a3bac50e6ded82d7eafb7d691a",
+        "publishedRevisionMatched": false
+      }
+    ]
+  },
+  "swc_ecma_transforms_base-44.0.4": {
+    "repository": "https://github.com/swc-project/swc.git",
+    "revision": "f35759acab9a1518cb3c69fecfa6cf2eab41e09e",
+    "pathInVcs": "crates/swc_ecma_transforms_base",
+    "license": "Apache-2.0",
+    "notices": [
+      {
+        "path": "tools/package/notices/swc-project-swc-00ec64fe9a4da0973f14721d7b6dc1f13cd75413/LICENSE",
+        "url": "https://raw.githubusercontent.com/swc-project/swc/38c1799aa48ef4a3bac50e6ded82d7eafb7d691a/LICENSE",
+        "sha256": "d96eba1f1881334d50ffc144276dfa98e147a415e7c591ecdfcb81680361dc91",
+        "revision": "38c1799aa48ef4a3bac50e6ded82d7eafb7d691a",
+        "publishedRevisionMatched": false
+      }
+    ]
+  },
+  "swc_ecma_transforms_react-50.0.0": {
+    "repository": "https://github.com/swc-project/swc.git",
+    "revision": "a2a8ad9118b8bc3ced5d4cc1dd74f10b0ffb17e1",
+    "pathInVcs": "crates/swc_ecma_transforms_react",
+    "license": "Apache-2.0",
+    "notices": [
+      {
+        "path": "tools/package/notices/swc-project-swc-00ec64fe9a4da0973f14721d7b6dc1f13cd75413/LICENSE",
+        "url": "https://raw.githubusercontent.com/swc-project/swc/38c1799aa48ef4a3bac50e6ded82d7eafb7d691a/LICENSE",
+        "sha256": "d96eba1f1881334d50ffc144276dfa98e147a415e7c591ecdfcb81680361dc91",
+        "revision": "38c1799aa48ef4a3bac50e6ded82d7eafb7d691a",
+        "publishedRevisionMatched": false
+      }
+    ]
+  },
+  "swc_ecma_transforms_typescript-50.0.0": {
+    "repository": "https://github.com/swc-project/swc.git",
+    "revision": "a2a8ad9118b8bc3ced5d4cc1dd74f10b0ffb17e1",
+    "pathInVcs": "crates/swc_ecma_transforms_typescript",
+    "license": "Apache-2.0",
+    "notices": [
+      {
+        "path": "tools/package/notices/swc-project-swc-00ec64fe9a4da0973f14721d7b6dc1f13cd75413/LICENSE",
+        "url": "https://raw.githubusercontent.com/swc-project/swc/38c1799aa48ef4a3bac50e6ded82d7eafb7d691a/LICENSE",
+        "sha256": "d96eba1f1881334d50ffc144276dfa98e147a415e7c591ecdfcb81680361dc91",
+        "revision": "38c1799aa48ef4a3bac50e6ded82d7eafb7d691a",
+        "publishedRevisionMatched": false
+      }
+    ]
+  },
+  "swc_ecma_utils-31.0.2": {
+    "repository": "https://github.com/swc-project/swc.git",
+    "revision": "f35759acab9a1518cb3c69fecfa6cf2eab41e09e",
+    "pathInVcs": "crates/swc_ecma_utils",
+    "license": "Apache-2.0",
+    "notices": [
+      {
+        "path": "tools/package/notices/swc-project-swc-00ec64fe9a4da0973f14721d7b6dc1f13cd75413/LICENSE",
+        "url": "https://raw.githubusercontent.com/swc-project/swc/38c1799aa48ef4a3bac50e6ded82d7eafb7d691a/LICENSE",
+        "sha256": "d96eba1f1881334d50ffc144276dfa98e147a415e7c591ecdfcb81680361dc91",
+        "revision": "38c1799aa48ef4a3bac50e6ded82d7eafb7d691a",
+        "publishedRevisionMatched": false
+      }
+    ]
+  },
+  "swc_ecma_visit-25.0.0": {
+    "repository": "https://github.com/swc-project/swc.git",
+    "revision": "5507eb8d37c025dbe25c68e03f8c6381db976603",
+    "pathInVcs": "crates/swc_ecma_visit",
+    "license": "Apache-2.0",
+    "notices": [
+      {
+        "path": "tools/package/notices/swc-project-swc-00ec64fe9a4da0973f14721d7b6dc1f13cd75413/LICENSE",
+        "url": "https://raw.githubusercontent.com/swc-project/swc/38c1799aa48ef4a3bac50e6ded82d7eafb7d691a/LICENSE",
+        "sha256": "d96eba1f1881334d50ffc144276dfa98e147a415e7c591ecdfcb81680361dc91",
+        "revision": "38c1799aa48ef4a3bac50e6ded82d7eafb7d691a",
+        "publishedRevisionMatched": false
+      }
+    ]
+  },
+  "swc_eq_ignore_macros-1.0.1": {
+    "repository": "https://github.com/swc-project/swc.git",
+    "revision": "832d537695a07e539660096883fab52bb7f10ecf",
+    "pathInVcs": "crates/swc_eq_ignore_macros",
+    "license": "Apache-2.0",
+    "notices": [
+      {
+        "path": "tools/package/notices/swc-project-swc-00ec64fe9a4da0973f14721d7b6dc1f13cd75413/LICENSE",
+        "url": "https://raw.githubusercontent.com/swc-project/swc/38c1799aa48ef4a3bac50e6ded82d7eafb7d691a/LICENSE",
+        "sha256": "d96eba1f1881334d50ffc144276dfa98e147a415e7c591ecdfcb81680361dc91",
+        "revision": "38c1799aa48ef4a3bac50e6ded82d7eafb7d691a",
+        "publishedRevisionMatched": false
+      }
+    ]
+  },
+  "swc_macros_common-1.0.1": {
+    "repository": "https://github.com/swc-project/swc.git",
+    "revision": "832d537695a07e539660096883fab52bb7f10ecf",
+    "pathInVcs": "crates/swc_macros_common",
+    "license": "Apache-2.0",
+    "notices": [
+      {
+        "path": "tools/package/notices/swc-project-swc-00ec64fe9a4da0973f14721d7b6dc1f13cd75413/LICENSE",
+        "url": "https://raw.githubusercontent.com/swc-project/swc/38c1799aa48ef4a3bac50e6ded82d7eafb7d691a/LICENSE",
+        "sha256": "d96eba1f1881334d50ffc144276dfa98e147a415e7c591ecdfcb81680361dc91",
+        "revision": "38c1799aa48ef4a3bac50e6ded82d7eafb7d691a",
+        "publishedRevisionMatched": false
+      }
+    ]
+  },
+  "swc_sourcemap-10.0.2": {
+    "repository": "https://github.com/swc-project/swc.git",
+    "revision": "f10b83098a834b7704c22df2c0db5539dee62893",
+    "pathInVcs": "crates/swc_sourcemap",
+    "license": "BSD-3-Clause",
+    "missingSeparateNotice": true,
+    "notices": [
+      {
+        "path": "tools/package/notices/swc-project-swc-f10b83098a834b7704c22df2c0db5539dee62893/UPSTREAM-Cargo.toml.orig",
+        "url": "https://github.com/swc-project/swc.git",
+        "revision": "f10b83098a834b7704c22df2c0db5539dee62893",
+        "publishedRevisionMatched": true,
+        "missingSeparateNotice": true,
+        "sha256": "7de72cc5dafa9fba64d0d2019992b3b693acbf8473e6bdf6180fa68a094d4198"
+      }
+    ]
+  },
+  "swc_ts_fast_strip-53.0.0": {
+    "repository": "https://github.com/swc-project/swc.git",
+    "revision": "a2a8ad9118b8bc3ced5d4cc1dd74f10b0ffb17e1",
+    "pathInVcs": "crates/swc_ts_fast_strip",
+    "license": "Apache-2.0",
+    "notices": [
+      {
+        "path": "tools/package/notices/swc-project-swc-00ec64fe9a4da0973f14721d7b6dc1f13cd75413/LICENSE",
+        "url": "https://raw.githubusercontent.com/swc-project/swc/38c1799aa48ef4a3bac50e6ded82d7eafb7d691a/LICENSE",
+        "sha256": "d96eba1f1881334d50ffc144276dfa98e147a415e7c591ecdfcb81680361dc91",
+        "revision": "38c1799aa48ef4a3bac50e6ded82d7eafb7d691a",
+        "publishedRevisionMatched": false
+      }
+    ]
+  },
+  "swc_visit-2.0.2": {
+    "repository": "https://github.com/swc-project/swc.git",
+    "revision": "59a9a43a8d6c826de58766a111c459af68828ab1",
+    "pathInVcs": "crates/swc_visit",
+    "license": "Apache-2.0",
+    "notices": [
+      {
+        "path": "tools/package/notices/swc-project-swc-00ec64fe9a4da0973f14721d7b6dc1f13cd75413/LICENSE",
+        "url": "https://raw.githubusercontent.com/swc-project/swc/38c1799aa48ef4a3bac50e6ded82d7eafb7d691a/LICENSE",
+        "sha256": "d96eba1f1881334d50ffc144276dfa98e147a415e7c591ecdfcb81680361dc91",
+        "revision": "38c1799aa48ef4a3bac50e6ded82d7eafb7d691a",
+        "publishedRevisionMatched": false
+      }
+    ]
+  },
+  "uuid-simd-0.8.0": {
+    "repository": "https://github.com/Nugine/simd",
+    "revision": "d74c030d9dc4f3cae02146d1f497ff62726ef09a",
+    "pathInVcs": "crates/uuid-simd",
+    "license": "MIT",
+    "notices": [
+      {
+        "path": "tools/package/notices/Nugine-simd-d74c030d9dc4f3cae02146d1f497ff62726ef09a/LICENSE",
+        "url": "https://raw.githubusercontent.com/Nugine/simd/d74c030d9dc4f3cae02146d1f497ff62726ef09a/LICENSE",
+        "sha256": "71674605ec4c087fe9eb534e3e4f9e26eb2e4aabcd76a29fd156c6a844d44b3d",
+        "revision": "d74c030d9dc4f3cae02146d1f497ff62726ef09a",
+        "publishedRevisionMatched": true
+      }
+    ]
+  },
+  "valuable-0.1.1": {
+    "repository": "https://github.com/tokio-rs/valuable",
+    "revision": "9efc29b6e58cef28f6566a47aa7e142a55fead77",
+    "pathInVcs": "valuable",
+    "license": "MIT",
+    "missingSeparateNotice": false,
+    "notices": [
+      {
+        "path": "tools/package/notices/tokio-rs-valuable-9efc29b6e58cef28f6566a47aa7e142a55fead77/LICENSE",
+        "url": "https://raw.githubusercontent.com/tokio-rs/valuable/9efc29b6e58cef28f6566a47aa7e142a55fead77/LICENSE",
+        "sha256": "ed60d479b8fd1f64e9cbc3de449a16a53ac1b3d1b6aeb9bf9d190a8e93061b44",
+        "revision": "9efc29b6e58cef28f6566a47aa7e142a55fead77",
+        "publishedRevisionMatched": true
+      }
+    ]
+  },
+  "vsimd-0.8.0": {
+    "repository": "https://github.com/Nugine/simd",
+    "revision": "d74c030d9dc4f3cae02146d1f497ff62726ef09a",
+    "pathInVcs": "crates/vsimd",
+    "license": "MIT",
+    "notices": [
+      {
+        "path": "tools/package/notices/Nugine-simd-d74c030d9dc4f3cae02146d1f497ff62726ef09a/LICENSE",
+        "url": "https://raw.githubusercontent.com/Nugine/simd/d74c030d9dc4f3cae02146d1f497ff62726ef09a/LICENSE",
+        "sha256": "71674605ec4c087fe9eb534e3e4f9e26eb2e4aabcd76a29fd156c6a844d44b3d",
+        "revision": "d74c030d9dc4f3cae02146d1f497ff62726ef09a",
+        "publishedRevisionMatched": true
+      }
+    ]
+  },
+  "zen-engine-2.1.3": {
+    "repository": "https://github.com/gorules/zen.git",
+    "revision": "6ccf7f6013444ad97992c5faa7015942f3e62e33",
+    "pathInVcs": "core/engine",
+    "license": "MIT",
+    "missingSeparateNotice": false,
+    "notices": [
+      {
+        "path": "tools/package/notices/gorules-zen-6ccf7f6013444ad97992c5faa7015942f3e62e33/LICENSE",
+        "url": "https://raw.githubusercontent.com/gorules/zen/6ccf7f6013444ad97992c5faa7015942f3e62e33/LICENSE",
+        "sha256": "2493262dd0c053f65dea03b3286a3c835f98c24264cda6d5c5b444d8ea5af6b3",
+        "revision": "6ccf7f6013444ad97992c5faa7015942f3e62e33",
+        "publishedRevisionMatched": true
+      }
+    ]
+  },
+  "zen-expression-2.1.3": {
+    "repository": "https://github.com/gorules/zen.git",
+    "revision": "6ccf7f6013444ad97992c5faa7015942f3e62e33",
+    "pathInVcs": "core/expression",
+    "license": "MIT",
+    "notices": [
+      {
+        "path": "tools/package/notices/gorules-zen-6ccf7f6013444ad97992c5faa7015942f3e62e33/LICENSE",
+        "url": "https://raw.githubusercontent.com/gorules/zen/6ccf7f6013444ad97992c5faa7015942f3e62e33/LICENSE",
+        "sha256": "2493262dd0c053f65dea03b3286a3c835f98c24264cda6d5c5b444d8ea5af6b3",
+        "revision": "6ccf7f6013444ad97992c5faa7015942f3e62e33",
+        "publishedRevisionMatched": true
+      }
+    ]
+  },
+  "zen-macros-2.1.3": {
+    "repository": "https://github.com/gorules/zen.git",
+    "revision": "6ccf7f6013444ad97992c5faa7015942f3e62e33",
+    "pathInVcs": "core/macros",
+    "license": "MIT",
+    "notices": [
+      {
+        "path": "tools/package/notices/gorules-zen-6ccf7f6013444ad97992c5faa7015942f3e62e33/LICENSE",
+        "url": "https://raw.githubusercontent.com/gorules/zen/6ccf7f6013444ad97992c5faa7015942f3e62e33/LICENSE",
+        "sha256": "2493262dd0c053f65dea03b3286a3c835f98c24264cda6d5c5b444d8ea5af6b3",
+        "revision": "6ccf7f6013444ad97992c5faa7015942f3e62e33",
+        "publishedRevisionMatched": true
+      }
+    ]
+  },
+  "zen-tmpl-2.1.3": {
+    "repository": "https://github.com/gorules/zen.git",
+    "revision": "6ccf7f6013444ad97992c5faa7015942f3e62e33",
+    "pathInVcs": "core/template",
+    "license": "MIT",
+    "notices": [
+      {
+        "path": "tools/package/notices/gorules-zen-6ccf7f6013444ad97992c5faa7015942f3e62e33/LICENSE",
+        "url": "https://raw.githubusercontent.com/gorules/zen/6ccf7f6013444ad97992c5faa7015942f3e62e33/LICENSE",
+        "sha256": "2493262dd0c053f65dea03b3286a3c835f98c24264cda6d5c5b444d8ea5af6b3",
+        "revision": "6ccf7f6013444ad97992c5faa7015942f3e62e33",
+        "publishedRevisionMatched": true
+      }
+    ]
+  },
+  "zen-types-2.1.3": {
+    "repository": "https://github.com/gorules/zen.git",
+    "revision": "6ccf7f6013444ad97992c5faa7015942f3e62e33",
+    "pathInVcs": "core/types",
+    "license": "MIT",
+    "notices": [
+      {
+        "path": "tools/package/notices/gorules-zen-6ccf7f6013444ad97992c5faa7015942f3e62e33/LICENSE",
+        "url": "https://raw.githubusercontent.com/gorules/zen/6ccf7f6013444ad97992c5faa7015942f3e62e33/LICENSE",
+        "sha256": "2493262dd0c053f65dea03b3286a3c835f98c24264cda6d5c5b444d8ea5af6b3",
+        "revision": "6ccf7f6013444ad97992c5faa7015942f3e62e33",
+        "publishedRevisionMatched": true
+      }
+    ]
+  }
+}
