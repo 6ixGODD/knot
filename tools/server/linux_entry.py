@@ -17,6 +17,9 @@ def main():
     parser.add_argument("--stage", choices=("native", "security"), default="native")
     args = parser.parse_args()
     run = Runner(args.out)
+    modules = Path(run.env["CARGO_TARGET_DIR"]).parent / "go-mod-cache"
+    modules.mkdir(parents=True, exist_ok=True)
+    run.env["GOMODCACHE"] = str(modules)
     (run.out / "evidence.json").write_text('{"passed":false}\n')
     tools = Path(os.environ["CARGO_TARGET_DIR"]).parent / "tools"
     run.run("bootstrap", [sys.executable, "tools/server/bootstrap.py", "--out", tools], timeout=300)
