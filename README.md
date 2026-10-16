@@ -1,6 +1,6 @@
 # KNOT
 
-KNOT is an in-process product configuration kernel. It accepts a versioned JSON product and returns complete state, price, flow and visual descriptions through a C ABI and C++17, Python and Go clients. It does not render, store sessions, authorize payments or run a service.
+KNOT is an in-process product configuration kernel. It accepts a versioned JSON product and returns complete state, price, flow and visual descriptions through a C ABI and C++17, Python and Go clients. It does not render, store sessions or authorize payments.
 
 Use the internally supplied SDK. It includes precompiled shared/static libraries, CMake targets, schemas, examples, dependency notices and the CLI.
 
@@ -9,3 +9,5 @@ Available internal packages target Windows x86_64 MSVC and Linux x86_64 GNU. C/C
 Start with [Quickstart](docs/quickstart.md). See [integration and ownership](docs/integration.md), [C API](docs/c-api.md), [C++ API](docs/cpp-api.md), [DSL](docs/dsl-reference.md), [state machine](docs/state-machine.md), [pricing](docs/pricing.md), [visual IR](docs/visual-ir.md), [limits](docs/limits.md), and [troubleshooting](docs/troubleshooting.md).
 
 Third-party notices, including those for the private JSON dependency, are included in the package.
+
+The stateless gRPC server exposes Initial, Apply and Evaluate with JSON payloads and mutual TLS. See the [gRPC contract](docs/grpc-api.md) and [internal container deployment](docs/deployment.md). The native SDK remains available independently.

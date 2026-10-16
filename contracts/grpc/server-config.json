@@ -1,0 +1,207 @@
+{
+  "exitCodes": {
+    "healthcheck": {
+      "failure": 1,
+      "serving": 0
+    },
+    "serve": {
+      "configuration": 2,
+      "drainTimeout": 5,
+      "internal": 4,
+      "model": 3,
+      "normal": 0
+    }
+  },
+  "fixedLimits": {
+    "businessRpc": 64,
+    "decodeBytes": 1048576,
+    "directoryEntries": 1024,
+    "encodeBytes": 4195328,
+    "handshakeMs": 5000,
+    "headerBytes": 16384,
+    "healthStreams": 8,
+    "modelInputBytes": 67108864,
+    "models": 64,
+    "streamsPerConnection": 8
+  },
+  "schemaVersion": "1.0",
+  "subcommands": [
+    {
+      "name": "serve",
+      "options": [
+        {
+          "default": "127.0.0.1:50051",
+          "enum": [],
+          "env": "KNOT_LISTEN",
+          "flag": "listen",
+          "max": null,
+          "min": null,
+          "requiredWhen": null,
+          "type": "socket"
+        },
+        {
+          "default": null,
+          "enum": [],
+          "env": "KNOT_MODEL_DIR",
+          "flag": "model-dir",
+          "max": null,
+          "min": null,
+          "requiredWhen": "always",
+          "type": "path"
+        },
+        {
+          "default": "mtls",
+          "enum": [
+            "mtls",
+            "plaintext"
+          ],
+          "env": "KNOT_TRANSPORT",
+          "flag": "transport",
+          "max": null,
+          "min": null,
+          "requiredWhen": null,
+          "type": "enum"
+        },
+        {
+          "default": null,
+          "enum": [],
+          "env": "KNOT_TLS_CERT",
+          "flag": "tls-cert",
+          "max": null,
+          "min": null,
+          "requiredWhen": "mtls",
+          "type": "path"
+        },
+        {
+          "default": null,
+          "enum": [],
+          "env": "KNOT_TLS_KEY",
+          "flag": "tls-key",
+          "max": null,
+          "min": null,
+          "requiredWhen": "mtls",
+          "type": "path"
+        },
+        {
+          "default": null,
+          "enum": [],
+          "env": "KNOT_CLIENT_CA",
+          "flag": "client-ca",
+          "max": null,
+          "min": null,
+          "requiredWhen": "mtls",
+          "type": "path"
+        },
+        {
+          "default": "4",
+          "enum": [],
+          "env": "KNOT_MAX_COMPUTE",
+          "flag": "max-compute",
+          "max": 64,
+          "min": 1,
+          "requiredWhen": null,
+          "type": "integer"
+        },
+        {
+          "default": "64",
+          "enum": [],
+          "env": "KNOT_MAX_CONNECTIONS",
+          "flag": "max-connections",
+          "max": 256,
+          "min": 1,
+          "requiredWhen": null,
+          "type": "integer"
+        },
+        {
+          "default": "30000",
+          "enum": [],
+          "env": "KNOT_REQUEST_TIMEOUT_MS",
+          "flag": "request-timeout-ms",
+          "max": 300000,
+          "min": 1,
+          "requiredWhen": null,
+          "type": "integer"
+        },
+        {
+          "default": "10000",
+          "enum": [],
+          "env": "KNOT_SHUTDOWN_GRACE_MS",
+          "flag": "shutdown-grace-ms",
+          "max": 120000,
+          "min": 1,
+          "requiredWhen": null,
+          "type": "integer"
+        }
+      ]
+    },
+    {
+      "name": "healthcheck",
+      "options": [
+        {
+          "default": null,
+          "enum": [],
+          "env": "KNOT_HEALTH_ENDPOINT",
+          "flag": "endpoint",
+          "max": null,
+          "min": null,
+          "requiredWhen": "always",
+          "type": "url"
+        },
+        {
+          "default": null,
+          "enum": [],
+          "env": "KNOT_HEALTH_CA",
+          "flag": "ca",
+          "max": null,
+          "min": null,
+          "requiredWhen": "https",
+          "type": "path"
+        },
+        {
+          "default": null,
+          "enum": [],
+          "env": "KNOT_HEALTH_CERT",
+          "flag": "cert",
+          "max": null,
+          "min": null,
+          "requiredWhen": "https",
+          "type": "path"
+        },
+        {
+          "default": null,
+          "enum": [],
+          "env": "KNOT_HEALTH_KEY",
+          "flag": "key",
+          "max": null,
+          "min": null,
+          "requiredWhen": "https",
+          "type": "path"
+        },
+        {
+          "default": null,
+          "enum": [],
+          "env": "KNOT_HEALTH_SERVER_NAME",
+          "flag": "server-name",
+          "max": null,
+          "min": null,
+          "requiredWhen": "https",
+          "type": "string"
+        },
+        {
+          "default": "2000",
+          "enum": [],
+          "env": "KNOT_HEALTH_TIMEOUT_MS",
+          "flag": "timeout-ms",
+          "max": 30000,
+          "min": 1,
+          "requiredWhen": null,
+          "type": "integer"
+        }
+      ]
+    },
+    {
+      "name": "describe-config",
+      "options": []
+    }
+  ]
+}

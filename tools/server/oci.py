@@ -1,0 +1,57 @@
+"""Validate the complete OCI descriptor graph and identify runtime attestations."""
+import hashlib
+import json
+import re
+from pathlib import Path
+
+
+def inspect_layout(directory):
+    directory = Path(directory)
+    seen = {}
+    def blob(descriptor):
+        digest = descriptor["digest"]
+        if not re.fullmatch(r"sha256:[0-9a-f]{64}", digest):
+            raise ValueError("unsupported OCI digest")
+        path = directory / "blobs/sha256" / digest.split(":")[1]
+        with path.open("rb") as stream:
+            actual = hashlib.file_digest(stream, "sha256").hexdigest()
+        if actual != digest.split(":")[1] or path.stat().st_size != descriptor["size"]:
+            raise ValueError("OCI descriptor mismatch")
+        seen[digest] = descriptor["size"]
+        return path
+    def visit(descriptor):
+        first = descriptor["digest"] not in seen
+        path = blob(descriptor)
+        if not first:
+            return
+        media = descriptor.get("mediaType", "")
+        if "manifest" not in media and "index" not in media:
+            return
+        obj = json.loads(path.read_text())
+        for child in obj.get("manifests", []) + obj.get("layers", []) + ([obj["config"]] if "config" in obj else []) + ([obj["subject"]] if "subject" in obj else []):
+            visit(child)
+    index = json.loads((directory / "index.json").read_text())
+    if len(index["manifests"]) != 1:
+        raise ValueError("expected one OCI layout image entry")
+    top = index["manifests"][0]
+    visit(top)
+    image_index = json.loads(blob(top).read_text())
+    runtime = [d for d in image_index.get("manifests", []) if d.get("platform", {}).get("os") == "linux" and d.get("platform", {}).get("architecture") == "amd64"]
+    if len(runtime) != 1:
+        raise ValueError("expected exactly one Linux amd64 runtime")
+    manifest = json.loads(blob(runtime[0]).read_text())
+    config = json.loads(blob(manifest["config"]).read_text())
+    predicates = []
+    for entry in image_index["manifests"]:
+        if entry["digest"] == runtime[0]["digest"]:
+            continue
+        attestation = json.loads(blob(entry).read_text())
+        for layer in attestation.get("layers", []):
+            statement = json.loads(blob(layer).read_text())
+            predicate = statement.get("predicateType", "")
+            if not any(s.get("digest", {}).get("sha256") == runtime[0]["digest"].split(":")[1] for s in statement.get("subject", [])):
+                raise ValueError("attestation subject mismatch")
+            predicates.append(predicate)
+    if not any("spdx" in p for p in predicates) or not any("slsa.dev/provenance" in p for p in predicates):
+        raise ValueError("missing SBOM or provenance")
+    return dict(indexDigest=top["digest"], runtimeManifestDigest=runtime[0]["digest"], configDigest=manifest["config"]["digest"], runtimeConfig=config, predicates=predicates, verifiedBlobs=seen)
