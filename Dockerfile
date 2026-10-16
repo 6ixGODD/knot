@@ -1,3 +1,5 @@
+# Include Cargo.lock dependencies as build-context SBOM evidence.
+ARG BUILDKIT_SBOM_SCAN_CONTEXT=true
 FROM --platform=linux/amd64 rust:1.97.1-bookworm@sha256:0e2bcaef56d041a486784e54104a81aebe0da44bd03019bd70bc0401e42e4a97 AS build
 WORKDIR /src
 ADD --checksum=sha256:121f6c7afe1d4d0e3ea6aab9432038599250134cbf4474cb1167d2c7decd4278 https://github.com/protocolbuffers/protobuf/releases/download/v36.2/protoc-36.2-linux-x86_64.zip /tmp/protoc.zip
