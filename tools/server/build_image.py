@@ -38,7 +38,7 @@ def main():
     run.run("context", [sys.executable, "tools/server/build_context.py", "--out", str(context)], timeout=120)
     layout = run.out / "layout"
     tag = "knot-internal:" + version + "-" + commit[:12]
-    run.run("oci-build", [buildx, "build", "--builder", args.builder, "--platform", "linux/amd64", "--provenance=mode=max", "--sbom=true", "--build-arg", "SOURCE_COMMIT=" + commit, "--build-arg", "WORKSPACE_VERSION=" + version, "--metadata-file", str(run.out / "build-metadata.json"), "--output", "type=oci,dest=" + str(layout) + ",tar=false,name=" + tag, str(context)], timeout=10800)
+    run.run("oci-build", [buildx, "build", "--builder", args.builder, "--platform", "linux/amd64", "--provenance=mode=max", "--attest", "type=sbom,generator=" + lock["images"]["sbom"], "--build-arg", "SOURCE_COMMIT=" + commit, "--build-arg", "WORKSPACE_VERSION=" + version, "--metadata-file", str(run.out / "build-metadata.json"), "--output", "type=oci,dest=" + str(layout) + ",tar=false,name=" + tag, str(context)], timeout=10800)
     evidence = inspect_layout(layout)
     skopeo_version = run.run("skopeo-version", ["docker", "run", "--rm", lock["images"]["skopeo"], "--version"], timeout=300).strip()
     expected_skopeo = "skopeo version " + lock["skopeo"]["version"] + " commit: " + lock["skopeo"]["commit"]
