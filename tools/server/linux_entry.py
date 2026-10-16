@@ -8,7 +8,7 @@ import sys
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "verify"))
-from common import Runner
+from common import ROOT, Runner
 
 
 def main():
@@ -28,7 +28,13 @@ def main():
     run.run("native-regression", [sys.executable, "tools/verify/all.py", "--stage", "native", "--out", run.out / "native"], timeout=10800)
     run.run("server-build", ["cargo", "build", "-p", "knot-server", "--bins", "--examples", "--locked"])
     target = Path(run.env["CARGO_TARGET_DIR"])
-    run.run("server-process", [sys.executable, "tools/server/verify.py", "--server", target / "debug/knot-server", "--probe", target / "debug/examples/grpc_probe", "--contracts", "contracts", "--out", run.out / "server"], timeout=300)
+    go_env = dict(run.env, CGO_ENABLED="0", GOTOOLCHAIN="local", GOMAXPROCS="1", GOFLAGS="-p=1", GOCACHE=str(target.parent / "go-cache"), GOTMPDIR=str(target.parent / "go-tmp"))
+    Path(go_env["GOTMPDIR"]).mkdir(exist_ok=True)
+    go_client = target.parent / "go-client"
+    for label, command in (("go-test", ["go", "test", "./..."]), ("go-vet", ["go", "vet", "./..."]), ("go-build", ["go", "build", "-trimpath", "-o", str(go_client), "."])):
+        run.run(label, command, cwd=ROOT / "examples/grpc/go", env=go_env)
+    run.run("server-process", [sys.executable, "tools/server/verify.py", "--server", target / "debug/knot-server", "--probe", target / "debug/examples/grpc_probe", "--contracts", "contracts", "--go-client", go_client, "--model-manifest", target / "debug/examples/model_manifest", "--out", run.out / "server"], timeout=300)
+    run.run("connections", [sys.executable, "tools/server/verify_connections.py", "--server", target / "debug/knot-server", "--models", run.out / "server/models", "--out", run.out / "connections"], timeout=90)
     (run.out / "evidence.json").write_text(json.dumps(dict(passed=True, platform="linux/amd64", native=True, server=True), indent=2) + "\n")
 
 
