@@ -138,6 +138,34 @@ async fn frozen_runtime_corpus_over_tcp() {
             .code(),
         tonic::Code::NotFound
     );
+    // Both byte ceilings precede either JSON parse, even when State is malformed.
+    let model = knot_compiler::compile_product(
+        &fs::read(root.parent().unwrap().join("examples/speaker.json")).unwrap(),
+        &knot_rules_zen::ZenCompiler,
+    )
+    .unwrap();
+    for (state, event, maximum) in [
+        (vec![0xff], vec![b' '; 65537], 65536),
+        (vec![b' '; 524289], vec![b' '; 65537], 524288),
+    ] {
+        let reply = client
+            .apply(protocol::ApplyRequest {
+                model_digest: Some(model.digest().to_owned()),
+                state_json: Some(state),
+                event_json: Some(event),
+            })
+            .await
+            .unwrap()
+            .into_inner();
+        let Some(protocol::configuration_response::Outcome::ErrorJson(bytes)) = reply.outcome
+        else {
+            panic!("expected bounded input error");
+        };
+        let error: Value = serde_json::from_slice(&bytes).unwrap();
+        assert_eq!(error["error"]["code"], "RESOURCE_LIMIT");
+        assert_eq!(error["error"]["details"]["limit"], "inputBytes");
+        assert_eq!(error["error"]["details"]["maximum"], maximum);
+    }
     // Actual HTTP/2 gRPC framing, bypassing generated client validation.
     for (payload, declared, expected_status) in [
         (vec![0x0a, 0x01, 0xff], 3u32, "3"),

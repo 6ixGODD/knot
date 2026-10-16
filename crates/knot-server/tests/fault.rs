@@ -87,6 +87,9 @@ impl RuleProgram for Program {
 async fn fault_is_published_before_inflight_success() {
     run_fault_case(true, None).await;
     run_fault_case(false, Some("UNRECOGNIZED_TEST_CODE")).await;
+    for code in ["NULL_ARGUMENT", "INVALID_MODEL", "RULE_COMPILE"] {
+        run_fault_case(false, Some(code)).await;
+    }
 }
 async fn run_fault_case(panic_second: bool, fault_code: Option<&'static str>) {
     let (started_tx, started_rx) = tokio::sync::oneshot::channel();
@@ -142,11 +145,11 @@ async fn run_fault_case(panic_second: bool, fault_code: Option<&'static str>) {
         .initial(protocol::InitialRequest {
             model_digest: Some(digest.clone()),
         })
-        .await
-        .unwrap_err();
-    assert_eq!(failure.code(), tonic::Code::Internal);
-    assert!(life.faulted());
+        .await;
+    // Always unblock the worker before assertions, including a failing regression.
     release_tx.send(()).unwrap();
+    assert_eq!(failure.unwrap_err().code(), tonic::Code::Internal);
+    assert!(life.faulted());
     assert_eq!(
         in_flight.await.unwrap().unwrap_err().code(),
         tonic::Code::Internal

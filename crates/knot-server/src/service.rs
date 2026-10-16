@@ -49,6 +49,16 @@ impl Service {
         let started = std::time::Instant::now();
         let task = self.lifecycle.spawn(move || {
             let result = catch_unwind(AssertUnwindSafe(|| -> Result<Vec<u8>, KnotError> {
+                for (bytes, maximum) in [
+                    (state.as_deref(), knot_schema::parse::STATE_BYTES),
+                    (event.as_deref(), knot_schema::parse::EVENT_BYTES),
+                ] {
+                    if let Some(bytes) = bytes
+                        && bytes.len() > maximum
+                    {
+                        return Err(KnotError::limit("inputBytes", maximum, bytes.len()));
+                    }
+                }
                 let result = match operation {
                     0 => knot_core::initial(&model)?,
                     1 => {
@@ -73,17 +83,27 @@ impl Service {
                         )?,
                     )?,
                 };
-                json::encode(&result)
+                crate::output::result(&result)
             }));
             let outcome = match result {
                 Ok(Ok(bytes)) => Ok(protocol::configuration_response::Outcome::ResultJson(bytes)),
-                Ok(Err(error)) if error.status() != 1999 => match json::encode(&error.envelope()) {
-                    Ok(bytes) => Ok(protocol::configuration_response::Outcome::ErrorJson(bytes)),
-                    Err(_) => {
-                        life.fault();
-                        Err(Status::internal("error encoding failed"))
+                Ok(Err(error))
+                    if error.status() != 1999
+                        && !matches!(
+                            error.code.as_str(),
+                            "NULL_ARGUMENT" | "INVALID_MODEL" | "RULE_COMPILE"
+                        ) =>
+                {
+                    match crate::output::error(&error.envelope()) {
+                        Ok(bytes) => {
+                            Ok(protocol::configuration_response::Outcome::ErrorJson(bytes))
+                        }
+                        Err(_) => {
+                            life.fault();
+                            Err(Status::internal("error encoding failed"))
+                        }
                     }
-                },
+                }
                 Ok(Err(_)) => {
                     life.fault();
                     Err(Status::internal("internal failure"))

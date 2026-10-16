@@ -227,9 +227,8 @@ pub fn parse(
     let args: Vec<_> = args.into_iter().collect();
     // Do not even read environment values for metadata and help.
     let environment = environment
-        && !args
-            .iter()
-            .any(|v| v == "describe-config" || v == "--help" || v == "-h");
+        && !args.get(1).is_some_and(|v| v == "describe-config")
+        && !args.iter().any(|v| v == "--help" || v == "-h");
     Command::new("knot-server")
         .version(env!("CARGO_PKG_VERSION"))
         .subcommand_required(true)

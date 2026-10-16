@@ -11,6 +11,7 @@ pub mod catalog;
 pub mod codec;
 pub mod health;
 pub mod lifecycle;
+mod output;
 pub mod service;
 pub mod telemetry;
 pub mod transport;

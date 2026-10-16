@@ -17,6 +17,8 @@
   "goGrpc": "v1.84.0",
   "goProtobuf": "v1.36.12",
   "goGrpcGenerator": "v1.6.2",
+  "goJsonSchema": "v6.0.3",
+  "goSchemaRegexp": "v1.11.0",
   "buildx": {
     "version": "0.38.0",
     "windowsAmd64Sha256": "b39784aed5b3f9b24d1971bbcbad8c8206033fa63ed4fea82c9141728fe0ea26",

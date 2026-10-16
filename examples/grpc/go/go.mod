@@ -3,6 +3,8 @@ module knot.local/grpc-example
 go 1.26.4
 
 require (
+	github.com/dlclark/regexp2 v1.11.0
+	github.com/santhosh-tekuri/jsonschema/v6 v6.0.3
 	google.golang.org/grpc v1.84.0
 	google.golang.org/protobuf v1.36.12
 )

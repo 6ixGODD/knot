@@ -1,6 +1,5 @@
 FROM --platform=linux/amd64 rust:1.97.1-bookworm@sha256:0e2bcaef56d041a486784e54104a81aebe0da44bd03019bd70bc0401e42e4a97 AS build
 WORKDIR /src
-RUN apt-get update && apt-get install -y --no-install-recommends unzip python3 && rm -rf /var/lib/apt/lists/*
 ADD --checksum=sha256:121f6c7afe1d4d0e3ea6aab9432038599250134cbf4474cb1167d2c7decd4278 https://github.com/protocolbuffers/protobuf/releases/download/v36.2/protoc-36.2-linux-x86_64.zip /tmp/protoc.zip
 RUN unzip /tmp/protoc.zip -d /opt/protoc && /opt/protoc/bin/protoc --version
 ENV PROTOC=/opt/protoc/bin/protoc CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0

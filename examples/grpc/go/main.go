@@ -24,6 +24,9 @@ func result(reply *knotv1.ConfigurationResponse) (json.RawMessage, error) {
 	}
 	switch outcome := reply.Outcome.(type) {
 	case *knotv1.ConfigurationResponse_ResultJson:
+		if err := validateResponse("result", outcome.ResultJson); err != nil {
+			return nil, err
+		}
 		if len(outcome.ResultJson) == 0 || !json.Valid(outcome.ResultJson) {
 			return nil, errors.New("invalid result JSON")
 		}
@@ -53,6 +56,9 @@ func result(reply *knotv1.ConfigurationResponse) (json.RawMessage, error) {
 	}
 }
 func errorCode(raw []byte) (string, error) {
+	if err := validateResponse("error", raw); err != nil {
+		return "", err
+	}
 	invalid := errors.New("invalid error envelope")
 	var envelope map[string]json.RawMessage
 	if json.Unmarshal(raw, &envelope) != nil || len(envelope) != 2 || string(envelope["schemaVersion"]) != `"1.0"` {
@@ -68,7 +74,7 @@ func errorCode(raw []byte) (string, error) {
 	}
 	for _, name := range []string{"message", "path"} {
 		var value *string
-		if json.Unmarshal(detail[name], &value) != nil || value == nil {
+		if json.Unmarshal(detail[name], &value) != nil || value == nil || name == "message" && *value == "" {
 			return "", invalid
 		}
 	}

@@ -46,4 +46,16 @@ fn explicit_flags_override_invalid_environment() {
         Some(3),
         "valid CLI must reach model loading"
     );
+    let named_like_command = Command::new(executable)
+        .args([
+            "serve",
+            "--transport",
+            "plaintext",
+            "--model-dir",
+            "describe-config",
+        ])
+        .env("KNOT_MAX_COMPUTE", "invalid")
+        .output()
+        .unwrap();
+    assert_eq!(named_like_command.status.code(), Some(2));
 }
