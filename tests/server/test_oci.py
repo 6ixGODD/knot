@@ -25,7 +25,7 @@ class OciIntegrity(unittest.TestCase):
         (self.root / "blobs/sha256" / digest).write_bytes(data)
         return dict(mediaType=media, digest="sha256:" + digest, size=len(data))
 
-    def layout(self, *, subject=True, provenance=True):
+    def layout(self, *, subject=True, provenance=True, cargo=False):
         config_type = "application/vnd.oci.image.config.v1+json"
         manifest_type = "application/vnd.oci.image.manifest.v1+json"
         index_type = "application/vnd.oci.image.index.v1+json"
@@ -37,7 +37,8 @@ class OciIntegrity(unittest.TestCase):
         if provenance:
             predicates.append("https://slsa.dev/provenance/v0.2")
         for predicate in predicates:
-            layers.append(self.blob(dict(predicateType=predicate, subject=[dict(digest=dict(sha256=runtime["digest"].split(":")[1] if subject else "0" * 64))]), "application/vnd.in-toto+json"))
+            document = dict(packages=[dict(externalRefs=[dict(referenceLocator="pkg:cargo/example@1.2.3")])]) if cargo and predicate == "https://spdx.dev/Document" else {}
+            layers.append(self.blob(dict(predicateType=predicate, predicate=document, subject=[dict(digest=dict(sha256=runtime["digest"].split(":")[1] if subject else "0" * 64))]), "application/vnd.in-toto+json"))
         attestation = self.blob(dict(schemaVersion=2, config=self.blob({}, config_type), layers=layers), manifest_type)
         attestation["platform"] = dict(os="unknown", architecture="unknown")
         top = self.blob(dict(schemaVersion=2, manifests=[runtime, attestation]), index_type)
@@ -54,6 +55,20 @@ class OciIntegrity(unittest.TestCase):
         (self.root / "blobs/sha256" / config["digest"].split(":")[1]).write_bytes(b"corrupt")
         with self.assertRaisesRegex(ValueError, "descriptor mismatch"):
             inspect_layout(self.root)
+
+    def cargo_lock(self):
+        path = self.root / "Cargo.lock"
+        path.write_text('[[package]]\nname="example"\nversion="1.2.3"\nsource="registry+https://example.invalid"\n')
+        return path
+
+    def test_missing_cargo_inventory(self):
+        self.layout()
+        with self.assertRaisesRegex(ValueError, "missing locked Cargo packages"):
+            inspect_layout(self.root, cargo_lock=self.cargo_lock())
+
+    def test_complete_cargo_inventory(self):
+        self.layout(cargo=True)
+        self.assertEqual(inspect_layout(self.root, cargo_lock=self.cargo_lock())["cargoSbomPackages"], 1)
 
     def test_wrong_descriptor_size(self):
         self.layout()
