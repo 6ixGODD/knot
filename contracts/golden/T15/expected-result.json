@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "1.0",
+  "error": {
+    "code": "VISUAL_CONFLICT",
+    "message": "VISUAL_CONFLICT",
+    "path": "/visual/slots/0",
+    "ruleIds": [
+      "visibility"
+    ],
+    "details": {}
+  }
+}

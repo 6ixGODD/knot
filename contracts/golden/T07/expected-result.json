@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0",
+  "error": {
+    "code": "INVALID_ANSWER",
+    "message": "INVALID_ANSWER",
+    "path": "/answers/n",
+    "ruleIds": [],
+    "details": {}
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "id": "B-revision-noop",
+  "title": "No-op at largest revision",
+  "operation": "apply",
+  "expectedStatus": 0,
+  "modelValidation": "valid"
+}

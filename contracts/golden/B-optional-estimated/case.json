@@ -1,0 +1,7 @@
+{
+  "id": "B-optional-estimated",
+  "title": "Unanswered optional is estimated",
+  "operation": "evaluate",
+  "expectedStatus": 0,
+  "modelValidation": "valid"
+}

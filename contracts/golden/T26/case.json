@@ -1,0 +1,7 @@
+{
+  "id": "T26",
+  "title": "Price addition overflow",
+  "operation": "initial",
+  "expectedStatus": 1011,
+  "modelValidation": "valid"
+}

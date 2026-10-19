@@ -1,0 +1,26 @@
+[package]
+name = "knot-ffi"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+[lib]
+name = "knot_ffi"
+crate-type = ["rlib", "cdylib", "staticlib"]
+[lints]
+workspace = true
+[dependencies]
+knot-schema.workspace = true
+knot-core.workspace = true
+knot-compiler.workspace = true
+knot-rules-zen.workspace = true
+serde_json.workspace = true
+serde.workspace = true
+[dev-dependencies]
+tokio.workspace = true
+[[test]]
+name = "golden"
+path = "../../tests/integration/golden.rs"
+[[test]]
+name = "ffi_cases"
+path = "../../tests/ffi/cases.rs"

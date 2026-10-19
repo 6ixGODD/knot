@@ -1,0 +1,7 @@
+{
+  "id": "B-multi-whole-clear",
+  "title": "One disabled member invalidates whole multi answer",
+  "operation": "apply",
+  "expectedStatus": 0,
+  "modelValidation": "valid"
+}

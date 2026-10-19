@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0",
+  "error": {
+    "code": "NUMERIC_OVERFLOW",
+    "message": "NUMERIC_OVERFLOW",
+    "path": "/pricing",
+    "ruleIds": [],
+    "details": {}
+  }
+}

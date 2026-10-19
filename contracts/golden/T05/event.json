@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0",
+  "type": "set_answer",
+  "questionId": "extras",
+  "expectedRevision": 4,
+  "value": [
+    "led",
+    "bluetooth"
+  ]
+}

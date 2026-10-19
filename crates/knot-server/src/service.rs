@@ -1,0 +1,228 @@
+//! Convert network envelopes without introducing domain semantics.
+use crate::{
+    catalog::Catalog,
+    lifecycle::Lifecycle,
+    protocol::{self, configuration_service_server::ConfigurationService},
+};
+use knot_schema::{KnotError, protocol as json};
+use std::{
+    panic::{AssertUnwindSafe, catch_unwind},
+    sync::Arc,
+};
+use tonic::{Request, Response, Status};
+#[derive(Clone)]
+pub struct Service {
+    pub catalog: Arc<Catalog>,
+    pub lifecycle: Lifecycle,
+}
+fn digest(value: Option<String>) -> Result<String, Status> {
+    let value = value.ok_or_else(|| Status::invalid_argument("missing model_digest"))?;
+    if value.len() != 71
+        || !value.starts_with("sha256:")
+        || !value.as_bytes()[7..]
+            .iter()
+            .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(b))
+    {
+        return Err(Status::invalid_argument("invalid model_digest"));
+    }
+    Ok(value)
+}
+enum Outcome {
+    Success(Vec<u8>),
+    Error(Vec<u8>),
+}
+fn configuration(outcome: Outcome) -> Response<protocol::ConfigurationResponse> {
+    let outcome = match outcome {
+        Outcome::Success(bytes) => protocol::configuration_response::Outcome::ResultJson(bytes),
+        Outcome::Error(bytes) => protocol::configuration_response::Outcome::ErrorJson(bytes),
+    };
+    Response::new(protocol::ConfigurationResponse {
+        outcome: Some(outcome),
+    })
+}
+impl Service {
+    async fn call(
+        &self,
+        digest_value: Option<String>,
+        state: Option<Vec<u8>>,
+        event: Option<Vec<u8>>,
+        operation: u8,
+    ) -> Result<Outcome, Status> {
+        self.lifecycle.admit()?;
+        let digest = digest(digest_value)?;
+        if operation > 0 && state.is_none() || operation == 1 && event.is_none() {
+            return Err(Status::invalid_argument("missing JSON field"));
+        }
+        let model = self
+            .catalog
+            .get(&digest)
+            .cloned()
+            .ok_or_else(|| Status::not_found("model not deployed"))?;
+        let life = self.lifecycle.clone();
+        let started = std::time::Instant::now();
+        let task = self.lifecycle.spawn(move || {
+            let result = catch_unwind(AssertUnwindSafe(|| -> Result<Vec<u8>, KnotError> {
+                for (bytes, maximum) in [
+                    (
+                        state.as_deref(),
+                        if operation == 3 {
+                            768 * 1024
+                        } else {
+                            knot_schema::parse::STATE_BYTES
+                        },
+                    ),
+                    (event.as_deref(), knot_schema::parse::EVENT_BYTES),
+                ] {
+                    if let Some(bytes) = bytes
+                        && bytes.len() > maximum
+                    {
+                        return Err(KnotError::limit("inputBytes", maximum, bytes.len()));
+                    }
+                }
+                if operation == 3 {
+                    let request = json::quote(
+                        state
+                            .as_deref()
+                            .ok_or_else(|| KnotError::new("INTERNAL", ""))?,
+                    )?;
+                    return crate::output::quote(&knot_core::quote(&model, &request)?);
+                }
+                let result = match operation {
+                    0 => knot_core::initial(&model)?,
+                    1 => {
+                        let state = json::state(
+                            state
+                                .as_deref()
+                                .ok_or_else(|| KnotError::new("INTERNAL", ""))?,
+                        )?;
+                        let event = json::event(
+                            event
+                                .as_deref()
+                                .ok_or_else(|| KnotError::new("INTERNAL", ""))?,
+                        )?;
+                        knot_core::apply(&model, &state, &event)?
+                    }
+                    _ => knot_core::evaluate(
+                        &model,
+                        &json::state(
+                            state
+                                .as_deref()
+                                .ok_or_else(|| KnotError::new("INTERNAL", ""))?,
+                        )?,
+                    )?,
+                };
+                crate::output::result(&result)
+            }));
+            let outcome = match result {
+                Ok(Ok(bytes)) => Ok(Outcome::Success(bytes)),
+                Ok(Err(error))
+                    if error.status() != 1999
+                        && !matches!(
+                            error.code.as_str(),
+                            "NULL_ARGUMENT" | "INVALID_MODEL" | "RULE_COMPILE"
+                        ) =>
+                {
+                    match crate::output::error(&error.envelope()) {
+                        Ok(bytes) => Ok(Outcome::Error(bytes)),
+                        Err(_) => {
+                            life.fault();
+                            Err(Status::internal("error encoding failed"))
+                        }
+                    }
+                }
+                Ok(Err(_)) => {
+                    life.fault();
+                    Err(Status::internal("internal failure"))
+                }
+                Err(payload) => {
+                    life.fault();
+                    // A panic payload can itself panic in Drop. Do not unwind past the fault boundary.
+                    if let Err(second) = catch_unwind(AssertUnwindSafe(|| drop(payload))) {
+                        std::mem::forget(second);
+                    }
+                    Err(Status::internal("internal failure"))
+                }
+            };
+            if life.faulted() {
+                return Err(Status::internal("service fault"));
+            }
+            let classification = match &outcome {
+                Ok(Outcome::Success(_)) => "success",
+                Ok(_) => {
+                    life.telemetry
+                        .domain
+                        .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                    "domainError"
+                }
+                Err(_) => "fault",
+            };
+            life.telemetry.request(
+                match operation {
+                    0 => "Initial",
+                    1 => "Apply",
+                    3 => "Quote",
+                    _ => "Evaluate",
+                },
+                classification,
+                &digest,
+                started.elapsed().as_millis(),
+            );
+            outcome
+        })?;
+        let outcome = match task.await {
+            Ok(result) => result?,
+            Err(_) => {
+                self.lifecycle.fault();
+                return Err(Status::internal("worker failure"));
+            }
+        };
+        if self.lifecycle.faulted() {
+            return Err(Status::internal("service fault"));
+        }
+        Ok(outcome)
+    }
+}
+#[tonic::async_trait]
+impl ConfigurationService for Service {
+    async fn quote(
+        &self,
+        request: Request<protocol::QuoteRequest>,
+    ) -> Result<Response<protocol::QuoteResponse>, Status> {
+        let r = request.into_inner();
+        let response = self.call(r.model_digest, r.quote_json, None, 3).await?;
+        let outcome = match response {
+            Outcome::Success(bytes) => protocol::quote_response::Outcome::QuoteJson(bytes),
+            Outcome::Error(bytes) => protocol::quote_response::Outcome::ErrorJson(bytes),
+        };
+        Ok(Response::new(protocol::QuoteResponse {
+            outcome: Some(outcome),
+        }))
+    }
+    async fn initial(
+        &self,
+        request: Request<protocol::InitialRequest>,
+    ) -> Result<Response<protocol::ConfigurationResponse>, Status> {
+        let r = request.into_inner();
+        self.call(r.model_digest, None, None, 0)
+            .await
+            .map(configuration)
+    }
+    async fn apply(
+        &self,
+        request: Request<protocol::ApplyRequest>,
+    ) -> Result<Response<protocol::ConfigurationResponse>, Status> {
+        let r = request.into_inner();
+        self.call(r.model_digest, r.state_json, r.event_json, 1)
+            .await
+            .map(configuration)
+    }
+    async fn evaluate(
+        &self,
+        request: Request<protocol::EvaluateRequest>,
+    ) -> Result<Response<protocol::ConfigurationResponse>, Status> {
+        let r = request.into_inner();
+        self.call(r.model_digest, r.state_json, None, 2)
+            .await
+            .map(configuration)
+    }
+}

@@ -1,0 +1,7 @@
+{
+  "id": "B-blocked-restore",
+  "title": "A blocked state is valid input to evaluate",
+  "operation": "evaluate",
+  "expectedStatus": 0,
+  "modelValidation": "valid"
+}

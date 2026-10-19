@@ -1,0 +1,45 @@
+[package]
+name = "knot-fuzz"
+version = "0.0.0"
+edition = "2024"
+publish = false
+[package.metadata]
+cargo-fuzz = true
+[workspace]
+[dependencies]
+libfuzzer-sys = "=0.4.13"
+knot-schema = { path = "../../crates/knot-schema" }
+knot-compiler = { path = "../../crates/knot-compiler" }
+knot-core = { path = "../../crates/knot-core" }
+knot-rules-zen = { path = "../../crates/knot-rules-zen" }
+serde_json = { version = "=1.0.154", features = ["arbitrary_precision"] }
+[[bin]]
+name = "product"
+path = "fuzz_targets/product.rs"
+test = false
+doc = false
+bench = false
+[[bin]]
+name = "state"
+path = "fuzz_targets/state.rs"
+test = false
+doc = false
+bench = false
+[[bin]]
+name = "event"
+path = "fuzz_targets/event.rs"
+test = false
+doc = false
+bench = false
+[[bin]]
+name = "ast"
+path = "fuzz_targets/ast.rs"
+test = false
+doc = false
+bench = false
+[[bin]]
+name = "operations"
+path = "fuzz_targets/operations.rs"
+test = false
+doc = false
+bench = false

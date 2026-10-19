@@ -1,0 +1,10 @@
+{
+  "id": "T22",
+  "title": "Shared model parallel evaluate",
+  "operation": "evaluate",
+  "expectedStatus": 0,
+  "modelValidation": "valid",
+  "threads": 8,
+  "repetitions": 100,
+  "alternateCase": "T03"
+}

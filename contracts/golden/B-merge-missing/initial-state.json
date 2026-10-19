@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "1.0",
+  "productId": "small",
+  "modelDigest": "sha256:ca1014301e228d8ca1b72d54af9ee872c2b3c524f9e7203f81267dd6cbb66b30",
+  "revision": 2,
+  "answers": {
+    "branch": "right",
+    "right": "#112233"
+  },
+  "skipped": []
+}

@@ -1,0 +1,7 @@
+{
+  "id": "T17",
+  "title": "Undefined condition field rejected",
+  "operation": "model_create",
+  "expectedStatus": 1003,
+  "modelValidation": "semantic-error"
+}

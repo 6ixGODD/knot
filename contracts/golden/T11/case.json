@@ -1,0 +1,7 @@
+{
+  "id": "T11",
+  "title": "Branch switch removes unreachable answers",
+  "operation": "apply",
+  "expectedStatus": 0,
+  "modelValidation": "valid"
+}

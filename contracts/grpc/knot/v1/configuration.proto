@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package knot.v1;
+
+option go_package = "knot.local/grpc-example/gen/knot/v1;knotv1";
+
+service ConfigurationService {
+  rpc Initial(InitialRequest) returns (ConfigurationResponse);
+  rpc Apply(ApplyRequest) returns (ConfigurationResponse);
+  rpc Evaluate(EvaluateRequest) returns (ConfigurationResponse);
+  rpc Quote(QuoteRequest) returns (QuoteResponse);
+}
+
+message InitialRequest {
+  optional string model_digest = 1;
+}
+
+message ApplyRequest {
+  optional string model_digest = 1;
+  optional bytes state_json = 2;
+  optional bytes event_json = 3;
+}
+
+message EvaluateRequest {
+  optional string model_digest = 1;
+  optional bytes state_json = 2;
+}
+
+message ConfigurationResponse {
+  oneof outcome {
+    bytes result_json = 1;
+    bytes error_json = 2;
+  }
+}
+
+message QuoteRequest {
+  optional string model_digest = 1;
+  optional bytes quote_json = 2;
+}
+
+message QuoteResponse {
+  oneof outcome {
+    bytes quote_json = 1;
+    bytes error_json = 2;
+  }
+}

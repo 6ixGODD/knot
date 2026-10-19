@@ -1,0 +1,7 @@
+{
+  "id": "B-quantity-rounding",
+  "title": "Half away from zero",
+  "operation": "apply",
+  "expectedStatus": 0,
+  "modelValidation": "valid"
+}

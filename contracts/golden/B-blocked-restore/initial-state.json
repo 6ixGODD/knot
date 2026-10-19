@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0",
+  "productId": "small",
+  "modelDigest": "sha256:ad2412a3742d7299e4547e1978cbff25acbbc8a2c75a70acabb1ac63a0d43369",
+  "revision": 1,
+  "answers": {
+    "gate": "off"
+  },
+  "skipped": []
+}

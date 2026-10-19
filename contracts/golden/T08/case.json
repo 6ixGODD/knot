@@ -1,0 +1,7 @@
+{
+  "id": "T08",
+  "title": "Fallback branch to cable",
+  "operation": "apply",
+  "expectedStatus": 0,
+  "modelValidation": "valid"
+}

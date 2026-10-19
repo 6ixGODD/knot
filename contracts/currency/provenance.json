@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "1.0",
+  "source": "SIX ISO 4217 List One",
+  "sourceUrl": "https://www.six-group.com/dam/download/financial-information/data-center/iso-currrency/lists/list-one.xml",
+  "publicationDate": "2026-09-17",
+  "sourceSha256": "33139b438657d1cee116ba737807ea71d19d6de4b90f799a09c56f0cc6a1b0ff",
+  "tableFile": "minor-units.json",
+  "tableDigest": "sha256:d1d429783375a1177f44f4ed661849fef44ae43a7d8a19d877c69701889b79fe",
+  "digestEncoding": "SHA-256 of exact UTF-8 table bytes, including final LF",
+  "entryCount": 165,
+  "excludedCodes": [
+    "XAG",
+    "XAU",
+    "XBA",
+    "XBB",
+    "XBC",
+    "XBD",
+    "XDR",
+    "XPD",
+    "XPT",
+    "XSU",
+    "XTS",
+    "XUA",
+    "XXX"
+  ],
+  "selection": "Distinct current alphabetic codes with numeric minor units; exclude XTS, XXX and N.A.; no country names or standard text."
+}

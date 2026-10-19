@@ -1,0 +1,11 @@
+{
+  "id": "T24",
+  "title": "Rust and C++ exact output agreement",
+  "operation": "evaluate",
+  "expectedStatus": 0,
+  "modelValidation": "valid",
+  "bindings": [
+    "rust",
+    "cpp"
+  ]
+}

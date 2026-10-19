@@ -1,0 +1,6 @@
+[package]
+name = "knot-buffer-memory"
+version = "0.0.0"
+edition = "2024"
+publish = false
+[workspace]

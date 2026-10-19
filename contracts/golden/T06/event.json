@@ -1,0 +1,7 @@
+{
+  "schemaVersion": "1.0",
+  "type": "set_answer",
+  "questionId": "panel_color",
+  "expectedRevision": 2,
+  "value": "#315a79"
+}

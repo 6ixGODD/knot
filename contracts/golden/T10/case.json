@@ -1,0 +1,7 @@
+{
+  "id": "T10",
+  "title": "Upstream edit clears disabled power and suffix",
+  "operation": "apply",
+  "expectedStatus": 0,
+  "modelValidation": "valid"
+}

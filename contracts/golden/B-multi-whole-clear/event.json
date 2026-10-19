@@ -1,0 +1,7 @@
+{
+  "schemaVersion": "1.0",
+  "type": "set_answer",
+  "questionId": "gate",
+  "expectedRevision": 1,
+  "value": "off"
+}

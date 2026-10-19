@@ -1,0 +1,7 @@
+{
+  "id": "T13",
+  "title": "Optional skip makes price final",
+  "operation": "apply",
+  "expectedStatus": 0,
+  "modelValidation": "valid"
+}

@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "1.0",
+  "productId": "small",
+  "productVersion": "1",
+  "questions": [
+    {
+      "id": "branch",
+      "type": "single",
+      "label": "Branch",
+      "required": true,
+      "options": [
+        {
+          "id": "left",
+          "label": "Left"
+        },
+        {
+          "id": "right",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "id": "left",
+      "type": "color",
+      "label": "Left color",
+      "required": true
+    },
+    {
+      "id": "right",
+      "type": "color",
+      "label": "Right color",
+      "required": true
+    },
+    {
+      "id": "join",
+      "type": "multi",
+      "label": "Join",
+      "required": false,
+      "options": [
+        {
+          "id": "x",
+          "label": "X",
+          "enabledWhen": {
+            "field": "left",
+            "op": "ne",
+            "value": "#000000"
+          }
+        }
+      ]
+    }
+  ],
+  "flow": {
+    "start": "branch",
+    "edges": [
+      {
+        "from": "branch",
+        "to": "left",
+        "when": {
+          "field": "branch",
+          "op": "eq",
+          "value": "left"
+        }
+      },
+      {
+        "from": "branch",
+        "to": "right"
+      },
+      {
+        "from": "left",
+        "to": "join"
+      },
+      {
+        "from": "right",
+        "to": "join"
+      },
+      {
+        "from": "join",
+        "to": "END"
+      }
+    ]
+  },
+  "pricing": {
+    "currency": "CNY",
+    "components": [
+      {
+        "id": "base",
+        "category": "base",
+        "amountMinor": 100
+      }
+    ]
+  },
+  "visual": {
+    "targets": [],
+    "slots": []
+  }
+}

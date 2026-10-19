@@ -1,0 +1,343 @@
+{
+  "schemaVersion": "1.0",
+  "productId": "speaker-pro",
+  "productVersion": "1.0.0",
+  "questions": [
+    {
+      "id": "speaker_type",
+      "type": "single",
+      "label": "音箱类型",
+      "required": true,
+      "options": [
+        {
+          "id": "active",
+          "label": "有源音箱"
+        },
+        {
+          "id": "passive",
+          "label": "无源音箱"
+        }
+      ]
+    },
+    {
+      "id": "material",
+      "type": "single",
+      "label": "箱体材质",
+      "required": true,
+      "options": [
+        {
+          "id": "walnut",
+          "label": "胡桃木"
+        },
+        {
+          "id": "aluminum",
+          "label": "铝合金"
+        }
+      ]
+    },
+    {
+      "id": "panel_color",
+      "type": "color",
+      "label": "面板颜色",
+      "required": true
+    },
+    {
+      "id": "power",
+      "type": "single",
+      "label": "输出功率",
+      "required": true,
+      "options": [
+        {
+          "id": "50w",
+          "label": "50W"
+        },
+        {
+          "id": "100w",
+          "label": "100W"
+        },
+        {
+          "id": "200w",
+          "label": "200W",
+          "enabledWhen": {
+            "all": [
+              {
+                "field": "speaker_type",
+                "op": "eq",
+                "value": "active"
+              },
+              {
+                "field": "material",
+                "op": "eq",
+                "value": "aluminum"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "extras",
+      "type": "multi",
+      "label": "附加功能",
+      "required": false,
+      "options": [
+        {
+          "id": "bluetooth",
+          "label": "蓝牙模块"
+        },
+        {
+          "id": "led",
+          "label": "LED 灯环"
+        }
+      ]
+    },
+    {
+      "id": "cable",
+      "type": "single",
+      "label": "接口类型",
+      "required": true,
+      "options": [
+        {
+          "id": "banana",
+          "label": "香蕉插头"
+        },
+        {
+          "id": "spade",
+          "label": "叉形端子"
+        }
+      ]
+    }
+  ],
+  "flow": {
+    "start": "speaker_type",
+    "edges": [
+      {
+        "from": "speaker_type",
+        "to": "material"
+      },
+      {
+        "from": "material",
+        "to": "panel_color"
+      },
+      {
+        "from": "panel_color",
+        "to": "power",
+        "when": {
+          "field": "speaker_type",
+          "op": "eq",
+          "value": "active"
+        }
+      },
+      {
+        "from": "panel_color",
+        "to": "cable"
+      },
+      {
+        "from": "power",
+        "to": "extras"
+      },
+      {
+        "from": "extras",
+        "to": "END"
+      },
+      {
+        "from": "cable",
+        "to": "END"
+      }
+    ]
+  },
+  "pricing": {
+    "currency": "CNY",
+    "components": [
+      {
+        "id": "base_active",
+        "category": "base",
+        "amountMinor": 129900,
+        "when": {
+          "field": "speaker_type",
+          "op": "eq",
+          "value": "active"
+        }
+      },
+      {
+        "id": "base_passive",
+        "category": "base",
+        "amountMinor": 89900,
+        "when": {
+          "field": "speaker_type",
+          "op": "eq",
+          "value": "passive"
+        }
+      },
+      {
+        "id": "material_walnut",
+        "category": "adjustment",
+        "amountMinor": 30000,
+        "when": {
+          "field": "material",
+          "op": "eq",
+          "value": "walnut"
+        }
+      },
+      {
+        "id": "material_aluminum",
+        "category": "adjustment",
+        "amountMinor": 50000,
+        "when": {
+          "field": "material",
+          "op": "eq",
+          "value": "aluminum"
+        }
+      },
+      {
+        "id": "power_100",
+        "category": "adjustment",
+        "amountMinor": 40000,
+        "when": {
+          "field": "power",
+          "op": "eq",
+          "value": "100w"
+        }
+      },
+      {
+        "id": "power_200",
+        "category": "adjustment",
+        "amountMinor": 90000,
+        "when": {
+          "field": "power",
+          "op": "eq",
+          "value": "200w"
+        }
+      },
+      {
+        "id": "extra_bluetooth",
+        "category": "adjustment",
+        "amountMinor": 19900,
+        "when": {
+          "field": "extras",
+          "op": "contains",
+          "value": "bluetooth"
+        }
+      },
+      {
+        "id": "extra_led",
+        "category": "adjustment",
+        "amountMinor": 12900,
+        "when": {
+          "field": "extras",
+          "op": "contains",
+          "value": "led"
+        }
+      }
+    ]
+  },
+  "visual": {
+    "targets": [
+      {
+        "id": "speaker.base",
+        "order": 0,
+        "defaults": {
+          "visible": true,
+          "assetRef": "speaker-base"
+        }
+      },
+      {
+        "id": "speaker.cabinet",
+        "order": 10,
+        "defaults": {
+          "visible": true,
+          "assetRef": "cabinet-default",
+          "surface.metallic": 0.0,
+          "surface.roughness": 0.7
+        }
+      },
+      {
+        "id": "speaker.front_panel",
+        "order": 20,
+        "defaults": {
+          "visible": true,
+          "color": "#26272B"
+        }
+      },
+      {
+        "id": "speaker.led_ring",
+        "order": 30,
+        "defaults": {
+          "visible": false,
+          "assetRef": "led-ring",
+          "emission.color": "#315A79",
+          "emission.strength": 0.8
+        }
+      }
+    ],
+    "slots": [
+      {
+        "id": "cabinet_asset",
+        "target": "speaker.cabinet",
+        "property": "assetRef",
+        "cases": [
+          {
+            "when": {
+              "field": "material",
+              "op": "eq",
+              "value": "walnut"
+            },
+            "value": "cabinet-walnut"
+          },
+          {
+            "when": {
+              "field": "material",
+              "op": "eq",
+              "value": "aluminum"
+            },
+            "value": "cabinet-aluminum"
+          }
+        ]
+      },
+      {
+        "id": "cabinet_metallic",
+        "target": "speaker.cabinet",
+        "property": "surface.metallic",
+        "cases": [
+          {
+            "when": {
+              "field": "material",
+              "op": "eq",
+              "value": "aluminum"
+            },
+            "value": 0.9
+          }
+        ]
+      },
+      {
+        "id": "panel_color",
+        "target": "speaker.front_panel",
+        "property": "color",
+        "cases": [
+          {
+            "when": {
+              "field": "panel_color",
+              "op": "exists"
+            },
+            "valueFrom": "panel_color"
+          }
+        ]
+      },
+      {
+        "id": "led_visibility",
+        "target": "speaker.led_ring",
+        "property": "visible",
+        "cases": [
+          {
+            "when": {
+              "field": "extras",
+              "op": "contains",
+              "value": "led"
+            },
+            "value": true
+          }
+        ]
+      }
+    ]
+  }
+}

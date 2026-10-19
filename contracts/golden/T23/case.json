@@ -1,0 +1,12 @@
+{
+  "id": "T23",
+  "title": "C ABI result ownership and repeated release",
+  "operation": "initial",
+  "expectedStatus": 0,
+  "modelValidation": "valid",
+  "bindings": [
+    "c"
+  ],
+  "repetitions": 1000,
+  "releaseOriginalBufferTwice": true
+}

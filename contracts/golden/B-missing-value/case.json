@@ -1,0 +1,7 @@
+{
+  "id": "B-missing-value",
+  "title": "Matched valueFrom cannot default missing",
+  "operation": "initial",
+  "expectedStatus": 1009,
+  "modelValidation": "valid"
+}

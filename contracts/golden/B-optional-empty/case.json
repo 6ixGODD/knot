@@ -1,0 +1,7 @@
+{
+  "id": "B-optional-empty",
+  "title": "Optional empty multi is an explicit answer",
+  "operation": "apply",
+  "expectedStatus": 0,
+  "modelValidation": "valid"
+}
