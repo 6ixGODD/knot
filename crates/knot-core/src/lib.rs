@@ -1,6 +1,6 @@
 //! Pure, atomic configuration transitions over immutable models.
 //!
-//! The frozen plan03 entry signatures are `initial(&CompiledModel)`,
+//! The transition entry signatures are `initial(&CompiledModel)`,
 //! `apply(&CompiledModel, &ConfigurationState, &ConfigurationEvent)` and
 //! `evaluate(&CompiledModel, &ConfigurationState)`, each returning
 //! `Result<TransitionResult, KnotError>`. Model lives in knot-compiler, wire values

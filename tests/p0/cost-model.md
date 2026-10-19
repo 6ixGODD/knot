@@ -35,5 +35,4 @@ OOM/abort and arbitrary native pointer misuse are outside the catch-unwind guara
 Required evidence includes all operators/missing/exact decimals, a 2048-leaf
 balanced tree, depth rejection, cumulative budget exhaustion, ordinary/Tokio and
 C++ threads, mixed answers, and poisoning at the same boundary used by ZEN calls.
-This table remains candidate evidence until independent plan01 review; it does
-not establish the full Core's flow/cleanup/sorting/output cost model.
+This backend cost evidence does not establish the full Core's flow/cleanup/sorting/output cost model.

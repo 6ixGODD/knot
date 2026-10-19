@@ -1,6 +1,6 @@
 use super::*;
 // Explicit typed Speaker component scenario. Condition ID truth is prescribed
-// here; plan05 must separately compile speaker.json and execute actual ZEN.
+// here; integration tests separately compile speaker.json and execute actual ZEN.
 pub fn speaker() -> CompiledModel {
     let choice = |name: &str, names: &[&str]| Question::Single {
         id: id(name),

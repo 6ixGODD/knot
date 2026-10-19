@@ -16,4 +16,4 @@ Use `cargo run -p knot-schema --example validate_json --locked -- --schema PATH
 --input PATH` for the repository's offline validator. It never retrieves external
 schemas. Defaults in schemas are annotations; normalization belongs to compilation.
 
-These resources remain a candidate until plan01's contract and Golden gates pass.
+Validate these resources with the contract and Golden checks before changing them.
