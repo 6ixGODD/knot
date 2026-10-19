@@ -24,6 +24,8 @@ python examples/grpc/speaker_web.py --image $image --out $out --port 8765
 
 HTTP 转接只属于这个本机示例，不是 KNOT 服务新增的公共 REST 接口。示例用 localStorage 保存配置，不包含账号、共享数据库或支付功能；请使用非敏感演示数据，实际产品需要自行实现会话和授权。
 
+连续调色时最多保留一个进行中的 Apply 和最新的未发送颜色，已确认的 Visual 立即更新；待修改稳定或输入暂停 120 ms 后再取 Quote。更新期间保留上次确认的价格并明确标注“更新中”，它不代表待提交选择的当前报价。客户端不插值金额，也不预测视觉规则。
+
 ### 脚本场景
 
 [音箱示例脚本](../examples/grpc/speaker_demo.py) 使用已有的[商品模型](../contracts/examples/speaker.json)、真实容器和[生成的 Go 客户端](../examples/grpc/go/main.go)。它运行三个购买/回改场景及一个非法选项场景，保存完整返回值供你检查。

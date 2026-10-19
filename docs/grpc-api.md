@@ -22,6 +22,8 @@ Open `http://127.0.0.1:8765`. Choose active, aluminum, a panel color, 200W and L
 
 The UI and SVG sources are in [speaker-web](../examples/grpc/go/cmd/speaker-web/). Restart the launcher after editing to rebuild embedded assets. This demo uses localStorage and has no accounts, shared database, checkout or payment processing. Use non-sensitive demo data; production applications must provide session and authorization handling.
 
+During a color gesture, the client keeps one Apply in flight and only the latest unsent color. Confirmed Visual updates immediately; Quote waits for the pending changes to settle (or a 120 ms input pause). The last confirmed price stays visible with an explicit updating label until the new server quote arrives. It is not a quote for the pending selection. The client never interpolates prices or predicts Visual rules.
+
 ### Scripted scenarios
 
 The [Speaker demo](../examples/grpc/speaker_demo.py) uses the existing [product model](../contracts/examples/speaker.json), a real container and the [generated Go client](../examples/grpc/go/main.go). It runs three purchase/edit scenarios plus a rejected option, and retains full responses so you can inspect the behavior.
