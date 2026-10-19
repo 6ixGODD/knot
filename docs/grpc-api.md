@@ -8,6 +8,8 @@ Use `knot.v1.ConfigurationService` to drive a product configurator: ask the next
 
 ### Interactive SVG configurator
 
+See the [example guide](../examples/grpc/README.md) for a walkthrough, source map and troubleshooting.
+
 The [browser example](../examples/grpc/speaker_web.py) renders four SVG layers (base, cabinet, panel and LED ring) through a small Go HTTP-to-gRPC bridge. Prices, available options, answer clearing and visual properties come from KNOT. This loopback-only bridge belongs to the example, not the server's public API.
 
 With Docker Linux containers, Python 3.9+, Go 1.26.4 and the internal image loaded, run from the repository root:
@@ -22,7 +24,7 @@ Open `http://127.0.0.1:8765`. Choose active, aluminum, a panel color, 200W and L
 
 The UI and SVG sources are in [speaker-web](../examples/grpc/go/cmd/speaker-web/). Restart the launcher after editing to rebuild embedded assets. This demo uses localStorage and has no accounts, shared database, checkout or payment processing. Use non-sensitive demo data; production applications must provide session and authorization handling.
 
-During a color gesture, the client keeps one Apply in flight and only the latest unsent color. Confirmed Visual updates immediately; Quote waits for the pending changes to settle (or a 120 ms input pause). The last confirmed price stays visible with an explicit updating label until the new server quote arrives. It is not a quote for the pending selection. The client never interpolates prices or predicts Visual rules.
+During a color gesture, the client keeps one Apply in flight and only the latest unsent color. Confirmed Visual updates immediately; Quote waits for the pending changes to settle (or a 120 ms input pause). The last confirmed price stays visible with a stable confirmation label and explanation until the new server quote arrives. It is not a quote for the pending selection. The client never interpolates prices or predicts Visual rules. Confirmed SVG colors transition for 80 ms, respecting reduced-motion preferences.
 
 ### Scripted scenarios
 

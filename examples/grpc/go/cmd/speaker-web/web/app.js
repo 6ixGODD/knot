@@ -201,7 +201,7 @@ function renderQuestion(s) {
         }
     }
     const answer = s.result.state.answers[q.id],
-        pending = s.quoteStatus !== "settled";
+        pending = s.quoteStatus === "loading";
     attribute(area, "aria-busy", String(pending));
     if (q.type === "single" || q.type === "multi") {
         for (const el of area.querySelectorAll("[data-option-id]")) {
@@ -257,7 +257,7 @@ function render(s) {
         path = snapshot.flow.path;
     text(
         $("revision"),
-        "Revision " + state.revision + (s.pending ? " · 保存中" : ""),
+        "Revision " + state.revision,
     );
     $("reset").disabled = !!s.pending;
     const targets = Object.fromEntries(
@@ -285,30 +285,18 @@ function render(s) {
               ? "铝合金"
               : "箱体预览",
     );
-    const price = s.quote?.price || s.displayQuote?.price,
-        pending = s.quoteStatus !== "settled";
+    // Loading changes focus/candidates, not the meaning of the last confirmed
+    // quote. Keep this region stable even during a sustained color gesture.
+    const price = s.quote?.price || s.displayQuote?.price;
     text($("price"), priceText(price));
-    text(
-        $("price-status"),
-        pending
-            ? (s.displayQuote ? "上次报价 · " : "") +
-                  (s.quoteStatus === "failed" ? "更新失败" : "更新中…")
-            : price?.status === "final"
-              ? "完整配置总价"
-              : "完整配置价格范围",
-    );
-    text(
-        $("price-note"),
-        pending
-            ? s.displayQuote
-                ? "价格与选项正在更新，请以更新后的报价为准。"
-                : "正在获取完整配置报价。"
-            : price?.status === "unavailable"
-              ? "超出精确报价范围，可继续配置后重试。"
-              : price?.status === "no_completion"
-                ? "请返回修改已有选项。"
-                : "",
-    );
+    text($("price-status"),
+        !price ? "配置报价" : price.status === "final" ? "已确认总价" : "已确认价格范围");
+    text($("price-note"),
+        price?.status === "unavailable"
+            ? "超出精确报价范围，可继续配置后重试。"
+            : price?.status === "no_completion"
+              ? "请返回修改已有选项。"
+              : "显示最近一次已确认报价，选项变更后自动更新。");
     const key = JSON.stringify(path);
     if (key !== stepKey) {
         stepKey = key;

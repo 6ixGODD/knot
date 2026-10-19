@@ -353,3 +353,17 @@ details {
         transition: none;
     }
 }
+
+/* Interpolate confirmed Visual colors without delaying input or inventing prices. */
+#panel-layer path:first-of-type {
+    transition: fill 80ms linear;
+}
+#led-layer ellipse {
+    transition: stroke 80ms linear;
+}
+@media (prefers-reduced-motion: reduce) {
+    #panel-layer path:first-of-type,
+    #led-layer ellipse {
+        transition: none;
+    }
+}
