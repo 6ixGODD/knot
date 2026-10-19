@@ -38,11 +38,23 @@ jobs:
           IMAGE=$(python -c 'import json,os; print(json.load(open(os.environ["RUNNER_TEMP"]+"/knot-package/delivery/release.json"))["image"])')
           python examples/grpc/speaker_demo.py --image "$IMAGE" --out "$RUNNER_TEMP/knot-package/delivery/smoke"
           python tools/server/smoke_package.py --delivery "$RUNNER_TEMP/knot-package/delivery"
+      - name: Make container-created cache readable by the runner
+        if: always()
+        run: |
+          if [ -d "$RUNNER_TEMP/knot-package-cache" ]; then
+            sudo chown -R "$(id -u):$(id -g)" "$RUNNER_TEMP/knot-package-cache"
+          fi
       - name: Downloadable service and example
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: knot-service-linux-amd64-${{ github.sha }}
-          path: ${{ runner.temp }}/knot-package/delivery/
+          path: |
+            ${{ runner.temp }}/knot-package/delivery/*.tar.gz
+            ${{ runner.temp }}/knot-package/delivery/*.json
+            ${{ runner.temp }}/knot-package/delivery/*.md
+            ${{ runner.temp }}/knot-package/delivery/SHA256SUMS
+            ${{ runner.temp }}/knot-package/delivery/smoke/*.json
+            ${{ runner.temp }}/knot-package/delivery/browser-smoke/result.json
           if-no-files-found: error
           compression-level: 0
           retention-days: 7
