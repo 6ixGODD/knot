@@ -20,6 +20,7 @@ def digest(path):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", required=True, type=Path)
+    parser.add_argument("--release", action="store_true", help="reuse the release build profile")
     args = parser.parse_args()
     output = args.out.resolve()
     output.mkdir(parents=True, exist_ok=True)
@@ -39,7 +40,7 @@ def main():
         shutil.copyfile(ROOT / "examples/grpc" / name, package / "examples/grpc" / name)
     from notices import collect
     collect(package / "licenses/third-party")
-    for name in ("grpc-api.md", "grpc-api.zh-CN.md", "deployment.md"):
+    for name in ("grpc-api.md", "grpc-api.zh-CN.md", "deployment.md", "service-package.md"):
         (package / "docs").mkdir(exist_ok=True)
         shutil.copyfile(ROOT / "docs" / name, package / "docs" / name)
     shutil.copyfile(ROOT / "tools/server/toolchain-lock.json", package / "toolchain-lock.json")
@@ -49,10 +50,11 @@ def main():
         shutil.copyfile(ROOT / "contracts/examples" / name, package / "models" / name)
     subprocess.run([protoc, "--proto_path=" + str(ROOT / "contracts/grpc"), "--include_imports", "--include_source_info", "--descriptor_set_out=" + str(package / "contracts/grpc/knot.bin"), str(ROOT / "contracts/grpc/knot/v1/configuration.proto")], check=True)
     # No implicit lookup of another workspace's prebuilt executable.
-    models = subprocess.check_output(["cargo", "run", "-q", "-p", "knot-server", "--example", "model_manifest", "--locked", "--", str(package / "models/speaker.json")], cwd=ROOT)
+    profile = ["--release"] if args.release else []
+    models = subprocess.check_output(["cargo", "run", *profile, "-q", "-p", "knot-server", "--example", "model_manifest", "--locked", "--", str(package / "models/speaker.json")], cwd=ROOT)
     json.loads(models)
     (package / "models/manifest.json").write_bytes(models)
-    config = subprocess.check_output(["cargo", "run", "-q", "-p", "knot-server", "--locked", "--", "describe-config"], cwd=ROOT)
+    config = subprocess.check_output(["cargo", "run", *profile, "-q", "-p", "knot-server", "--locked", "--", "describe-config"], cwd=ROOT)
     if config != (ROOT / "contracts/grpc/server-config.json").read_bytes():
         raise RuntimeError("generated configuration drift")
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, encoding="utf-8").strip()

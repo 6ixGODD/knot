@@ -13,3 +13,5 @@ Third-party notices, including those for the private JSON dependency, are includ
 The stateless gRPC server exposes Initial, Apply, Evaluate and Quote with JSON payloads and mutual TLS. See the [gRPC API and runnable Speaker scenarios](docs/grpc-api.md) ([简体中文](docs/grpc-api.zh-CN.md)) and [internal container deployment](docs/deployment.md). The native SDK remains available independently.
 
 For the browser configurator, start with the [Speaker example guide](examples/grpc/README.md) ([简体中文](examples/grpc/README.zh-CN.md)).
+
+Download or build the complete service/example bundle: [Service package](docs/service-package.md).
