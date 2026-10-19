@@ -1,6 +1,6 @@
+use crate::evaluation::Evaluation;
 use crate::{changes, flow, output, reconcile, revision, snapshot, state};
 use knot_compiler::CompiledModel;
-use knot_rules::CallBudget;
 use knot_schema::{KnotError, wire::*};
 
 /// Apply one event atomically. Every backend call, including old-state validation
@@ -10,8 +10,29 @@ pub fn apply(
     old: &ConfigurationState,
     event: &ConfigurationEvent,
 ) -> Result<TransitionResult, KnotError> {
-    let mut budget = CallBudget::new();
-    let old_snapshot = snapshot(model, old, &mut budget)?;
+    let mut budget = Evaluation::new();
+    apply_internal(model, old, event, &mut budget, true)
+}
+
+pub(crate) fn apply_internal(
+    model: &CompiledModel,
+    old: &ConfigurationState,
+    event: &ConfigurationEvent,
+    budget: &mut Evaluation,
+    advance: bool,
+) -> Result<TransitionResult, KnotError> {
+    let old_snapshot = snapshot(model, old, budget)?;
+    apply_validated(model, old, &old_snapshot, event, budget, advance)
+}
+// Only called with the snapshot produced for this exact state by this request.
+pub(crate) fn apply_validated(
+    model: &CompiledModel,
+    old: &ConfigurationState,
+    old_snapshot: &Snapshot,
+    event: &ConfigurationEvent,
+    budget: &mut Evaluation,
+    advance: bool,
+) -> Result<TransitionResult, KnotError> {
     let (id, expected, kind) = match event {
         ConfigurationEvent::SetAnswer {
             question_id,
@@ -29,7 +50,9 @@ pub fn apply(
             ..
         } => (question_id, expected_revision, ChangeKind::Skipped),
     };
-    revision::check_revision(old.revision.get(), expected.get())?;
+    if advance {
+        revision::check_revision(old.revision.get(), expected.get())?;
+    }
     let index = *model
         .question_index()
         .get(id)
@@ -53,8 +76,8 @@ pub fn apply(
             .take_while(|other| *other != id)
             .filter_map(|other| old.answers.get(other).map(|a| (other.clone(), a.clone())))
             .collect();
-        let facts = state::facts(model, &preceding, &mut budget)?;
-        let available = flow::availability(model, index, &facts, Some(&value), &mut budget)?;
+        let facts = state::facts(model, &preceding, budget)?;
+        let available = flow::availability(model, index, &facts, Some(&value), budget)?;
         let disabled = flow::disabled(model, index, &value, &available);
         if !disabled.is_empty() {
             let mut e = KnotError::new("INVALID_OPTION", &state::pointer(id));
@@ -73,15 +96,17 @@ pub fn apply(
             .sort_by_key(|id| model.question_index().get(id).copied());
     }
     let user_changed = candidate.answers != old.answers || candidate.skipped != old.skipped;
-    let automatic = reconcile::run(model, &mut candidate, &mut budget)?;
+    let automatic = reconcile::run(model, &mut candidate, budget)?;
     if let Some(value) = set
         && candidate.answers.get(id) != Some(&value)
     {
         return Err(KnotError::new("INVALID_ANSWER", &state::pointer(id)));
     }
-    let snapshot = snapshot(model, &candidate, &mut budget)?;
+    let snapshot = snapshot(model, &candidate, budget)?;
     let changed = old.answers != candidate.answers || old.skipped != candidate.skipped;
-    candidate.revision = Integer::new(revision::next_revision(old.revision.get(), changed)?)?;
+    if advance {
+        candidate.revision = Integer::new(revision::next_revision(old.revision.get(), changed)?)?;
+    }
     let mut answer_changes = Vec::new();
     if user_changed {
         answer_changes.push(AnswerChange {
@@ -92,15 +117,17 @@ pub fn apply(
         });
     }
     answer_changes.extend(automatic);
-    let changes = changes::derive(&old_snapshot, &snapshot, answer_changes);
-    output::finish(
-        TransitionResult {
-            schema_version: Version::V1,
-            state: candidate,
-            snapshot,
-            changes,
-            diagnostics: Vec::new(),
-        },
-        &mut budget,
-    )
+    let changes = changes::derive(old_snapshot, &snapshot, answer_changes);
+    let result = TransitionResult {
+        schema_version: Version::V1,
+        state: candidate,
+        snapshot,
+        changes,
+        diagnostics: Vec::new(),
+    };
+    if advance {
+        output::finish(result, budget)
+    } else {
+        Ok(result)
+    }
 }

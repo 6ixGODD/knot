@@ -1,6 +1,7 @@
+use crate::evaluation::Evaluation;
 use crate::flow;
 use knot_compiler::CompiledModel;
-use knot_rules::{CallBudget, Facts};
+use knot_rules::Facts;
 use knot_schema::{KnotError, wire::*};
 
 fn validate(property: &str, value: &VisualValue, path: &str) -> Result<(), KnotError> {
@@ -36,7 +37,7 @@ pub(crate) fn derive(
     model: &CompiledModel,
     state: &ConfigurationState,
     facts: &Facts,
-    budget: &mut CallBudget,
+    budget: &mut Evaluation,
 ) -> Result<Visual, KnotError> {
     let definition = &model.product().visual;
     let mut targets = Vec::new();

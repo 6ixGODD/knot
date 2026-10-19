@@ -62,7 +62,8 @@ pub fn compile_product(
             .cmp(&b.order)
             .then_with(|| a.id.as_str().as_bytes().cmp(b.id.as_str().as_bytes()))
     });
-    CompiledModel::new(ModelParts {
+    let dependencies = crate::quote_domains::dependencies(&lowered.conditions);
+    let mut model = CompiledModel::new(ModelParts {
         product,
         question_index,
         edges,
@@ -71,7 +72,9 @@ pub fn compile_product(
         sources: lowered.sources,
         program,
         digest,
-    })
+    })?;
+    model.install_quote_dependencies(dependencies);
+    Ok(model)
 }
 
 fn limit(value: &Value, maximum: usize, name: &str) -> Result<(), KnotError> {

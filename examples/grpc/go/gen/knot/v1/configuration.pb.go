@@ -259,6 +259,140 @@ func (*ConfigurationResponse_ResultJson) isConfigurationResponse_Outcome() {}
 
 func (*ConfigurationResponse_ErrorJson) isConfigurationResponse_Outcome() {}
 
+type QuoteRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ModelDigest   *string                `protobuf:"bytes,1,opt,name=model_digest,json=modelDigest,proto3,oneof" json:"model_digest,omitempty"`
+	QuoteJson     []byte                 `protobuf:"bytes,2,opt,name=quote_json,json=quoteJson,proto3,oneof" json:"quote_json,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *QuoteRequest) Reset() {
+	*x = QuoteRequest{}
+	mi := &file_knot_v1_configuration_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *QuoteRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QuoteRequest) ProtoMessage() {}
+
+func (x *QuoteRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_knot_v1_configuration_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QuoteRequest.ProtoReflect.Descriptor instead.
+func (*QuoteRequest) Descriptor() ([]byte, []int) {
+	return file_knot_v1_configuration_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *QuoteRequest) GetModelDigest() string {
+	if x != nil && x.ModelDigest != nil {
+		return *x.ModelDigest
+	}
+	return ""
+}
+
+func (x *QuoteRequest) GetQuoteJson() []byte {
+	if x != nil {
+		return x.QuoteJson
+	}
+	return nil
+}
+
+type QuoteResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Outcome:
+	//
+	//	*QuoteResponse_QuoteJson
+	//	*QuoteResponse_ErrorJson
+	Outcome       isQuoteResponse_Outcome `protobuf_oneof:"outcome"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *QuoteResponse) Reset() {
+	*x = QuoteResponse{}
+	mi := &file_knot_v1_configuration_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *QuoteResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QuoteResponse) ProtoMessage() {}
+
+func (x *QuoteResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_knot_v1_configuration_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QuoteResponse.ProtoReflect.Descriptor instead.
+func (*QuoteResponse) Descriptor() ([]byte, []int) {
+	return file_knot_v1_configuration_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *QuoteResponse) GetOutcome() isQuoteResponse_Outcome {
+	if x != nil {
+		return x.Outcome
+	}
+	return nil
+}
+
+func (x *QuoteResponse) GetQuoteJson() []byte {
+	if x != nil {
+		if x, ok := x.Outcome.(*QuoteResponse_QuoteJson); ok {
+			return x.QuoteJson
+		}
+	}
+	return nil
+}
+
+func (x *QuoteResponse) GetErrorJson() []byte {
+	if x != nil {
+		if x, ok := x.Outcome.(*QuoteResponse_ErrorJson); ok {
+			return x.ErrorJson
+		}
+	}
+	return nil
+}
+
+type isQuoteResponse_Outcome interface {
+	isQuoteResponse_Outcome()
+}
+
+type QuoteResponse_QuoteJson struct {
+	QuoteJson []byte `protobuf:"bytes,1,opt,name=quote_json,json=quoteJson,proto3,oneof"`
+}
+
+type QuoteResponse_ErrorJson struct {
+	ErrorJson []byte `protobuf:"bytes,2,opt,name=error_json,json=errorJson,proto3,oneof"`
+}
+
+func (*QuoteResponse_QuoteJson) isQuoteResponse_Outcome() {}
+
+func (*QuoteResponse_ErrorJson) isQuoteResponse_Outcome() {}
+
 var File_knot_v1_configuration_proto protoreflect.FileDescriptor
 
 const file_knot_v1_configuration_proto_rawDesc = "" +
@@ -287,11 +421,24 @@ const file_knot_v1_configuration_proto_rawDesc = "" +
 	"resultJson\x12\x1f\n" +
 	"\n" +
 	"error_json\x18\x02 \x01(\fH\x00R\terrorJsonB\t\n" +
-	"\aoutcome2\xe0\x01\n" +
+	"\aoutcome\"z\n" +
+	"\fQuoteRequest\x12&\n" +
+	"\fmodel_digest\x18\x01 \x01(\tH\x00R\vmodelDigest\x88\x01\x01\x12\"\n" +
+	"\n" +
+	"quote_json\x18\x02 \x01(\fH\x01R\tquoteJson\x88\x01\x01B\x0f\n" +
+	"\r_model_digestB\r\n" +
+	"\v_quote_json\"\\\n" +
+	"\rQuoteResponse\x12\x1f\n" +
+	"\n" +
+	"quote_json\x18\x01 \x01(\fH\x00R\tquoteJson\x12\x1f\n" +
+	"\n" +
+	"error_json\x18\x02 \x01(\fH\x00R\terrorJsonB\t\n" +
+	"\aoutcome2\x98\x02\n" +
 	"\x14ConfigurationService\x12B\n" +
 	"\aInitial\x12\x17.knot.v1.InitialRequest\x1a\x1e.knot.v1.ConfigurationResponse\x12>\n" +
 	"\x05Apply\x12\x15.knot.v1.ApplyRequest\x1a\x1e.knot.v1.ConfigurationResponse\x12D\n" +
-	"\bEvaluate\x12\x18.knot.v1.EvaluateRequest\x1a\x1e.knot.v1.ConfigurationResponseB,Z*knot.local/grpc-example/gen/knot/v1;knotv1b\x06proto3"
+	"\bEvaluate\x12\x18.knot.v1.EvaluateRequest\x1a\x1e.knot.v1.ConfigurationResponse\x126\n" +
+	"\x05Quote\x12\x15.knot.v1.QuoteRequest\x1a\x16.knot.v1.QuoteResponseB,Z*knot.local/grpc-example/gen/knot/v1;knotv1b\x06proto3"
 
 var (
 	file_knot_v1_configuration_proto_rawDescOnce sync.Once
@@ -305,22 +452,26 @@ func file_knot_v1_configuration_proto_rawDescGZIP() []byte {
 	return file_knot_v1_configuration_proto_rawDescData
 }
 
-var file_knot_v1_configuration_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_knot_v1_configuration_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_knot_v1_configuration_proto_goTypes = []any{
 	(*InitialRequest)(nil),        // 0: knot.v1.InitialRequest
 	(*ApplyRequest)(nil),          // 1: knot.v1.ApplyRequest
 	(*EvaluateRequest)(nil),       // 2: knot.v1.EvaluateRequest
 	(*ConfigurationResponse)(nil), // 3: knot.v1.ConfigurationResponse
+	(*QuoteRequest)(nil),          // 4: knot.v1.QuoteRequest
+	(*QuoteResponse)(nil),         // 5: knot.v1.QuoteResponse
 }
 var file_knot_v1_configuration_proto_depIdxs = []int32{
 	0, // 0: knot.v1.ConfigurationService.Initial:input_type -> knot.v1.InitialRequest
 	1, // 1: knot.v1.ConfigurationService.Apply:input_type -> knot.v1.ApplyRequest
 	2, // 2: knot.v1.ConfigurationService.Evaluate:input_type -> knot.v1.EvaluateRequest
-	3, // 3: knot.v1.ConfigurationService.Initial:output_type -> knot.v1.ConfigurationResponse
-	3, // 4: knot.v1.ConfigurationService.Apply:output_type -> knot.v1.ConfigurationResponse
-	3, // 5: knot.v1.ConfigurationService.Evaluate:output_type -> knot.v1.ConfigurationResponse
-	3, // [3:6] is the sub-list for method output_type
-	0, // [0:3] is the sub-list for method input_type
+	4, // 3: knot.v1.ConfigurationService.Quote:input_type -> knot.v1.QuoteRequest
+	3, // 4: knot.v1.ConfigurationService.Initial:output_type -> knot.v1.ConfigurationResponse
+	3, // 5: knot.v1.ConfigurationService.Apply:output_type -> knot.v1.ConfigurationResponse
+	3, // 6: knot.v1.ConfigurationService.Evaluate:output_type -> knot.v1.ConfigurationResponse
+	5, // 7: knot.v1.ConfigurationService.Quote:output_type -> knot.v1.QuoteResponse
+	4, // [4:8] is the sub-list for method output_type
+	0, // [0:4] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -338,13 +489,18 @@ func file_knot_v1_configuration_proto_init() {
 		(*ConfigurationResponse_ResultJson)(nil),
 		(*ConfigurationResponse_ErrorJson)(nil),
 	}
+	file_knot_v1_configuration_proto_msgTypes[4].OneofWrappers = []any{}
+	file_knot_v1_configuration_proto_msgTypes[5].OneofWrappers = []any{
+		(*QuoteResponse_QuoteJson)(nil),
+		(*QuoteResponse_ErrorJson)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_knot_v1_configuration_proto_rawDesc), len(file_knot_v1_configuration_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -31,12 +31,17 @@ async fn partial_bodies_hold_global_slots_before_decoding() {
         let stream = tokio::net::TcpStream::connect(addr).await.unwrap();
         let (mut client, connection) = h2::client::handshake(stream).await.unwrap();
         connections.push(tokio::spawn(connection));
-        for _ in 0..8 {
+        for request_index in 0..8 {
             client = client.ready().await.unwrap();
             let request = http::Request::builder()
                 .method("POST")
                 .uri(format!(
-                    "http://{addr}/knot.v1.ConfigurationService/Initial"
+                    "http://{addr}/knot.v1.ConfigurationService/{}",
+                    if request_index % 2 == 0 {
+                        "Initial"
+                    } else {
+                        "Quote"
+                    }
                 ))
                 .header("content-type", "application/grpc")
                 .header("te", "trailers")

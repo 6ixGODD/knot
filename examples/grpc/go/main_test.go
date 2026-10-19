@@ -2,6 +2,7 @@ package main
 
 import (
 	knotv1 "knot.local/grpc-example/gen/knot/v1"
+	"knot.local/grpc-example/internal/validation"
 	"testing"
 )
 
@@ -41,17 +42,17 @@ func TestRejectInvalidErrorFields(t *testing.T) {
 
 func TestResponseFormats(t *testing.T) {
 	for _, input := range []string{"0", "-0.000000001", "9007199254740991", "1.123456789000"} {
-		if err := decimalFormat(input); err != nil {
+		if err := validation.DecimalFormat(input); err != nil {
 			t.Fatalf("valid decimal %q: %v", input, err)
 		}
 	}
 	for _, input := range []string{"", "+1", "1.", ".1", "1e2", "9007199254740991.1", "0.0000000001"} {
-		if decimalFormat(input) == nil {
+		if validation.DecimalFormat(input) == nil {
 			t.Fatalf("invalid decimal %q accepted", input)
 		}
 	}
 	for _, input := range []string{"", "a\x7f", "a\u0085"} {
-		if idFormat(input) == nil {
+		if validation.IDFormat(input) == nil {
 			t.Fatalf("invalid id %q accepted", input)
 		}
 	}

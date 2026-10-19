@@ -9,3 +9,5 @@ pub mod model;
 mod semantic;
 pub use compile::compile_product;
 pub use model::{CompiledModel, IndexedEdge, ModelParts};
+
+pub mod quote_domains;

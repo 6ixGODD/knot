@@ -40,6 +40,15 @@ pub fn error(value: &impl serde::Serialize) -> Result<Vec<u8>, KnotError> {
     )
 }
 
+static QUOTE: OnceLock<Result<Validator, KnotError>> = OnceLock::new();
+pub fn quote(value: &knot_schema::quote::QuoteResult) -> Result<Vec<u8>, KnotError> {
+    encode(
+        value,
+        &QUOTE,
+        include_bytes!("../../../contracts/schemas/quote-result.schema.json"),
+    )
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

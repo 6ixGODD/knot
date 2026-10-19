@@ -1,6 +1,7 @@
+use crate::evaluation::Evaluation;
 use crate::flow;
 use knot_compiler::CompiledModel;
-use knot_rules::{CallBudget, Facts};
+use knot_rules::Facts;
 use knot_schema::{Decimal, KnotError, SAFE_INTEGER, wire::*};
 
 pub(crate) fn derive(
@@ -8,7 +9,7 @@ pub(crate) fn derive(
     state: &ConfigurationState,
     facts: &Facts,
     status: FlowStatus,
-    budget: &mut CallBudget,
+    budget: &mut Evaluation,
 ) -> Result<Price, KnotError> {
     let pricing = &model.product().pricing;
     knot_schema::currency::minor_units(&pricing.currency)?;

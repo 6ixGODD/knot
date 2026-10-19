@@ -9,6 +9,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"knot.local/grpc-example/internal/validation"
 	"os"
 	"time"
 
@@ -24,7 +25,7 @@ func result(reply *knotv1.ConfigurationResponse) (json.RawMessage, error) {
 	}
 	switch outcome := reply.Outcome.(type) {
 	case *knotv1.ConfigurationResponse_ResultJson:
-		if err := validateResponse("result", outcome.ResultJson); err != nil {
+		if err := validation.Validate("result", outcome.ResultJson); err != nil {
 			return nil, err
 		}
 		if len(outcome.ResultJson) == 0 || !json.Valid(outcome.ResultJson) {
@@ -56,7 +57,7 @@ func result(reply *knotv1.ConfigurationResponse) (json.RawMessage, error) {
 	}
 }
 func errorCode(raw []byte) (string, error) {
-	if err := validateResponse("error", raw); err != nil {
+	if err := validation.Validate("error", raw); err != nil {
 		return "", err
 	}
 	invalid := errors.New("invalid error envelope")
@@ -106,6 +107,7 @@ func run() error {
 	endpoint := flag.String("endpoint", "127.0.0.1:50051", "gRPC address")
 	digest := flag.String("digest", "", "model digest from the protocol package")
 	eventsPath := flag.String("events", "", "complete event array")
+	trace := flag.Bool("trace", false, "write complete RPC outcomes as JSON Lines to stderr")
 	plaintext := flag.Bool("plaintext", false, "explicitly use an isolated plaintext connection")
 	caPath := flag.String("ca", "", "server CA file")
 	certPath := flag.String("cert", "", "client certificate file")
@@ -145,10 +147,31 @@ func run() error {
 	}
 	defer conn.Close()
 	client := knotv1.NewConfigurationServiceClient(conn)
+	record := func(method string, reply *knotv1.ConfigurationResponse) error {
+		if !*trace {
+			return nil
+		}
+		if reply == nil {
+			return errors.New("missing response")
+		}
+		entry := map[string]any{"rpc": method}
+		switch outcome := reply.Outcome.(type) {
+		case *knotv1.ConfigurationResponse_ResultJson:
+			entry["result"] = json.RawMessage(outcome.ResultJson)
+		case *knotv1.ConfigurationResponse_ErrorJson:
+			entry["error"] = json.RawMessage(outcome.ErrorJson)
+		default:
+			return errors.New("missing outcome")
+		}
+		return json.NewEncoder(os.Stderr).Encode(entry)
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	reply, err := client.Initial(ctx, &knotv1.InitialRequest{ModelDigest: digest})
 	if err != nil {
+		return err
+	}
+	if err = record("Initial", reply); err != nil {
 		return err
 	}
 	current, err := state(reply)
@@ -168,6 +191,9 @@ func run() error {
 		if err != nil {
 			return err
 		}
+		if err = record("Apply", reply); err != nil {
+			return err
+		}
 		current, err = state(reply)
 		if err != nil {
 			return err
@@ -175,6 +201,9 @@ func run() error {
 	}
 	reply, err = client.Evaluate(ctx, &knotv1.EvaluateRequest{ModelDigest: digest, StateJson: current})
 	if err != nil {
+		return err
+	}
+	if err = record("Evaluate", reply); err != nil {
 		return err
 	}
 	raw, err := result(reply)
@@ -193,6 +222,9 @@ func run() error {
 		code, err := errorCode(failure.ErrorJson)
 		if err != nil || code != "REVISION_CONFLICT" {
 			return errors.New("unexpected domain error")
+		}
+		if err = record("Apply(replayed event)", rejected); err != nil {
+			return err
 		}
 	}
 	_, err = fmt.Fprintln(os.Stdout, string(raw))

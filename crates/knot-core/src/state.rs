@@ -1,5 +1,6 @@
+use crate::evaluation::Evaluation;
 use knot_compiler::CompiledModel;
-use knot_rules::{CallBudget, FactValue, Facts, FieldKind, Scalar};
+use knot_rules::{FactValue, Facts, FieldKind, Scalar};
 use knot_schema::{Decimal, KnotError, wire::*};
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -109,7 +110,7 @@ pub(crate) fn normalize(q: &Question, value: &Answer) -> Result<Answer, KnotErro
 pub(crate) fn validate(
     model: &CompiledModel,
     state: &ConfigurationState,
-    budget: &mut CallBudget,
+    budget: &mut Evaluation,
 ) -> Result<(), KnotError> {
     if state.product_id != model.product().product_id || state.model_digest != model.digest() {
         return Err(KnotError::new("MODEL_MISMATCH", "/modelDigest"));
@@ -150,7 +151,7 @@ pub(crate) fn validate(
 pub(crate) fn facts(
     model: &CompiledModel,
     answers: &BTreeMap<Id, Answer>,
-    budget: &mut CallBudget,
+    budget: &mut Evaluation,
 ) -> Result<Facts, KnotError> {
     budget.charge(
         (model.product().questions.len() * 4

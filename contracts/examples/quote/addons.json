@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "1.0",
+  "productId": "quote-lab",
+  "productVersion": "1",
+  "questions": [
+    {
+      "id": "style",
+      "type": "single",
+      "label": "Style",
+      "options": [
+        {
+          "id": "plain",
+          "label": "Plain"
+        },
+        {
+          "id": "pro",
+          "label": "Pro"
+        }
+      ]
+    },
+    {
+      "id": "addons",
+      "type": "multi",
+      "required": false,
+      "label": "Add-ons",
+      "options": [
+        {
+          "id": "a",
+          "label": "A"
+        },
+        {
+          "id": "b",
+          "label": "B"
+        }
+      ]
+    }
+  ],
+  "flow": {
+    "start": "style",
+    "edges": [
+      {
+        "from": "style",
+        "to": "addons"
+      },
+      {
+        "from": "addons",
+        "to": "END"
+      }
+    ]
+  },
+  "pricing": {
+    "currency": "CNY",
+    "components": [
+      {
+        "id": "base",
+        "category": "base",
+        "amountMinor": 10000
+      },
+      {
+        "id": "pro",
+        "category": "adjustment",
+        "amountMinor": 2000,
+        "when": {
+          "op": "eq",
+          "field": "style",
+          "value": "pro"
+        }
+      },
+      {
+        "id": "a",
+        "category": "adjustment",
+        "amountMinor": 3000,
+        "when": {
+          "op": "contains",
+          "field": "addons",
+          "value": "a"
+        }
+      },
+      {
+        "id": "b",
+        "category": "adjustment",
+        "amountMinor": 4000,
+        "when": {
+          "op": "contains",
+          "field": "addons",
+          "value": "b"
+        }
+      },
+      {
+        "id": "joint-discount",
+        "category": "adjustment",
+        "amountMinor": -5000,
+        "when": {
+          "all": [
+            {
+              "op": "contains",
+              "field": "addons",
+              "value": "a"
+            },
+            {
+              "op": "contains",
+              "field": "addons",
+              "value": "b"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "visual": {
+    "targets": [],
+    "slots": []
+  }
+}

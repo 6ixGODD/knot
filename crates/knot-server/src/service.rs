@@ -27,6 +27,19 @@ fn digest(value: Option<String>) -> Result<String, Status> {
     }
     Ok(value)
 }
+enum Outcome {
+    Success(Vec<u8>),
+    Error(Vec<u8>),
+}
+fn configuration(outcome: Outcome) -> Response<protocol::ConfigurationResponse> {
+    let outcome = match outcome {
+        Outcome::Success(bytes) => protocol::configuration_response::Outcome::ResultJson(bytes),
+        Outcome::Error(bytes) => protocol::configuration_response::Outcome::ErrorJson(bytes),
+    };
+    Response::new(protocol::ConfigurationResponse {
+        outcome: Some(outcome),
+    })
+}
 impl Service {
     async fn call(
         &self,
@@ -34,7 +47,7 @@ impl Service {
         state: Option<Vec<u8>>,
         event: Option<Vec<u8>>,
         operation: u8,
-    ) -> Result<Response<protocol::ConfigurationResponse>, Status> {
+    ) -> Result<Outcome, Status> {
         self.lifecycle.admit()?;
         let digest = digest(digest_value)?;
         if operation > 0 && state.is_none() || operation == 1 && event.is_none() {
@@ -50,7 +63,14 @@ impl Service {
         let task = self.lifecycle.spawn(move || {
             let result = catch_unwind(AssertUnwindSafe(|| -> Result<Vec<u8>, KnotError> {
                 for (bytes, maximum) in [
-                    (state.as_deref(), knot_schema::parse::STATE_BYTES),
+                    (
+                        state.as_deref(),
+                        if operation == 3 {
+                            768 * 1024
+                        } else {
+                            knot_schema::parse::STATE_BYTES
+                        },
+                    ),
                     (event.as_deref(), knot_schema::parse::EVENT_BYTES),
                 ] {
                     if let Some(bytes) = bytes
@@ -58,6 +78,14 @@ impl Service {
                     {
                         return Err(KnotError::limit("inputBytes", maximum, bytes.len()));
                     }
+                }
+                if operation == 3 {
+                    let request = json::quote(
+                        state
+                            .as_deref()
+                            .ok_or_else(|| KnotError::new("INTERNAL", ""))?,
+                    )?;
+                    return crate::output::quote(&knot_core::quote(&model, &request)?);
                 }
                 let result = match operation {
                     0 => knot_core::initial(&model)?,
@@ -86,7 +114,7 @@ impl Service {
                 crate::output::result(&result)
             }));
             let outcome = match result {
-                Ok(Ok(bytes)) => Ok(protocol::configuration_response::Outcome::ResultJson(bytes)),
+                Ok(Ok(bytes)) => Ok(Outcome::Success(bytes)),
                 Ok(Err(error))
                     if error.status() != 1999
                         && !matches!(
@@ -95,9 +123,7 @@ impl Service {
                         ) =>
                 {
                     match crate::output::error(&error.envelope()) {
-                        Ok(bytes) => {
-                            Ok(protocol::configuration_response::Outcome::ErrorJson(bytes))
-                        }
+                        Ok(bytes) => Ok(Outcome::Error(bytes)),
                         Err(_) => {
                             life.fault();
                             Err(Status::internal("error encoding failed"))
@@ -121,7 +147,7 @@ impl Service {
                 return Err(Status::internal("service fault"));
             }
             let classification = match &outcome {
-                Ok(protocol::configuration_response::Outcome::ResultJson(_)) => "success",
+                Ok(Outcome::Success(_)) => "success",
                 Ok(_) => {
                     life.telemetry
                         .domain
@@ -134,6 +160,7 @@ impl Service {
                 match operation {
                     0 => "Initial",
                     1 => "Apply",
+                    3 => "Quote",
                     _ => "Evaluate",
                 },
                 classification,
@@ -152,19 +179,33 @@ impl Service {
         if self.lifecycle.faulted() {
             return Err(Status::internal("service fault"));
         }
-        Ok(Response::new(protocol::ConfigurationResponse {
-            outcome: Some(outcome),
-        }))
+        Ok(outcome)
     }
 }
 #[tonic::async_trait]
 impl ConfigurationService for Service {
+    async fn quote(
+        &self,
+        request: Request<protocol::QuoteRequest>,
+    ) -> Result<Response<protocol::QuoteResponse>, Status> {
+        let r = request.into_inner();
+        let response = self.call(r.model_digest, r.quote_json, None, 3).await?;
+        let outcome = match response {
+            Outcome::Success(bytes) => protocol::quote_response::Outcome::QuoteJson(bytes),
+            Outcome::Error(bytes) => protocol::quote_response::Outcome::ErrorJson(bytes),
+        };
+        Ok(Response::new(protocol::QuoteResponse {
+            outcome: Some(outcome),
+        }))
+    }
     async fn initial(
         &self,
         request: Request<protocol::InitialRequest>,
     ) -> Result<Response<protocol::ConfigurationResponse>, Status> {
         let r = request.into_inner();
-        self.call(r.model_digest, None, None, 0).await
+        self.call(r.model_digest, None, None, 0)
+            .await
+            .map(configuration)
     }
     async fn apply(
         &self,
@@ -173,12 +214,15 @@ impl ConfigurationService for Service {
         let r = request.into_inner();
         self.call(r.model_digest, r.state_json, r.event_json, 1)
             .await
+            .map(configuration)
     }
     async fn evaluate(
         &self,
         request: Request<protocol::EvaluateRequest>,
     ) -> Result<Response<protocol::ConfigurationResponse>, Status> {
         let r = request.into_inner();
-        self.call(r.model_digest, r.state_json, None, 2).await
+        self.call(r.model_digest, r.state_json, None, 2)
+            .await
+            .map(configuration)
     }
 }

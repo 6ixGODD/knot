@@ -29,6 +29,8 @@ pub struct ModelParts {
 pub struct CompiledModel {
     parts: ModelParts,
     condition_ids: BTreeMap<String, ConditionId>,
+    quote_colors: BTreeMap<Id, Vec<String>>,
+    quote_dependencies: Option<Vec<Vec<usize>>>,
     diagnostics: Vec<knot_schema::wire::Diagnostic>,
 }
 impl CompiledModel {
@@ -220,11 +222,28 @@ impl CompiledModel {
                 rule_ids: vec![],
             })
             .collect();
+        let quote_colors = crate::quote_domains::colors(product);
         Ok(Self {
+            quote_colors,
+            quote_dependencies: None,
             parts,
             condition_ids,
             diagnostics,
         })
+    }
+    pub(crate) fn install_quote_dependencies(&mut self, dependencies: Vec<Vec<usize>>) {
+        self.quote_dependencies = Some(dependencies);
+    }
+    /// Dependency proof from the exact IR passed to the backend; absent for ModelParts.
+    pub fn quote_dependencies(&self, id: ConditionId) -> Option<&[usize]> {
+        self.quote_dependencies
+            .as_ref()?
+            .get(id.0)
+            .map(Vec::as_slice)
+    }
+    /// Proven color equivalence classes for completion search.
+    pub fn quote_colors(&self, id: &Id) -> Option<&[String]> {
+        self.quote_colors.get(id).map(Vec::as_slice)
     }
     pub fn product(&self) -> &Product {
         &self.parts.product
