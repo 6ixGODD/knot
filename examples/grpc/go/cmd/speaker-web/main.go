@@ -15,6 +15,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"path"
 	"time"
 
 	"google.golang.org/grpc"
@@ -123,6 +124,22 @@ func (b bridge) call(w http.ResponseWriter, r *http.Request) {
 	send(w, 502, map[string]string{"transportError": "Invalid gRPC outcome"})
 }
 
+func staticAssets() (http.Handler, error) {
+	web, err := fs.Sub(assets, "web")
+	if err != nil {
+		return nil, err
+	}
+	files := http.FileServer(http.FS(web))
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Module MIME must not depend on the host OS registry or mime.types file.
+		switch path.Ext(r.URL.Path) {
+		case ".js", ".mjs":
+			w.Header().Set("Content-Type", "text/javascript; charset=utf-8")
+		}
+		files.ServeHTTP(w, r)
+	}), nil
+}
+
 func run() error {
 	listen := flag.String("listen", "127.0.0.1:8765", "loopback HTTP address")
 	endpoint := flag.String("grpc", "127.0.0.1:50051", "loopback plaintext gRPC address")
@@ -151,11 +168,11 @@ func run() error {
 	mux.HandleFunc("GET /api/example", func(w http.ResponseWriter, r *http.Request) {
 		send(w, 200, map[string]any{"events": json.RawMessage(events), "digest": *digest})
 	})
-	web, err := fs.Sub(assets, "web")
+	web, err := staticAssets()
 	if err != nil {
 		return err
 	}
-	mux.Handle("/", http.FileServer(http.FS(web)))
+	mux.Handle("/", web)
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
 		w.Header().Set("X-Content-Type-Options", "nosniff")
