@@ -26,12 +26,12 @@ The UI and SVG sources are in [speaker-web](../examples/grpc/go/cmd/speaker-web/
 
 The [Speaker demo](../examples/grpc/speaker_demo.py) uses the existing [product model](../contracts/examples/speaker.json), a real container and the [generated Go client](../examples/grpc/go/main.go). It runs three purchase/edit scenarios plus a rejected option, and retains full responses so you can inspect the behavior.
 
-Requirements: Docker with Linux containers, Python 3.9+ and Go 1.26.4 (see [go.mod](../examples/grpc/go/go.mod)). The first client build needs the Go modules; no Rust, protoc or native SDK is required. Import the internally supplied image with `docker load --input <archive>`. Use the tag reported by that command; the example below uses the supplied 0.1.0 image.
+Requirements: Docker with Linux containers, Python 3.9+ and Go 1.26.4 (see [go.mod](../examples/grpc/go/go.mod)). The first client build needs the Go modules; no Rust, protoc or native SDK is required. Import the internally supplied image with `docker load --input <archive>`. Use the tag reported by that command.
 
 From the repository root in PowerShell:
 
 ```powershell
-$image = 'knot-internal:0.1.0-20b6c2fb2038'
+$image = Read-Host 'Imported local image tag'
 $out = Join-Path $env:TEMP ('knot-speaker-' + [guid]::NewGuid().ToString('N'))
 python examples/grpc/speaker_demo.py --image $image --out $out
 Get-Content (Join-Path $out 'summary.json')

@@ -232,11 +232,19 @@ fn errors_are_not_silently_excluded_and_search_is_bounded() {
     assert!(quote(&m, &req(s)).is_err());
     let p = product((0..20).map(|i| single(&format!("q{i}"), true)).collect());
     let m = model(p);
-    // The real callCost ceiling is exhausted before the node ceiling in this
-    // deep model, leaving no fuel to serialize an unavailable result.
-    let error = quote(&m, &req(initial(&m).unwrap().state)).unwrap_err();
-    assert_eq!(error.code, "RESOURCE_LIMIT");
-    assert_eq!(error.details["limit"], "callCost");
+    // Bounded search must clear every partial extremum. The separate controlled
+    // fuel fixture below proves RESOURCE_LIMIT when no output fuel remains.
+    let result = quote(&m, &req(initial(&m).unwrap().state)).unwrap();
+    let assert_unavailable = |price: &PriceQuote| {
+        assert_eq!(price.status, QuoteStatus::Unavailable);
+        assert_eq!(price.reason, Some(QuoteReason::SearchLimit));
+        assert!(price.min_minor.is_none());
+        assert!(price.max_minor.is_none());
+    };
+    assert_unavailable(&result.price);
+    for candidate in result.focus.unwrap().candidates {
+        assert_unavailable(candidate.price.as_ref().unwrap());
+    }
 }
 
 #[test]

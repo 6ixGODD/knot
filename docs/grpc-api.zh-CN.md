@@ -28,12 +28,12 @@ HTTP 转接只属于这个本机示例，不是 KNOT 服务新增的公共 REST 
 
 [音箱示例脚本](../examples/grpc/speaker_demo.py) 使用已有的[商品模型](../contracts/examples/speaker.json)、真实容器和[生成的 Go 客户端](../examples/grpc/go/main.go)。它运行三个购买/回改场景及一个非法选项场景，保存完整返回值供你检查。
 
-需要：支持 Linux 容器的 Docker、Python 3.9+、Go 1.26.4（见 [go.mod](../examples/grpc/go/go.mod)）。首次构建客户端需要下载 Go 依赖，不需要 Rust、protoc 或原生 SDK。用 `docker load --input <归档文件>` 导入内部提供的镜像，镜像名以导入输出为准。下面使用已提供的 0.1.0 镜像。
+需要：支持 Linux 容器的 Docker、Python 3.9+、Go 1.26.4（见 [go.mod](../examples/grpc/go/go.mod)）。首次构建客户端需要下载 Go 依赖，不需要 Rust、protoc 或原生 SDK。用 `docker load --input <归档文件>` 导入内部提供的镜像，镜像名以导入输出为准。
 
 在仓库根目录运行 PowerShell：
 
 ```powershell
-$image = 'knot-internal:0.1.0-20b6c2fb2038'
+$image = Read-Host 'Imported local image tag'
 $out = Join-Path $env:TEMP ('knot-speaker-' + [guid]::NewGuid().ToString('N'))
 python examples/grpc/speaker_demo.py --image $image --out $out
 Get-Content (Join-Path $out 'summary.json')
