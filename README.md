@@ -14,4 +14,4 @@ The stateless gRPC server exposes Initial, Apply, Evaluate and Quote with JSON p
 
 For the browser configurator, start with the [Speaker example guide](examples/grpc/README.md) ([简体中文](examples/grpc/README.zh-CN.md)).
 
-Download or build the complete service/example bundle: [Service package](docs/service-package.md).
+Service delivery: [GHCR package](https://github.com/6ixGODD/knot/pkgs/container/knot), [v0.1.0 Release](https://github.com/6ixGODD/knot/releases/tag/v0.1.0), and [pull/run instructions](docs/service-package.md).
