@@ -20,12 +20,20 @@ fn descriptor_contract() -> Result<(), Box<dyn std::error::Error>> {
             .iter()
             .map(|m| m.name.as_deref())
             .collect::<Vec<_>>(),
-        vec![Some("Initial"), Some("Apply"), Some("Evaluate")]
+        vec![
+            Some("Initial"),
+            Some("Apply"),
+            Some("Evaluate"),
+            Some("Quote")
+        ]
     );
     for message in &file.message_type {
         for (index, field) in message.field.iter().enumerate() {
             assert_eq!(field.number, Some(index as i32 + 1));
-            if message.name.as_deref() != Some("ConfigurationResponse") {
+            if !matches!(
+                message.name.as_deref(),
+                Some("ConfigurationResponse" | "QuoteResponse")
+            ) {
                 assert_eq!(field.proto3_optional, Some(true));
             }
         }
@@ -43,6 +51,52 @@ fn descriptor_contract() -> Result<(), Box<dyn std::error::Error>> {
             .map(|f| f.oneof_index)
             .collect::<Vec<_>>(),
         vec![Some(0), Some(0)]
+    );
+    let quote = file
+        .message_type
+        .iter()
+        .find(|m| m.name.as_deref() == Some("QuoteRequest"))
+        .ok_or("quote request")?;
+    assert_eq!(
+        quote
+            .field
+            .iter()
+            .map(|f| (f.name.as_deref(), f.number, f.r#type))
+            .collect::<Vec<_>>(),
+        vec![
+            (Some("model_digest"), Some(1), Some(9)),
+            (Some("quote_json"), Some(2), Some(12))
+        ]
+    );
+    let quote_reply = file
+        .message_type
+        .iter()
+        .find(|m| m.name.as_deref() == Some("QuoteResponse"))
+        .ok_or("quote response")?;
+    assert_eq!(quote_reply.oneof_decl.len(), 1);
+    assert_eq!(
+        quote_reply
+            .field
+            .iter()
+            .map(|f| (f.name.as_deref(), f.number, f.oneof_index))
+            .collect::<Vec<_>>(),
+        vec![
+            (Some("quote_json"), Some(1), Some(0)),
+            (Some("error_json"), Some(2), Some(0))
+        ]
+    );
+    let quote_method = service
+        .method
+        .iter()
+        .find(|m| m.name.as_deref() == Some("Quote"))
+        .ok_or("quote method")?;
+    assert_eq!(
+        quote_method.input_type.as_deref(),
+        Some(".knot.v1.QuoteRequest")
+    );
+    assert_eq!(
+        quote_method.output_type.as_deref(),
+        Some(".knot.v1.QuoteResponse")
     );
     let missing = protocol::ApplyRequest::decode(&[][..])?;
     assert!(missing.state_json.is_none());

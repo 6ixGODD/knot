@@ -13,3 +13,5 @@ pub mod wire;
 pub use error::KnotError;
 pub use parse::parse_json;
 pub use value::{Decimal, SAFE_INTEGER, exact_integer};
+
+pub mod quote;

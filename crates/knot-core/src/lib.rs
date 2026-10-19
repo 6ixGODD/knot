@@ -8,6 +8,7 @@
 //! covers all backend calls in a transition. Initial/evaluate emit empty Changes.
 #![forbid(unsafe_code)]
 mod changes;
+mod evaluation;
 mod flow;
 mod output;
 mod price;
@@ -17,8 +18,8 @@ mod state;
 mod transition;
 mod visual;
 
+use crate::evaluation::Evaluation;
 use knot_compiler::CompiledModel;
-use knot_rules::CallBudget;
 use knot_schema::{KnotError, wire::*};
 pub use transition::apply;
 
@@ -44,7 +45,7 @@ pub fn evaluate(
     model: &CompiledModel,
     state: &ConfigurationState,
 ) -> Result<TransitionResult, KnotError> {
-    let mut budget = CallBudget::new();
+    let mut budget = Evaluation::new();
     let snapshot = snapshot(model, state, &mut budget)?;
     output::finish(
         TransitionResult {
@@ -61,7 +62,7 @@ pub fn evaluate(
 fn snapshot(
     model: &CompiledModel,
     state: &ConfigurationState,
-    budget: &mut CallBudget,
+    budget: &mut Evaluation,
 ) -> Result<Snapshot, KnotError> {
     state::validate(model, state, budget)?;
     let walked = flow::walk(model, state, budget)?;
@@ -83,3 +84,9 @@ fn snapshot(
         validation: walked.validation,
     })
 }
+
+mod quote;
+pub use quote::quote;
+
+#[cfg(test)]
+extern crate self as knot_core;

@@ -75,3 +75,81 @@ pub fn encode(value: &impl serde::Serialize) -> Result<Vec<u8>, KnotError> {
     }
     Ok(sink.bytes)
 }
+
+static QUOTE: OnceLock<Result<Validator, KnotError>> = OnceLock::new();
+/// Admit an independent Quote request, preserving nested State limits.
+pub fn quote(bytes: &[u8]) -> Result<crate::quote::QuoteRequest, KnotError> {
+    let value = crate::parse_json(bytes, 768 * 1024)?;
+    schema(
+        &QUOTE,
+        include_bytes!("../../../contracts/schemas/quote-request.schema.json"),
+    )?
+    .validate(&value)?;
+    let state_value = value
+        .get("state")
+        .ok_or_else(|| KnotError::new("BAD_SCHEMA", "/state"))?;
+    let state_bytes = encode(state_value)?;
+    let raw_state_length = nested_state_length(bytes)?;
+    if raw_state_length > parse::STATE_BYTES {
+        return Err(KnotError::limit(
+            "inputBytes",
+            parse::STATE_BYTES,
+            raw_state_length,
+        ));
+    }
+    state(&state_bytes)?;
+    serde_json::from_value(value).map_err(|_| KnotError::new("BAD_SCHEMA", ""))
+}
+
+// Called only after strict JSON admission. Count the original nested object's
+// bytes, including its whitespace, rather than permitting whitespace compaction
+// to bypass the independent State ceiling.
+fn nested_state_length(bytes: &[u8]) -> Result<usize, KnotError> {
+    let mut depth = 0usize;
+    let mut i = 0usize;
+    let mut state_start = None;
+    while i < bytes.len() {
+        match bytes[i] {
+            b'"' => {
+                let start = i;
+                i += 1;
+                while i < bytes.len() {
+                    if bytes[i] == b'\\' {
+                        i += 2;
+                        continue;
+                    }
+                    if bytes[i] == b'"' {
+                        break;
+                    }
+                    i += 1;
+                }
+                if depth == 1 {
+                    let key: Result<String, _> = serde_json::from_slice(&bytes[start..=i]);
+                    let mut next = i + 1;
+                    while next < bytes.len() && bytes[next].is_ascii_whitespace() {
+                        next += 1;
+                    }
+                    if matches!(key.as_deref(), Ok("state")) && bytes.get(next) == Some(&b':') {
+                        next += 1;
+                        while next < bytes.len() && bytes[next].is_ascii_whitespace() {
+                            next += 1;
+                        }
+                        state_start = Some(next);
+                    }
+                }
+            }
+            b'{' | b'[' => depth += 1,
+            b'}' | b']' => {
+                depth -= 1;
+                if depth == 1
+                    && let Some(start) = state_start
+                {
+                    return Ok(i + 1 - start);
+                }
+            }
+            _ => {}
+        }
+        i += 1;
+    }
+    Err(KnotError::new("BAD_SCHEMA", "/state"))
+}

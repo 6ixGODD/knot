@@ -1,13 +1,13 @@
+use crate::evaluation::Evaluation;
 use crate::flow;
 use knot_compiler::CompiledModel;
-use knot_rules::CallBudget;
 use knot_schema::{KnotError, wire::*};
 use std::collections::BTreeMap;
 
 pub(crate) fn run(
     model: &CompiledModel,
     candidate: &mut ConfigurationState,
-    budget: &mut CallBudget,
+    budget: &mut Evaluation,
 ) -> Result<Vec<AnswerChange>, KnotError> {
     let maximum = candidate.answers.len() + candidate.skipped.len() + 1;
     let mut changes = BTreeMap::new();

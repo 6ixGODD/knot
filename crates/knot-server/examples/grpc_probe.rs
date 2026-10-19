@@ -172,6 +172,42 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         };
         let expected: Value = serde_json::from_slice(&fs::read(dir.join("expected-result.json"))?)?;
         compare(serde_json::from_slice(&bytes)?, expected.clone())?;
+        if case["expectedStatus"] == 0 {
+            let quoted_state =
+                knot_schema::protocol::state(&serde_json::to_vec(&expected["state"])?)?;
+            let request = knot_schema::quote::QuoteRequest {
+                schema_version: knot_schema::wire::Version::V1,
+                state: quoted_state,
+                focus_question_id: None,
+                candidate_value: None,
+            };
+            let expected_quote = match knot_core::quote(&model, &request) {
+                Ok(q) => serde_json::to_value(q)?,
+                Err(e) => e.envelope(),
+            };
+            let response = client
+                .quote(protocol::QuoteRequest {
+                    model_digest: digest.clone(),
+                    quote_json: Some(serde_json::to_vec(&request)?),
+                })
+                .await?
+                .into_inner();
+            let raw = match response.outcome.ok_or("missing Quote outcome")? {
+                protocol::quote_response::Outcome::QuoteJson(bytes)
+                    if expected_quote.get("error").is_none() =>
+                {
+                    bytes
+                }
+                protocol::quote_response::Outcome::ErrorJson(bytes)
+                    if expected_quote.get("error").is_some() =>
+                {
+                    bytes
+                }
+                _ => return Err("wrong Quote outcome".into()),
+            };
+            compare(serde_json::from_slice(&raw)?, expected_quote)?;
+            records.push(json!({"id":id,"operation":"Quote","passed":true}));
+        }
         if let Some(threads) = case["threads"].as_u64() {
             let alternate = root.join(case["alternateCase"].as_str().ok_or("alternate case")?);
             let alternate_expected: Value =

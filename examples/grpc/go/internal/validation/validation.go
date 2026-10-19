@@ -1,4 +1,4 @@
-package main
+package validation
 
 import (
 	"bytes"
@@ -33,7 +33,7 @@ func compileRegexp(pattern string) (jsonschema.Regexp, error) {
 
 func (offlineSchemas) Load(string) (any, error) { return nil, errors.New("external schema prohibited") }
 
-func idFormat(value any) error {
+func IDFormat(value any) error {
 	s, ok := value.(string)
 	if !ok {
 		return nil
@@ -44,7 +44,7 @@ func idFormat(value any) error {
 	return nil
 }
 
-func decimalFormat(value any) error {
+func DecimalFormat(value any) error {
 	s, ok := value.(string)
 	if !ok {
 		return nil
@@ -83,10 +83,10 @@ var responseSchemas = sync.OnceValues(func() (map[string]*jsonschema.Schema, err
 	compiler.UseRegexpEngine(compileRegexp)
 	compiler.UseLoader(offlineSchemas{})
 	compiler.AssertFormat()
-	compiler.RegisterFormat(&jsonschema.Format{Name: "knot-id", Validate: idFormat})
-	compiler.RegisterFormat(&jsonschema.Format{Name: "knot-decimal", Validate: decimalFormat})
+	compiler.RegisterFormat(&jsonschema.Format{Name: "knot-id", Validate: IDFormat})
+	compiler.RegisterFormat(&jsonschema.Format{Name: "knot-decimal", Validate: DecimalFormat})
 	schemas := make(map[string]*jsonschema.Schema)
-	for name, source := range map[string]string{"result": resultSchemaJSON, "error": errorSchemaJSON} {
+	for name, source := range map[string]string{"result": resultSchemaJSON, "error": errorSchemaJSON, "quote": quote_resultSchemaJSON} {
 		document, err := jsonschema.UnmarshalJSON(strings.NewReader(source))
 		if err != nil {
 			return nil, err
@@ -103,7 +103,7 @@ var responseSchemas = sync.OnceValues(func() (map[string]*jsonschema.Schema, err
 	return schemas, nil
 })
 
-func validateResponse(name string, raw []byte) error {
+func Validate(name string, raw []byte) error {
 	if len(raw) == 0 || len(raw) > 4194304 || !utf8.Valid(raw) {
 		return errors.New("invalid response bytes")
 	}
@@ -115,5 +115,9 @@ func validateResponse(name string, raw []byte) error {
 	if err != nil {
 		return err
 	}
-	return schemas[name].Validate(value)
+	schema, known := schemas[name]
+	if !known {
+		return errors.New("unknown response schema")
+	}
+	return schema.Validate(value)
 }

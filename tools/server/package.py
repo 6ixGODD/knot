@@ -31,11 +31,13 @@ def main():
     actual = subprocess.check_output([protoc, "--version"], encoding="utf-8").strip()
     if actual != "libprotoc " + lock["protoc"]["version"]:
         raise RuntimeError("protoc version mismatch")
-    for source, destination in [("contracts/grpc", "contracts/grpc"), ("examples/grpc/go", "examples/grpc/go")]:
+    for source, destination in [("contracts/grpc", "contracts/grpc"), ("contracts/schemas", "contracts/schemas"), ("contracts/examples", "contracts/examples"), ("examples/grpc/go", "examples/grpc/go")]:
         shutil.copytree(ROOT / source, package / destination, ignore=shutil.ignore_patterns("*.exe", "__pycache__"))
+    shutil.copyfile(ROOT / "examples/grpc/speaker_demo.py", package / "examples/grpc/speaker_demo.py")
+    shutil.copyfile(ROOT / "examples/grpc/speaker_web.py", package / "examples/grpc/speaker_web.py")
     from notices import collect
     collect(package / "licenses/third-party")
-    for name in ("grpc-api.md", "deployment.md"):
+    for name in ("grpc-api.md", "grpc-api.zh-CN.md", "deployment.md"):
         (package / "docs").mkdir(exist_ok=True)
         shutil.copyfile(ROOT / "docs" / name, package / "docs" / name)
     shutil.copyfile(ROOT / "tools/server/toolchain-lock.json", package / "toolchain-lock.json")

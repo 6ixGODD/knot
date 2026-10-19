@@ -122,14 +122,14 @@ pub(crate) fn definitions(product: &mut Product) -> Result<BTreeMap<Id, usize>, 
 
 // Intersect the min-anchored step lattice with the permitted answer precision.
 // All operands are fixed-scale i128; the largest intermediate is < 10^35.
-fn domain(
+pub(crate) fn domain(
     min: Option<i128>,
     max: Option<i128>,
     step: Option<i128>,
     quantum: i128,
     bound: i128,
     path: &str,
-) -> Result<(), KnotError> {
+) -> Result<(i128, i128, i128), KnotError> {
     let lo = min.unwrap_or(-bound);
     let hi = max.unwrap_or(bound);
     if lo > hi {
@@ -151,7 +151,11 @@ fn domain(
         (0, quantum)
     };
     let first = lo + (origin - lo).rem_euclid(period);
-    if first > hi { Err(bad(path)) } else { Ok(()) }
+    if first > hi {
+        Err(bad(path))
+    } else {
+        Ok((first, hi, period))
+    }
 }
 fn extended_gcd(mut a: i128, mut b: i128) -> (i128, i128) {
     let (mut x, mut y) = (1, 0);

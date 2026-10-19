@@ -8,6 +8,7 @@ service ConfigurationService {
   rpc Initial(InitialRequest) returns (ConfigurationResponse);
   rpc Apply(ApplyRequest) returns (ConfigurationResponse);
   rpc Evaluate(EvaluateRequest) returns (ConfigurationResponse);
+  rpc Quote(QuoteRequest) returns (QuoteResponse);
 }
 
 message InitialRequest {
@@ -28,6 +29,18 @@ message EvaluateRequest {
 message ConfigurationResponse {
   oneof outcome {
     bytes result_json = 1;
+    bytes error_json = 2;
+  }
+}
+
+message QuoteRequest {
+  optional string model_digest = 1;
+  optional bytes quote_json = 2;
+}
+
+message QuoteResponse {
+  oneof outcome {
+    bytes quote_json = 1;
     bytes error_json = 2;
   }
 }

@@ -1,6 +1,7 @@
+use crate::evaluation::Evaluation;
 use crate::state;
 use knot_compiler::CompiledModel;
-use knot_rules::{CallBudget, ConditionId, Facts};
+use knot_rules::{ConditionId, Facts};
 use knot_schema::{KnotError, wire::*};
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -13,20 +14,16 @@ pub(crate) fn condition(
     model: &CompiledModel,
     facts: &Facts,
     id: ConditionId,
-    budget: &mut CallBudget,
+    budget: &mut Evaluation,
 ) -> Result<bool, KnotError> {
     budget.charge(1)?;
-    let effects = model.program().evaluate(facts, &[id], budget)?;
-    match effects.values() {
-        [(actual, value)] if *actual == id => Ok(*value),
-        _ => Err(KnotError::new("RULE_EVAL", "")),
-    }
+    budget.condition(model, facts, id)
 }
 pub(crate) fn at(
     model: &CompiledModel,
     facts: &Facts,
     path: &str,
-    budget: &mut CallBudget,
+    budget: &mut Evaluation,
 ) -> Result<bool, KnotError> {
     let id = model
         .condition_id(path)
@@ -38,7 +35,7 @@ pub(crate) fn availability(
     index: usize,
     facts: &Facts,
     selected: Option<&Answer>,
-    budget: &mut CallBudget,
+    budget: &mut Evaluation,
 ) -> Result<Vec<AvailableOption>, KnotError> {
     state::options(&model.product().questions[index])
         .iter()
@@ -93,7 +90,7 @@ pub(crate) fn disabled(
         })
         .collect()
 }
-fn current(q: &Question, options: Vec<AvailableOption>) -> CurrentQuestion {
+pub(crate) fn current(q: &Question, options: Vec<AvailableOption>) -> CurrentQuestion {
     let required = state::required(q);
     match q {
         Question::Single { id, label, .. } => CurrentQuestion::Single {
@@ -150,7 +147,7 @@ fn current(q: &Question, options: Vec<AvailableOption>) -> CurrentQuestion {
 pub(crate) fn walk(
     model: &CompiledModel,
     state: &ConfigurationState,
-    budget: &mut CallBudget,
+    budget: &mut Evaluation,
 ) -> Result<Walk, KnotError> {
     let product = model.product();
     let mut cursor = Some(

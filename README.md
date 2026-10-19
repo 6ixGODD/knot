@@ -10,4 +10,4 @@ Start with [Quickstart](docs/quickstart.md). See [integration and ownership](doc
 
 Third-party notices, including those for the private JSON dependency, are included in the package.
 
-The stateless gRPC server exposes Initial, Apply and Evaluate with JSON payloads and mutual TLS. See the [gRPC contract](docs/grpc-api.md) and [internal container deployment](docs/deployment.md). The native SDK remains available independently.
+The stateless gRPC server exposes Initial, Apply and Evaluate with JSON payloads and mutual TLS. See the [gRPC API and runnable Speaker scenarios](docs/grpc-api.md) ([简体中文](docs/grpc-api.zh-CN.md)) and [internal container deployment](docs/deployment.md). The native SDK remains available independently.

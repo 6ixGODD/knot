@@ -171,10 +171,12 @@ async fn run_fault_case(panic_second: bool, fault_code: Option<&'static str>) {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn disconnected_rpc_retains_cpu_until_real_completion() {
-    run_detached_case(false).await;
-    run_detached_case(true).await;
+    for quote in [false, true] {
+        run_detached_case(false, quote).await;
+        run_detached_case(true, quote).await;
+    }
 }
-async fn run_detached_case(deadline: bool) {
+async fn run_detached_case(deadline: bool, quote: bool) {
     let (started_tx, started_rx) = tokio::sync::oneshot::channel();
     let (release_tx, release_rx) = std::sync::mpsc::channel();
     let gate = Arc::new(Gate {
@@ -191,6 +193,7 @@ async fn run_detached_case(deadline: bool) {
     .unwrap();
     let model = knot_compiler::compile_product(&bytes, &Compiler(gate)).unwrap();
     let digest = model.digest().to_owned();
+    let quote_json = serde_json::to_vec(&serde_json::json!({"schemaVersion":"1.0","state":{"schemaVersion":"1.0","productId":model.product().product_id,"modelDigest":model.digest(),"revision":0,"answers":{},"skipped":[]}})).unwrap();
     let mut catalog = Catalog::new();
     catalog.insert(digest.clone(), Arc::new(model));
     let life = Lifecycle::new(1);
@@ -215,21 +218,30 @@ async fn run_detached_case(deadline: bool) {
     let first_digest = digest.clone();
     let in_flight = tokio::spawn(async move {
         let request = protocol::InitialRequest {
+            model_digest: Some(first_digest.clone()),
+        };
+        let quote_request = protocol::QuoteRequest {
             model_digest: Some(first_digest),
+            quote_json: Some(quote_json),
         };
         if deadline {
             // Read the server's wire status without tonic's local deadline middleware.
             let socket = tokio::net::TcpStream::connect(addr).await.unwrap();
             let (mut wire, connection) = h2::client::handshake(socket).await.unwrap();
             let driver = tokio::spawn(connection);
-            let message = request.encode_to_vec();
+            let message = if quote {
+                quote_request.encode_to_vec()
+            } else {
+                request.encode_to_vec()
+            };
             let mut frame = vec![0];
             frame.extend_from_slice(&(message.len() as u32).to_be_bytes());
             frame.extend_from_slice(&message);
             let headers = tonic::codegen::http::Request::builder()
                 .method("POST")
                 .uri(format!(
-                    "http://{addr}/knot.v1.ConfigurationService/Initial"
+                    "http://{addr}/knot.v1.ConfigurationService/{}",
+                    if quote { "Quote" } else { "Initial" }
                 ))
                 .header("content-type", "application/grpc")
                 .header("grpc-timeout", "100m")
@@ -249,6 +261,8 @@ async fn run_detached_case(deadline: bool) {
                 tonic::Code::from_i32(code),
                 "observed wire status",
             ))
+        } else if quote {
+            first.quote(quote_request).await.map(|_| ())
         } else {
             first.initial(request).await.map(|_| ())
         }

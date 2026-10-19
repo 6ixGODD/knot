@@ -22,6 +22,7 @@ const (
 	ConfigurationService_Initial_FullMethodName  = "/knot.v1.ConfigurationService/Initial"
 	ConfigurationService_Apply_FullMethodName    = "/knot.v1.ConfigurationService/Apply"
 	ConfigurationService_Evaluate_FullMethodName = "/knot.v1.ConfigurationService/Evaluate"
+	ConfigurationService_Quote_FullMethodName    = "/knot.v1.ConfigurationService/Quote"
 )
 
 // ConfigurationServiceClient is the client API for ConfigurationService service.
@@ -31,6 +32,7 @@ type ConfigurationServiceClient interface {
 	Initial(ctx context.Context, in *InitialRequest, opts ...grpc.CallOption) (*ConfigurationResponse, error)
 	Apply(ctx context.Context, in *ApplyRequest, opts ...grpc.CallOption) (*ConfigurationResponse, error)
 	Evaluate(ctx context.Context, in *EvaluateRequest, opts ...grpc.CallOption) (*ConfigurationResponse, error)
+	Quote(ctx context.Context, in *QuoteRequest, opts ...grpc.CallOption) (*QuoteResponse, error)
 }
 
 type configurationServiceClient struct {
@@ -71,6 +73,16 @@ func (c *configurationServiceClient) Evaluate(ctx context.Context, in *EvaluateR
 	return out, nil
 }
 
+func (c *configurationServiceClient) Quote(ctx context.Context, in *QuoteRequest, opts ...grpc.CallOption) (*QuoteResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(QuoteResponse)
+	err := c.cc.Invoke(ctx, ConfigurationService_Quote_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ConfigurationServiceServer is the server API for ConfigurationService service.
 // All implementations must embed UnimplementedConfigurationServiceServer
 // for forward compatibility.
@@ -78,6 +90,7 @@ type ConfigurationServiceServer interface {
 	Initial(context.Context, *InitialRequest) (*ConfigurationResponse, error)
 	Apply(context.Context, *ApplyRequest) (*ConfigurationResponse, error)
 	Evaluate(context.Context, *EvaluateRequest) (*ConfigurationResponse, error)
+	Quote(context.Context, *QuoteRequest) (*QuoteResponse, error)
 	mustEmbedUnimplementedConfigurationServiceServer()
 }
 
@@ -96,6 +109,9 @@ func (UnimplementedConfigurationServiceServer) Apply(context.Context, *ApplyRequ
 }
 func (UnimplementedConfigurationServiceServer) Evaluate(context.Context, *EvaluateRequest) (*ConfigurationResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Evaluate not implemented")
+}
+func (UnimplementedConfigurationServiceServer) Quote(context.Context, *QuoteRequest) (*QuoteResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Quote not implemented")
 }
 func (UnimplementedConfigurationServiceServer) mustEmbedUnimplementedConfigurationServiceServer() {}
 func (UnimplementedConfigurationServiceServer) testEmbeddedByValue()                              {}
@@ -172,6 +188,24 @@ func _ConfigurationService_Evaluate_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ConfigurationService_Quote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuoteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConfigurationServiceServer).Quote(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ConfigurationService_Quote_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConfigurationServiceServer).Quote(ctx, req.(*QuoteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ConfigurationService_ServiceDesc is the grpc.ServiceDesc for ConfigurationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -190,6 +224,10 @@ var ConfigurationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Evaluate",
 			Handler:    _ConfigurationService_Evaluate_Handler,
+		},
+		{
+			MethodName: "Quote",
+			Handler:    _ConfigurationService_Quote_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

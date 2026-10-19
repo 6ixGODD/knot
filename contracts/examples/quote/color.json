@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "1.0",
+  "productId": "quote-color",
+  "productVersion": "1",
+  "questions": [
+    {
+      "id": "color",
+      "type": "color",
+      "label": "Color"
+    }
+  ],
+  "flow": {
+    "start": "color",
+    "edges": [
+      {
+        "from": "color",
+        "to": "END"
+      }
+    ]
+  },
+  "pricing": {
+    "currency": "CNY",
+    "components": [
+      {
+        "id": "base",
+        "category": "base",
+        "amountMinor": 10000
+      },
+      {
+        "id": "red",
+        "category": "adjustment",
+        "amountMinor": 200,
+        "when": {
+          "op": "eq",
+          "field": "color",
+          "value": "#FF0000"
+        }
+      },
+      {
+        "id": "not-red",
+        "category": "adjustment",
+        "amountMinor": -100,
+        "when": {
+          "op": "ne",
+          "field": "color",
+          "value": "#FF0000"
+        }
+      },
+      {
+        "id": "primary",
+        "category": "adjustment",
+        "amountMinor": 50,
+        "when": {
+          "op": "in",
+          "field": "color",
+          "value": [
+            "#FF0000",
+            "#00FF00"
+          ]
+        }
+      }
+    ]
+  },
+  "visual": {
+    "targets": [],
+    "slots": []
+  }
+}
