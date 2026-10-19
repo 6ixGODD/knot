@@ -1,30 +1,23 @@
-# Get or build the service package
+# Get or build the service
 
-The service package contains both `knot-runtime.tar.gz` (a Linux amd64 Docker image) and `knot-grpc-0.1.0.tar.gz` (protocol, Go client and speaker frontend sources). It is separate from the native C/C++ SDK. Repository access is required.
+The Linux amd64 service image is published to [GHCR](https://github.com/6ixGODD/knot/pkgs/container/knot). Download the protocol, Go client and speaker frontend from [Release v0.1.0](https://github.com/6ixGODD/knot/releases/tag/v0.1.0). The native C/C++ SDK is a separate delivery.
 
-## Download a completed build
+## Run the released example
 
-Open [Service package runs](https://github.com/6ixGODD/knot/actions/workflows/package.yml), select a **successful** run, and download its `knot-service-linux-amd64-<commit>` artifact. Extract the ZIP into a new directory. `release.json` records the exact source commit and image tag; `SHA256SUMS` covers the delivered files. Do not use artifacts from failed or cancelled runs.
-
-With GitHub CLI, first select the successful run ID from `gh run list --repo 6ixGODD/knot --workflow package.yml --status success`, then run:
+Install Docker with Linux containers, Python 3.9+ and Go 1.26.4. Download `knot-grpc-0.1.0.tar.gz` from the Release and run from that download directory:
 
 ```powershell
-$run = Read-Host 'Successful Service package run ID'
-gh run download $run --repo 6ixGODD/knot --dir ./knot-download
-```
-
-Enter the downloaded artifact directory containing `release.json`. With Docker running in Linux-container mode, Python 3.9+ and Go 1.26.4 installed:
-
-```powershell
-docker load --input ./knot-runtime.tar.gz
+docker login ghcr.io
+docker pull ghcr.io/6ixgodd/knot:0.1.0
 tar -xzf ./knot-grpc-0.1.0.tar.gz
-$image = (Get-Content ./release.json | ConvertFrom-Json).image
 cd knot-grpc-0.1.0
 $out = Join-Path $env:TEMP ('knot-speaker-' + [guid]::NewGuid().ToString('N'))
-python examples/grpc/speaker_web.py --image $image --out $out --port 8765
+python examples/grpc/speaker_web.py --image ghcr.io/6ixgodd/knot:0.1.0 --out $out --port 8765
 ```
 
-Open <http://127.0.0.1:8765>. The first launch downloads Go modules and builds the bridge. No Rust compiler or protoc is needed. Ctrl+C stops the demo. See [example interactions](../examples/grpc/README.md).
+Open <http://127.0.0.1:8765>. Ctrl+C stops the demo. First launch downloads Go modules and builds the bridge; no Rust compiler or protoc is needed. See [example interactions](../examples/grpc/README.md).
+
+The repository and GHCR package are private. At `docker login`, supply an authorized GitHub username and a classic PAT with `read:packages` as the password. Never commit the token. Repository access alone does not authenticate the Docker client. The Release's `release.json` records the immutable image digest, release source and original tested binary source; `SHA256SUMS` covers attachments.
 
 ## Build from source
 
@@ -41,3 +34,5 @@ On Linux, use `python3 tools/server/ci_package.py --out /tmp/knot-package-001 --
 ## CI cost boundary
 
 `Service package` runs only on manual dispatch: one Ubuntu x64 job, a 40-minute hard limit, a 30-minute build limit and a five-minute smoke-check limit. It reuses the Cargo registry/build cache and Go cache. No automatic retries, platform matrix, full workspace test suite, fuzzing or Miri are included. A successful run establishes package construction and the recorded short checks, not full cross-platform release certification. Artifacts expire after seven days. The older broad verification workflows are manual-only and are not prerequisites for this job.
+
+`Publish GHCR release` promotes an already successful build in one Ubuntu job capped at ten minutes. It verifies source equivalence, archive checksums and smoke evidence, pushes GHCR tags, pulls back the exact digest, verifies unchanged runtime layers/configuration, then publishes the Release. It does not compile Rust or run the full suite. Actions artifacts are intermediate build inputs; GHCR and Releases are the distribution entry points.

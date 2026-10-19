@@ -1,6 +1,6 @@
 # Deploy the gRPC service
 
-First [download a successful CI package or build it from source](service-package.md). The bundle includes the Linux amd64 image, protocol and runnable examples. In its delivery directory, run `docker load --input ./knot-runtime.tar.gz`; use the image tag in `release.json`. The image contains no models or credentials. No public registry download is required.
+Pull the private Linux amd64 image with `docker pull ghcr.io/6ixgodd/knot:0.1.0` after authenticating to GHCR. Download matching protocol/examples from the Release. See [authentication, download and source-build instructions](service-package.md). The image contains no models or credentials.
 
 Mount a complete model directory read-only. Startup compiles every top-level `.json` model before serving; invalid or empty directories fail without partial readiness. Keep all digests still referenced by client sessions. Change models or certificates by replacing the deployment and restarting.
 
