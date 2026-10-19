@@ -1,7 +1,5 @@
 name: P0 candidate evidence
 on:
-  pull_request:
-  push:
   workflow_dispatch:
 permissions:
   contents: read

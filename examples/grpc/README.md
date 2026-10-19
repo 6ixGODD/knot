@@ -6,11 +6,13 @@ Run a speaker configurator against the real KNOT gRPC service. The browser examp
 
 ## Run the browser example
 
-Use Docker with Linux containers, Python 3.9+ and Go 1.26.4. The first build downloads Go modules. No Rust compiler, protoc or native SDK is needed. Extract the protocol package and run from its root (the directory containing `examples` and `contracts`):
+Use Docker with Linux containers, Python 3.9+ and Go 1.26.4. The first build downloads Go modules. No Rust compiler, protoc or native SDK is needed. Download the `knot-service-linux-amd64-<commit>` artifact from a [successful Service package run](https://github.com/6ixGODD/knot/actions/workflows/package.yml), then extract the ZIP. Run from the directory containing `release.json` and both `.tar.gz` files. See [download and source-build instructions](../../docs/service-package.md):
 
 ```powershell
-docker load --input <path-to-knot-runtime.tar>
-$image = Read-Host 'Image tag reported by docker load'
+docker load --input ./knot-runtime.tar.gz
+tar -xzf ./knot-grpc-0.1.0.tar.gz
+$image = (Get-Content ./release.json | ConvertFrom-Json).image
+cd knot-grpc-0.1.0
 $out = Join-Path $env:TEMP ('knot-speaker-web-' + [guid]::NewGuid().ToString('N'))
 python examples/grpc/speaker_web.py --image $image --out $out --port 8765
 ```

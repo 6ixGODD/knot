@@ -6,11 +6,13 @@
 
 ## 启动前端
 
-准备 Docker Linux 容器、Python 3.9+、Go 1.26.4。首次构建需要下载 Go 模块，不需要 Rust、protoc 或原生 SDK。解压协议包，在包含 `examples` 和 `contracts` 的根目录运行：
+准备 Docker Linux 容器、Python 3.9+、Go 1.26.4。首次构建需要下载 Go 模块，不需要 Rust、protoc 或原生 SDK。先从 [Service package 的成功运行](https://github.com/6ixGODD/knot/actions/workflows/package.yml) 下载 `knot-service-linux-amd64-<commit>` artifact，解压 ZIP。在包含 `release.json` 和两个 `.tar.gz` 文件的目录运行。完整获取与源码构建方法见[打包指南](../../docs/service-package.md)：
 
 ```powershell
-docker load --input <path-to-knot-runtime.tar>
-$image = Read-Host 'Image tag reported by docker load'
+docker load --input ./knot-runtime.tar.gz
+tar -xzf ./knot-grpc-0.1.0.tar.gz
+$image = (Get-Content ./release.json | ConvertFrom-Json).image
+cd knot-grpc-0.1.0
 $out = Join-Path $env:TEMP ('knot-speaker-web-' + [guid]::NewGuid().ToString('N'))
 python examples/grpc/speaker_web.py --image $image --out $out --port 8765
 ```
