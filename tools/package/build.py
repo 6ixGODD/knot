@@ -93,7 +93,7 @@ def main():
         for source in sorted((ROOT/directory).rglob('*')):
             if source.is_file() and source.suffix not in ('.pyc',) and '__pycache__' not in source.parts and not source.name.endswith('_test.go'):
                 copy(source, source.relative_to(ROOT))
-    public_docs = ['quickstart','integration','c-api','cpp-api','dsl-reference','state-machine','pricing','visual-ir','limits','troubleshooting','grpc-api','deployment']
+    public_docs = ['quickstart','integration','c-api','cpp-api','dsl-reference','state-machine','pricing','visual-ir','limits','troubleshooting','grpc-api','grpc-api.zh-CN','deployment']
     for name in public_docs: copy(ROOT/f'docs/{name}.md', f'docs/{name}.md')
     output = Path(runner.env['CARGO_TARGET_DIR'])/'release'
     if sys.platform == 'win32':
