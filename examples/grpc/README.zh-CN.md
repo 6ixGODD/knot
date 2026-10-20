@@ -6,10 +6,9 @@
 
 ## 启动前端
 
-准备 Docker Linux 容器、Python 3.9+、Go 1.26.4。先从 [v0.1.0 Release](https://github.com/6ixGODD/knot/releases/tag/v0.1.0) 下载 `knot-grpc-0.1.0.tar.gz`，在下载目录运行以下命令。GHCR 镜像为私有包，`docker login ghcr.io` 使用有仓库权限的 GitHub 用户名和具有 `read:packages` 权限的 classic PAT；不要把 token 写进源码。首次启动下载 Go 模块，不需要 Rust 或 protoc。
+准备 Docker Linux 容器、Python 3.9+、Go 1.26.4。先从 [v0.1.0 Release](https://github.com/6ixGODD/knot/releases/tag/v0.1.0) 下载 `knot-grpc-0.1.0.tar.gz`，在下载目录运行以下命令。GHCR 镜像已公开，无需登录、token 或加入仓库即可拉取。首次启动下载 Go 模块，不需要 Rust 或 protoc。
 
 ```powershell
-docker login ghcr.io
 docker pull ghcr.io/6ixgodd/knot:0.1.0
 tar -xzf ./knot-grpc-0.1.0.tar.gz
 $image = 'ghcr.io/6ixgodd/knot:0.1.0'

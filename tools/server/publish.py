@@ -1,4 +1,4 @@
-"""Promote a verified CI image to private GHCR without compiling Rust again."""
+"""Promote a verified CI image to public GHCR without compiling Rust again."""
 import argparse
 import hashlib
 import json
@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import tarfile
 import tomllib
+import time
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -40,8 +41,8 @@ def main():
     tag = "v" + version
     if command("git", "rev-parse", tag + "^{commit}").decode().strip() != commit:
         raise RuntimeError("release tag must identify this exact master commit")
-    if not api("repos/" + repo)["private"]:
-        raise RuntimeError("this delivery is authorized only for the private repository")
+    if api("repos/" + repo)["private"]:
+        raise RuntimeError("public delivery requires the owner's public repository")
     build = api(f"repos/{repo}/actions/runs/{run_id}")
     if build["conclusion"] != "success" or build["path"] != ".github/workflows/package.yml":
         raise RuntimeError("source must be a successful Service package run")
@@ -98,8 +99,19 @@ def main():
     if config != (ROOT / "contracts/grpc/server-config.json").read_bytes():
         raise RuntimeError("registry image configuration contract mismatch")
     package = api(f"users/{repo.split('/')[0]}/packages/container/{repo.split('/')[1].lower()}")
-    if package["visibility"] != "private" or package.get("repository", {}).get("full_name", "").lower() != repo.lower():
-        raise RuntimeError("package must remain private and linked to this repository")
+    print("GHCR uploaded: " + package["html_url"], flush=True)
+    deadline = time.monotonic() + 240
+    while package["visibility"] != "public":
+        if time.monotonic() > deadline:
+            raise RuntimeError("package visibility must be set to public before Release publication")
+        print("Waiting for package visibility to become public", flush=True)
+        time.sleep(5)
+        package = api(f"users/{repo.split('/')[0]}/packages/container/{repo.split('/')[1].lower()}")
+    if package.get("repository", {}).get("full_name", "").lower() != repo.lower():
+        raise RuntimeError("package must be linked to this repository")
+    anonymous = out / "anonymous-docker"
+    anonymous.mkdir()
+    print(command("docker", "--config", anonymous, "pull", digest).decode(), flush=True)
     release = out / "release"
     release.mkdir()
     with tarfile.open(candidate / f"knot-grpc-{version}.tar.gz") as archive:
@@ -127,14 +139,14 @@ def main():
                     runtimeLayersUnchanged=True)
     (release / "release.json").write_text(json.dumps(identity, indent=2) + "\n")
     (release / "validation.json").write_text(json.dumps(dict(buildConclusion=build["conclusion"],
-        originalBrowserSmoke=smoke, registryPullVerified=True, runtimeConfigVerified=True), indent=2) + "\n")
+        originalBrowserSmoke=smoke, registryPullVerified=True, anonymousPullVerified=True, runtimeConfigVerified=True), indent=2) + "\n")
     shutil.copyfile(ROOT / "docs/service-package.md", release / "README.md")
     sums = [sha(p) + "  " + p.name for p in sorted(release.iterdir())]
     (release / "SHA256SUMS").write_text("\n".join(sums) + "\n")
     notes = out / "release-notes.md"
-    notes.write_text(f"KNOT {version}: private gRPC service and speaker configurator.\n\n"
+    notes.write_text(f"KNOT {version}: gRPC service and speaker configurator.\n\n"
         f"Container package: {package['html_url']}\n\n```sh\ndocker pull {image}\n```\n\n"
-        "Authenticate to ghcr.io with a classic PAT with read:packages for private access. "
+        "The container is public; no GitHub account, token or repository membership is required to pull it. "
         "Download the protocol/example archive below and follow examples/grpc/README.md "
         "or README.zh-CN.md. Docker Linux containers, Python 3.9+ and Go 1.26.4 are required.\n\n"
         f"Registry digest: `{digest}`.\n\nRelease source: `{commit}`. "
