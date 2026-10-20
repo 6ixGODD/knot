@@ -6,10 +6,9 @@ Run a speaker configurator against the real KNOT gRPC service. The browser examp
 
 ## Run the browser example
 
-Use Docker with Linux containers, Python 3.9+ and Go 1.26.4. Download `knot-grpc-0.1.0.tar.gz` from the [v0.1.0 Release](https://github.com/6ixGODD/knot/releases/tag/v0.1.0) and run these commands in the download directory. The GHCR package is private: authenticate using an authorized GitHub username and a classic PAT with `read:packages`. The first launch downloads Go modules; no Rust or protoc is required.
+Use Docker with Linux containers, Python 3.9+ and Go 1.26.4. Download `knot-grpc-0.1.0.tar.gz` from the [v0.1.0 Release](https://github.com/6ixGODD/knot/releases/tag/v0.1.0) and run these commands in the download directory. The GHCR package is public; no account, token or repository invitation is required. The first launch downloads Go modules; no Rust or protoc is required.
 
 ```powershell
-docker login ghcr.io
 docker pull ghcr.io/6ixgodd/knot:0.1.0
 tar -xzf ./knot-grpc-0.1.0.tar.gz
 $image = 'ghcr.io/6ixgodd/knot:0.1.0'

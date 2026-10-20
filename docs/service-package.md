@@ -7,7 +7,6 @@ The Linux amd64 service image is published to [GHCR](https://github.com/6ixGODD/
 Install Docker with Linux containers, Python 3.9+ and Go 1.26.4. Download `knot-grpc-0.1.0.tar.gz` from the Release and run from that download directory:
 
 ```powershell
-docker login ghcr.io
 docker pull ghcr.io/6ixgodd/knot:0.1.0
 tar -xzf ./knot-grpc-0.1.0.tar.gz
 cd knot-grpc-0.1.0
@@ -17,7 +16,7 @@ python examples/grpc/speaker_web.py --image ghcr.io/6ixgodd/knot:0.1.0 --out $ou
 
 Open <http://127.0.0.1:8765>. Ctrl+C stops the demo. First launch downloads Go modules and builds the bridge; no Rust compiler or protoc is needed. See [example interactions](../examples/grpc/README.md).
 
-The repository and GHCR package are private. At `docker login`, supply an authorized GitHub username and a classic PAT with `read:packages` as the password. Never commit the token. Repository access alone does not authenticate the Docker client. The Release's `release.json` records the immutable image digest, release source and original tested binary source; `SHA256SUMS` covers attachments.
+The repository, Release and GHCR package are public. Partners can pull without a GitHub account, token or repository invitation. The Release's `release.json` records the immutable image digest, release source and original tested binary source; `SHA256SUMS` covers attachments.
 
 ## Build from source
 

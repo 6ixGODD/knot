@@ -1,6 +1,6 @@
 # Deploy the gRPC service
 
-Pull the private Linux amd64 image with `docker pull ghcr.io/6ixgodd/knot:0.1.0` after authenticating to GHCR. Download matching protocol/examples from the Release. See [authentication, download and source-build instructions](service-package.md). The image contains no models or credentials.
+Pull the public Linux amd64 image with `docker pull ghcr.io/6ixgodd/knot:0.1.0`; no login is required. Download matching protocol/examples from the Release. See [download and source-build instructions](service-package.md). The image contains no models or credentials.
 
 Mount a complete model directory read-only. Startup compiles every top-level `.json` model before serving; invalid or empty directories fail without partial readiness. Keep all digests still referenced by client sessions. Change models or certificates by replacing the deployment and restarting.
 
