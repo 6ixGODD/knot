@@ -1,69 +1,35 @@
-# gRPC API
+# gRPC API reference
 
-[简体中文](grpc-api.zh-CN.md)
+[简体中文](grpc-api.zh-CN.md) · [Service guide](grpc/README.md) · [Quickstart](grpc/quickstart.md) · [Language clients](grpc/clients.md)
 
-Use `knot.v1.ConfigurationService` to drive a product configurator: ask the next question, accept an answer, and return the updated configuration, price and visual properties. The service is stateless and uses the same engine as the native SDK. Your application owns the UI, session storage and payment flow.
+`knot.v1.ConfigurationService` is a stateless product configuration service. All four RPCs are unary. Requests select an exact model and include the complete state where required. This page describes the network contract; the [browser demo](../examples/grpc/README.md) is documented separately.
 
-## Try a real configuration
+## Which method to call
 
-### Interactive SVG configurator
-
-See the [example guide](../examples/grpc/README.md) for a walkthrough, source map and troubleshooting.
-
-The [browser example](../examples/grpc/speaker_web.py) renders four SVG layers (base, cabinet, panel and LED ring) through a small Go HTTP-to-gRPC bridge. Prices, available options, answer clearing and visual properties come from KNOT. This loopback-only bridge belongs to the example, not the server's public API.
-
-With Docker Linux containers, Python 3.9+, Go 1.26.4 and the internal image loaded, run from the repository root:
-
-```powershell
-$image = Read-Host 'Local image tag with Quote support'
-$out = Join-Path $env:TEMP ('knot-speaker-web-' + [guid]::NewGuid().ToString('N'))
-python examples/grpc/speaker_web.py --image $image --out $out --port 8765
-```
-
-Open `http://127.0.0.1:8765`. Choose active, aluminum, a panel color, 200W and LED. Each selection calls Apply and updates the SVG immediately; Quote then supplies the complete-product price range and each option's whole-product price. Previous/next navigation preserves answers and revision. Changing aluminum to walnut clears incompatible answers and hides the LED ring. Reloading calls Evaluate, then Quote, with saved State. A failed restore leaves the stored configuration intact. Press Ctrl+C to stop the example and remove its container; logs remain in `$out`. Use a new output directory and a supplied image that includes Quote; older three-method images cannot serve this UI.
-
-The UI and SVG sources are in [speaker-web](../examples/grpc/go/cmd/speaker-web/). Restart the launcher after editing to rebuild embedded assets. This demo uses localStorage and has no accounts, shared database, checkout or payment processing. Use non-sensitive demo data; production applications must provide session and authorization handling.
-
-During a color gesture, the client keeps one Apply in flight and only the latest unsent color. Confirmed Visual updates immediately; Quote waits for the pending changes to settle (or a 120 ms input pause). The last confirmed price stays visible with a stable confirmation label and explanation until the new server quote arrives. It is not a quote for the pending selection. The client never interpolates prices or predicts Visual rules. Confirmed SVG colors transition for 80 ms, respecting reduced-motion preferences.
-
-### Scripted scenarios
-
-The [Speaker demo](../examples/grpc/speaker_demo.py) uses the existing [product model](../contracts/examples/speaker.json), a real container and the [generated Go client](../examples/grpc/go/main.go). It runs three purchase/edit scenarios plus a rejected option, and retains full responses so you can inspect the behavior.
-
-Requirements: Docker with Linux containers, Python 3.9+ and Go 1.26.4 (see [go.mod](../examples/grpc/go/go.mod)). The first client build needs the Go modules; no Rust, protoc or native SDK is required. Import the internally supplied image with `docker load --input <archive>`. Use the tag reported by that command.
-
-From the repository root in PowerShell:
-
-```powershell
-$image = Read-Host 'Imported local image tag'
-$out = Join-Path $env:TEMP ('knot-speaker-' + [guid]::NewGuid().ToString('N'))
-python examples/grpc/speaker_demo.py --image $image --out $out
-Get-Content (Join-Path $out 'summary.json')
-```
-
-The script builds the Go client, mounts only `speaker.json`, starts a read-only container on an unused loopback port, checks health, runs the scenarios and removes its container. Output stays in `$out`; use a new directory for each run. Plaintext is explicitly enabled for this local demo. For a remote deployment, use [mTLS](deployment.md).
-
-| Scenario | Choices and behavior | Expected result |
+| RPC | Application use | State effect |
 |---|---|---|
-| `premium` | Active speaker → aluminum → blue panel → 200W → LED ring | CNY 2,828.00 (`282800` minor units), `final`, flow `complete`; LED visible |
-| `change-material` | Start with that completed configuration, then change aluminum to walnut | CNY 1,599.00 (`159900`), `estimated`; clears `power` and `extras`, hides LED, asks `power` again |
-| `passive` | Passive speaker → walnut → blue panel → banana connector | CNY 1,199.00 (`119900`), `final`, flow `complete`; no power or extras questions |
-| `disabled-power` | Active speaker → walnut → blue panel → attempt 200W | `INVALID_OPTION`; the rejected request yields no replacement State |
+| Initial | Start a new configuration | Returns revision 0 and no answers; creates no server session |
+| Apply | Submit, clear or skip an answer | Validates the event, reconciles dependent answers and returns complete new State/Snapshot |
+| Evaluate | Restore saved configuration or rebuild its view | Validates State without repairing it or increasing revision; empty Changes |
+| Quote | Initial display, successful answer update, question navigation or candidate preview | Complete-product range and candidate totals; no State mutation |
 
-This CLI scenario retains the legacy cumulative `snapshot.price`; `estimated` is a subtotal, not the complete-product quote displayed by the browser. The demo asserts these subtotals/final prices, revisions and flow states. Every successful scenario also calls Evaluate and checks that State is unchanged, then replays an old event and requires `REVISION_CONFLICT`.
+### Initial
 
-Inspect `*.events.json` for inputs, `*.result.json` for the final result, and `*.trace.jsonl` for every Initial/Apply/Evaluate outcome. In `change-material.trace.jsonl`, the last successful Apply contains the automatic answer changes; Evaluate has empty Changes. The trace contains complete answers: keep it local and use it only with non-sensitive demo data.
+Send only `model_digest`. The successful TransitionResult contains the `state` to save, `snapshot.flow` and `snapshot.visual` to render. Call Quote with that State for the complete-product range. Do not call Initial on every interaction; it starts over.
 
-To try another configuration, edit a generated event file and call the built client against your running server:
+### Apply
 
-```powershell
-& (Join-Path $out 'grpc-example.exe') --plaintext --trace `
-  --endpoint 127.0.0.1:50051 `
-  --digest sha256:73e5998863973011c590d9883bb0a593f62d77fca5d10480b4f0029153ed1541 `
-  --events (Join-Path $out 'premium.events.json')
-```
+Send `model_digest`, complete `state_json` and one `event_json`. Event `expectedRevision` must equal the supplied State revision. `set_answer` sets an answer; for multi questions send the complete option set, not one appended option. `clear_answer` removes an answer; `skip_answer` skips an eligible question. Exact fields are in the [Event Schema](../contracts/schemas/event.schema.json).
 
-This second command requires a server you started separately; the demo's temporary server has already stopped. Use its actual endpoint. The digest above identifies the unchanged Speaker model; it is not a raw JSON-file checksum. Other deployed models need their own compiled digest from the matching model manifest. The client prints the final result to stdout and optional RPC traces to stderr. Its sample workflow starts a fresh session and tests an old-revision rejection; it is not a session persistence client.
+A valid change may clear later answers that depended on the old selection. Replace the entire returned State rather than merging only the clicked answer locally. A no-op does not increase revision. Domain errors provide no replacement State. Do not edit revision, answers or skipped fields to bypass Apply.
+
+### Evaluate
+
+Send complete saved State to rebuild its Snapshot; no Event is required. Evaluate does not repair invalid State, migrate models or increase revision. Preserve a saved configuration when restoration fails instead of silently overwriting it with Initial.
+
+### Quote
+
+Send outer `model_digest` and `quote_json`. The JSON contains `schemaVersion`, complete `state`, optional `focusQuestionId` and optional `candidateValue`. Omitted focus uses the engine's current question; explicit focus can inspect an earlier question without a navigation Event. Numeric/color previews require explicit focus and do not submit an answer. Success is a separate QuoteResult, not TransitionResult; full pricing semantics follow below.
 
 ## Calls and payloads
 
@@ -111,7 +77,7 @@ Save the complete returned State only after a successful domain result. Use data
 
 Internal JSON limits remain 4 MiB Product, 512 KiB State and 64 KiB Event. Business protobuf messages are capped at 1 MiB inbound and 4 MiB + 1 KiB outbound. Deadlines do not interrupt running synchronous computation; the compute slot remains occupied until that work exits.
 
-For mTLS, omit `--plaintext` and provide `--ca`, `--cert`, `--key` and `--server-name` to the Go client. Use a real client identity and the server's verified SAN. The [deployment guide](deployment.md) covers server certificates, health and shutdown.
+For mTLS, follow the [language client setup](grpc/clients.md#remote-connections-and-validation). Use a client identity and an endpoint hostname matching the server certificate SAN. The [deployment guide](deployment.md) covers server certificates, health and shutdown.
 
 Standard `grpc.health.v1.Health` is available for the service name `knot.v1.ConfigurationService`. There is no reflection, REST, model upload, model listing or remote administrative API.
 

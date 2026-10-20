@@ -36,6 +36,11 @@ def main():
         shutil.copytree(ROOT / source, package / destination, ignore=shutil.ignore_patterns("*.exe", "__pycache__"))
     shutil.copyfile(ROOT / "examples/grpc/speaker_demo.py", package / "examples/grpc/speaker_demo.py")
     shutil.copyfile(ROOT / "examples/grpc/speaker_web.py", package / "examples/grpc/speaker_web.py")
+    for name in ("walkthrough.py", "python/client.py", "node/client.cjs"):
+        destination = package / "examples/grpc" / name
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(ROOT / "examples/grpc" / name, destination)
+    shutil.copytree(ROOT / "docs/grpc", package / "docs/grpc")
     for name in ("README.md", "README.zh-CN.md"):
         shutil.copyfile(ROOT / "examples/grpc" / name, package / "examples/grpc" / name)
     from notices import collect

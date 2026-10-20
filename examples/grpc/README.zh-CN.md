@@ -4,9 +4,22 @@
 
 示例连接真实 KNOT gRPC 服务。浏览器示例供前端接入参考；脚本示例记录可复现的购买、修改场景。
 
+只想调用服务？从[独立 gRPC 接入指南](../../docs/grpc/README.zh-CN.md)开始；以下是可选前端演示。
+
 ## 启动前端
 
 准备 Docker Linux 容器、Python 3.9+、Go 1.26.4。先从 [v0.1.0 Release](https://github.com/6ixGODD/knot/releases/tag/v0.1.0) 下载 `knot-grpc-0.1.0.tar.gz`，在下载目录运行以下命令。GHCR 镜像已公开，无需登录、token 或加入仓库即可拉取。首次启动下载 Go 模块，不需要 Rust 或 protoc。
+
+Linux/macOS shell:
+
+```sh
+docker pull ghcr.io/6ixgodd/knot:0.1.0
+tar -xzf ./knot-grpc-0.1.0.tar.gz
+cd knot-grpc-0.1.0
+python3 examples/grpc/speaker_web.py --image ghcr.io/6ixgodd/knot:0.1.0 --out /tmp/knot-speaker-web-001 --port 8765
+```
+
+输出目录必须不存在。PowerShell：
 
 ```powershell
 docker pull ghcr.io/6ixgodd/knot:0.1.0

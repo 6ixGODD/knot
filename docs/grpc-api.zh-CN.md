@@ -1,71 +1,35 @@
-# gRPC 调用接口
+# gRPC 接口参考
 
-[English](grpc-api.md)
+[English](grpc-api.md) · [服务接入入口](grpc/README.zh-CN.md) · [快速开始](grpc/quickstart.zh-CN.md) · [语言客户端](grpc/clients.zh-CN.md)
 
-用 `knot.v1.ConfigurationService` 驱动商品配置流程：展示下一题、提交用户选择，获得新的配置状态、价格和视觉属性。服务无会话存储，与原生 SDK 使用同一内核。界面、会话保存和支付流程由你的应用负责。
+`knot.v1.ConfigurationService` 是无会话存储的商品配置服务。四个 RPC 均为 unary；每次传入精确模型身份和必要的完整状态。本文描述网络契约，前端演示见[单独教程](../examples/grpc/README.zh-CN.md)。
 
-## 先跑一个真实配置
+## 何时调用哪个接口
 
-### 带前端的 SVG 音箱定制
-
-操作步骤、源码入口和排查方法见[示例指南](../examples/grpc/README.zh-CN.md)。
-
-[启动脚本](../examples/grpc/speaker_web.py)会启动真实 gRPC 服务和本机 Go HTTP 转接服务。浏览器用底座、箱体、面板、灯环四个 SVG 图层展示音箱；价格、选项可用性、答案自动清除和图层属性全部来自 KNOT。
-
-准备 Docker Linux 容器、Python 3.9+、Go 1.26.4，并加载内部提供的镜像。在仓库根目录运行：
-
-```powershell
-$image = Read-Host 'Local image tag with Quote support'
-$out = Join-Path $env:TEMP ('knot-speaker-web-' + [guid]::NewGuid().ToString('N'))
-python examples/grpc/speaker_web.py --image $image --out $out --port 8765
-```
-
-打开 `http://127.0.0.1:8765`，依次选择有源、铝合金、面板颜色、200W、LED。选择通过 Apply 立即更新 SVG，随后 Quote 返回完整配置区间及各选项的选择后整机价。上一项/下一项只改变焦点，保留选择和 revision。返回改成胡桃木时，不兼容答案被清除、灯环熄灭。刷新先 Evaluate 保存的 State，再 Quote；恢复失败不会覆盖存档。
-
-在启动终端按 Ctrl+C 停止页面服务并移除容器，日志保留在 `$out`。每次使用新的输出目录；`$image` 必须为包含 Quote 的配套镜像，旧三方法镜像不能支持此页面。[页面和 SVG 源码](../examples/grpc/go/cmd/speaker-web/)修改后重新启动脚本。
-
-HTTP 转接只属于这个本机示例，不是 KNOT 服务新增的公共 REST 接口。示例用 localStorage 保存配置，不包含账号、共享数据库或支付功能；请使用非敏感演示数据，实际产品需要自行实现会话和授权。
-
-连续调色时最多保留一个进行中的 Apply 和最新的未发送颜色，已确认的 Visual 立即更新；待修改稳定或输入暂停 120 ms 后再取 Quote。更新期间保留上次确认的价格，用固定的“已确认”标题及说明标识，它不代表待提交选择的当前报价。客户端不插值金额，也不预测视觉规则。已确认的 SVG 颜色使用 80 ms 过渡，并遵守减少动态效果设置。
-
-### 脚本场景
-
-[音箱示例脚本](../examples/grpc/speaker_demo.py) 使用已有的[商品模型](../contracts/examples/speaker.json)、真实容器和[生成的 Go 客户端](../examples/grpc/go/main.go)。它运行三个购买/回改场景及一个非法选项场景，保存完整返回值供你检查。
-
-需要：支持 Linux 容器的 Docker、Python 3.9+、Go 1.26.4（见 [go.mod](../examples/grpc/go/go.mod)）。首次构建客户端需要下载 Go 依赖，不需要 Rust、protoc 或原生 SDK。用 `docker load --input <归档文件>` 导入内部提供的镜像，镜像名以导入输出为准。
-
-在仓库根目录运行 PowerShell：
-
-```powershell
-$image = Read-Host 'Imported local image tag'
-$out = Join-Path $env:TEMP ('knot-speaker-' + [guid]::NewGuid().ToString('N'))
-python examples/grpc/speaker_demo.py --image $image --out $out
-Get-Content (Join-Path $out 'summary.json')
-```
-
-脚本会构建 Go 客户端，只挂载 `speaker.json`，在本机回环地址的空闲端口启动只读容器，检查健康并运行场景，结束后删除自己的容器。结果保留在 `$out`；每次使用新目录。本机演示显式开启明文连接；远程部署使用 [mTLS](deployment.md)。
-
-| 场景 | 选择和业务行为 | 预期结果 |
+| RPC | 业务时机 | 状态影响 |
 |---|---|---|
-| `premium`：高配有源音箱 | 有源 → 铝合金 → 蓝色面板 → 200W → LED 灯环 | ¥2,828.00，`totalMinor=282800`，价格 `final`，流程 `complete`，灯环可见 |
-| `change-material`：买家回改材质 | 在上面的完整配置上，把铝合金改成胡桃木 | ¥1,599.00，`159900`，价格退回 `estimated`；自动清掉 `power` 和 `extras`，隐藏灯环，重新询问功率 |
-| `passive`：另一条购买路线 | 无源 → 胡桃木 → 蓝色面板 → 香蕉插头 | ¥1,199.00，`119900`，价格 `final`，流程 `complete`；不询问功率和配件 |
-| `disabled-power`：拒绝不合法组合 | 有源 → 胡桃木 → 蓝色面板 → 尝试选 200W | 返回 `INVALID_OPTION`；失败请求不提供可替换的 State |
+| Initial | 开始新配置 | 返回 revision 0 的空答案 State；不创建服务端会话 |
+| Apply | 用户提交、清空或跳过答案 | 校验 Event，协调依赖答案，返回完整新 State 和 Snapshot |
+| Evaluate | 恢复已保存配置、重新计算视图 | 校验已有 State，不修复、不增加 revision，Changes 为空 |
+| Quote | 初始展示、答案提交成功后、切换问题或预览候选值 | 返回完整商品价格范围和候选整机价；不修改 State |
 
-脚本保留旧 `snapshot.price` 的累计金额语义，`estimated` 是小计，不能作为浏览器完整配置报价。脚本会断言这些小计/最终金额、revision 和流程状态。每个成功场景还会调用 Evaluate，确认 State 不变；随后重放旧事件，确认收到 `REVISION_CONFLICT`。
+### Initial
 
-查看 `*.events.json` 看提交内容，`*.result.json` 看最终结果，`*.trace.jsonl` 看每一步 Initial/Apply/Evaluate 的完整返回。在 `change-material.trace.jsonl` 中，最后一个成功 Apply 的 Changes 包含自动清理记录；Evaluate 的 Changes 为空。轨迹包含完整答案，仅用于本地非敏感演示数据。
+输入只有 `model_digest`。成功返回 TransitionResult。应用保存其中的 `state`，用 `snapshot.flow` 和 `snapshot.visual` 渲染流程与视觉，然后对该 State 调用 Quote 得到价格区间。不要在每次点击时调用 Initial，它会从头开始。
 
-想改选项，可以编辑生成的事件文件，再对自己启动的服务运行客户端：
+### Apply
 
-```powershell
-& (Join-Path $out 'grpc-example.exe') --plaintext --trace `
-  --endpoint 127.0.0.1:50051 `
-  --digest sha256:73e5998863973011c590d9883bb0a593f62d77fca5d10480b4f0029153ed1541 `
-  --events (Join-Path $out 'premium.events.json')
-```
+输入为 `model_digest`、完整 `state_json` 和一个 `event_json`。Event 的 `expectedRevision` 必须等于所传 State 的 revision。`set_answer` 写入答案；multi 类型传完整选项集合而不是追加一个选项。`clear_answer` 清除答案，`skip_answer` 跳过允许跳过的问题；字段见 [Event Schema](../contracts/schemas/event.schema.json)。
 
-第二条命令需要你另行启动服务，并填入它的实际地址；示例脚本的临时服务已经停止。上面的 digest 对应未修改的音箱模型，并非 JSON 文件字节的 SHA-256。其他模型须使用配套模型清单中的编译后 digest。客户端将最终结果写到 stdout，可选的逐次 RPC 轨迹写到 stderr。它每次从新配置开始，并测试旧 revision 拒绝，不负责保存会话。
+一次合法修改可能清理依赖于旧答案的后续答案，必须整体替换返回的 State，不能只把这次点击合并进本地答案。实际 no-op 不增加 revision。领域错误不提供替换状态。不要手改 revision、answers 或 skipped 来绕过 Apply。
+
+### Evaluate
+
+传入完整已保存 State，恢复 Snapshot；不需要 Event。它不会补齐错误状态或做模型迁移，也不会将 revision 加一。恢复失败时保留原存档并向用户报告错误，不能静默 Initial 后覆盖存档。
+
+### Quote
+
+外层为 `model_digest` 和 `quote_json`；内部 JSON 为 `schemaVersion`、完整 `state`，以及可选 `focusQuestionId` / `candidateValue`。未给 focus 时使用引擎当前问题；指定 focus 可查看之前的问题，不产生导航 Event。数字/颜色候选预览需显式 focus，预览不提交答案。成功响应是独立的 QuoteResult，不是 TransitionResult；完整价格语义见下文。
 
 ## 调用及其载荷
 
@@ -125,7 +89,7 @@ Get-Content (Join-Path $out 'summary.json')
 
 内部 JSON 上限：Product 4 MiB、State 512 KiB、Event 64 KiB。业务 protobuf 消息上限：入站 1 MiB，出站 4 MiB + 1 KiB。deadline 不会强行中断已运行的同步计算，计算槽要等工作结束才释放。
 
-使用 mTLS 时，Go 客户端去掉 `--plaintext`，提供 `--ca`、`--cert`、`--key`、`--server-name`，使用真实客户端身份并校验服务端 SAN。[部署文档](deployment.md) 说明服务端证书、健康检查和退出方式。
+使用 mTLS 时，按[语言客户端](grpc/clients.zh-CN.md#远程连接与校验)配置身份，endpoint 主机名必须匹配服务端 SAN。[部署文档](deployment.md) 说明服务端证书、健康检查和退出方式。
 
 标准健康服务为 `grpc.health.v1.Health`，业务服务名为 `knot.v1.ConfigurationService`。没有 reflection、REST、模型上传、模型列表或远程管理 API。
 
