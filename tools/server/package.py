@@ -45,7 +45,8 @@ def main():
         shutil.copyfile(ROOT / "examples/grpc" / name, package / "examples/grpc" / name)
     from notices import collect
     collect(package / "licenses/third-party")
-    for name in ("grpc-api.md", "grpc-api.zh-CN.md", "deployment.md", "service-package.md"):
+    for name in ("grpc-api.md", "grpc-api.zh-CN.md", "deployment.md", "service-package.md",
+                 "dsl-reference.zh-CN.md", "integration-overview.zh-CN.md"):
         (package / "docs").mkdir(exist_ok=True)
         shutil.copyfile(ROOT / "docs" / name, package / "docs" / name)
     shutil.copyfile(ROOT / "tools/server/toolchain-lock.json", package / "toolchain-lock.json")

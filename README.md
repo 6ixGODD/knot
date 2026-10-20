@@ -4,6 +4,8 @@ KNOT is a product configuration engine available as a gRPC service or an in-proc
 
 Choose [gRPC service integration](docs/grpc/README.md) ([简体中文](docs/grpc/README.zh-CN.md)) or the [native SDK quickstart](docs/quickstart.md).
 
+For the complete Chinese integration path, read the [system overview](docs/integration-overview.zh-CN.md), [Product DSL guide](docs/dsl-reference.zh-CN.md), then [service setup and calls](docs/grpc/README.zh-CN.md).
+
 The internally supplied native SDK includes precompiled shared/static libraries, CMake targets, schemas, examples, dependency notices and the CLI.
 
 Available internal packages target Windows x86_64 MSVC and Linux x86_64 GNU. C/C++ consumers need a matching compiler and CMake, but no Rust toolchain or dependency downloads. Read `manifest.json` for the exact tested host, compiler, target and CRT; compatibility with older operating systems or other ABI combinations is not established. macOS is outside the validated package scope.

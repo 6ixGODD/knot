@@ -6,6 +6,8 @@ Your application sends answers to KNOT and receives a consistent configuration, 
 
 | Start here | What you will learn |
 |---|---|
+| [System overview (Chinese)](../integration-overview.zh-CN.md) | How models, state, service and application fit together |
+| [Product DSL authoring guide (Chinese)](../dsl-reference.zh-CN.md) | Define questions, conditions, flow, prices and visual rules |
 | [Quickstart](quickstart.md) | Pull the image, mount a product, check readiness and make the first call |
 | [API reference](../grpc-api.md) | Inputs, outputs, errors and semantics of all four RPCs |
 | [Go, Python and Node.js clients](clients.md) | Install dependencies and call each RPC directly |

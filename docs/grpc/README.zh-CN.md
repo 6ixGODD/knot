@@ -6,6 +6,8 @@
 
 | 阅读顺序 | 解决的问题 |
 |---|---|
+| [完整接入体系](../integration-overview.zh-CN.md) | 模型、状态、服务、应用和渲染分别负责什么 |
+| [商品模型 DSL 1.0](../dsl-reference.zh-CN.md) | 定义自己的题目、选项、条件、分支、价格和视觉规则 |
 | [快速开始](quickstart.zh-CN.md) | 拉取镜像、挂载商品模型、检查服务、发出第一次请求 |
 | [接口参考](../grpc-api.zh-CN.md) | 四个 RPC 的输入、输出、语义和错误 |
 | [Go、Python、Node.js 客户端](clients.zh-CN.md) | 安装各语言依赖，直接调用每个接口 |

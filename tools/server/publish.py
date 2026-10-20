@@ -124,6 +124,8 @@ def main():
         if (protocol / "docs" / path.name).exists():
             shutil.copyfile(path, protocol / "docs" / path.name)
     shutil.copytree(ROOT / "docs/grpc", protocol / "docs/grpc", dirs_exist_ok=True)
+    for name in ("dsl-reference.zh-CN.md", "integration-overview.zh-CN.md"):
+        shutil.copyfile(ROOT / "docs" / name, protocol / "docs" / name)
     for name in ("README.md", "README.zh-CN.md"):
         shutil.copyfile(ROOT / "examples/grpc" / name, protocol / "examples/grpc" / name)
     manifest = json.loads((protocol / "manifest.json").read_text())

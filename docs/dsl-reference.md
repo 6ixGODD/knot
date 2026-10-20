@@ -1,5 +1,7 @@
 # Product DSL 1.0
 
+[简体中文：模型规范与编写指南](dsl-reference.zh-CN.md)
+
 The normative structural contract is [product.schema.json](../contracts/schemas/product.schema.json); the full [Speaker model](../contracts/examples/speaker.json) is the main example. References resolve within packaged schemas. Defaults are annotations; compilation applies only the declared defaults. Missing required fields, unknown fields, duplicate IDs/keys, cycles and unresolved references are rejected.
 
 A small complete structural example:
